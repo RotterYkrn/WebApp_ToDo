@@ -4,3 +4,6 @@
 [submodule "server"]
 	path = server
 	url = https://github.com/RotterYkrn/ToDo_Backend_Typescript_NodeJS
+[submodule "db"]
+	path = db
+	url = https://github.com/RotterYkrn/MySQL_Database
