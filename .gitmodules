@@ -4,3 +4,6 @@
 [submodule "db"]
 	path = db
 	url = https://github.com/RotterYkrn/MySQL_Database
+[submodule "client"]
+	path = client
+	url = https://github.com/RotterYkrn/ToDo_Frontend_Typescript.git
