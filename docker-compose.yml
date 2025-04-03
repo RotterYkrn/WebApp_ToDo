@@ -27,18 +27,18 @@ services:
     build: ./server
 
     ports:
-      - "5000:5000"
+      - "3000:3000"
 
     volumes:
       - ./server:/app
       - /app/node_modules
     
+    env_file:
+      - .env
+    
     environment:
       - CHOKIDAR_USEPOLLING=true
       - MYSQL_SERVER=db
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASS}
-      - MYSQL_DATABASE=${DB_NAME}
       - TZ=${TZ}
       
     tty: true
@@ -53,13 +53,18 @@ services:
 
     image: mysql:8.0
 
-    environment:
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_ROOT_HOST=${DB_ROOT_HOST}
-      - MYSQL_ROOT_PASSWORD=${DB_PASS}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASS}
-      - TZ=${TZ}
+    env_file:
+      - .env
+
+    # command: >
+    #   bash -c '
+    #     echo "Excecute db build command."'
+
+    # bash -c '
+    #   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER IF NOT EXISTS \'$MYSQL_USER\'@\'%\' IDENTIFIED BY \'$MYSQL_PASSWORD\'";
+    #   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO \'$MYSQL_USER\'@\'%\'";
+    #   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "FLUSH PRIVILEGES";
+    #   exec mysqld'
 
     ports:
       - "3306:3306"
