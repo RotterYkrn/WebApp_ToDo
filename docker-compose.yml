@@ -55,7 +55,7 @@ services:
   
   db:
 
-    image: mysql:latest
+    image: mysql:9.3
 
     env_file:
       - .env
