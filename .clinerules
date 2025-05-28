@@ -32,6 +32,43 @@
   - Prisma
   - MySQL
 
+# ディレクトリ構造
+
+.
+├── client/                 # フロントエンド
+│   ├── src/                # コード群
+│   │   ├── dist-tsc/       # tscの出力結果用
+│   │   ├── scripts/        # JavaScriptコード群
+│   │   ├── styles/         # スタイルシートコード群
+│   │   └── index.html      # HTML
+│   ├── dist                # Viteの出力結果用
+│   └── Dockerfile
+├── server/                 # バックエンド
+│   ├── prisma/
+│   │   ├── schema.prisma   # Prismaの設定、スキーマ定義
+│   │   └── migrations      # Prismaのマイグレーション履歴
+│   ├── generated/
+│   │   └── prisma/         # ORMの自動生成コード群
+│   ├── src/                # JavaScriptコード群
+│   ├── dist/               # tscの出力結果用
+│   └── Dockerfile
+├── db/
+└── docker-compose.yaml
+
+# 規約
+
+## コードの書式
+
+- JavaScriptのコードはESMで記述してください。
+- JavaScriptのコードには、必ずJSDocを付けてください。
+- tscで型検証を行ってください。
+
+## 注意点
+
+フォーマッタやリンタによって、保存時にコードが変更される場合があります。
+それが原因でエラーが出たり、動作が意図したものでなくなったと判断した場合は、
+ユーザに判断を仰いでください。
+
 # セキュリティガイドライン
 
 ## 機密ファイル
