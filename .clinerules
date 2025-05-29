@@ -30,6 +30,8 @@
     - ESM + JSDoc + tsc で、コードをJavaScriptで記述しつつ、TypeScriptの型検証の部分を活用します
   - Express
   - Prisma
+    - ORM
+    - https://www.prisma.io/docs
   - MySQL
 
 # ディレクトリ構造
