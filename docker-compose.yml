@@ -3,14 +3,16 @@ services:
   client:
 
     build: 
-      context: ./client
+      context: .
+      dockerfile: ./client/Dockerfile
       target: development
 
     ports:
       - "8080:5173"
     
     volumes:
-      - ./client:/app
+      - ./client:/app/client
+      - ./packages/shared-schema:/app/packages/shared-schema
       - /app/node_modules
     
     environment:
@@ -27,7 +29,9 @@ services:
 
   server:
 
-    build: ./server
+    build: 
+      context: .
+      dockerfile: ./server/Dockerfile
 
     ports:
       - "3000:3000"
@@ -35,6 +39,8 @@ services:
 
     volumes:
       - ./server:/app
+      - ./packages/shared-schema:/app/packages/shared-schema
+      - ./packages/orm:/app/packages/orm
       - /app/node_modules
     
     env_file:
