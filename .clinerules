@@ -21,39 +21,51 @@
   - Docker
     - Docker Compose
 - フロントエンド
-  - vanilla JavaScript
-    - ESM + JSDoc + tsc で、コードをJavaScriptで記述しつつ、TypeScriptの型検証の部分を活用します
+  - vanilla TypeScript
   - Vite
   - Biome
 - バックエンド
-  - vanilla JavaScript
-    - ESM + JSDoc + tsc で、コードをJavaScriptで記述しつつ、TypeScriptの型検証の部分を活用します
+  - vanilla TypeScript
   - Express
   - Prisma
     - ORM
     - https://www.prisma.io/docs
+  - zod
+    - zod-prisma-types を用いて、Prismaのスキーマ定義をTypeScriptに変換
+    - 変換したものにバリデーションをつけて拡張したものを、スキーマの型定義として使用
   - MySQL
+- 設計タイプ
+  - TDD + DDD
+  - OOP + FP
+    - Value Objectの型定義にはFPのコンセプトを用いています
+    - Entityの型定義にはOOPのコンセプトを用いています
 
 # ディレクトリ構造
 
 .
-├── client/                 # フロントエンド
-│   ├── src/                # コード群
-│   │   ├── dist-tsc/       # tscの出力結果用
-│   │   ├── scripts/        # JavaScriptコード群
-│   │   ├── styles/         # スタイルシートコード群
-│   │   └── index.html      # HTML
-│   ├── dist                # Viteの出力結果用
+├── client/                     # フロントエンド
+│   ├── src/                    # コード群
+│   │   ├── dist-tsc/           # tscの出力結果用
+│   │   ├── scripts/            # JavaScriptコード群
+│   │   ├── styles/             # スタイルシートコード群
+│   │   └── index.html          # HTML
+│   ├── dist                    # Viteの出力結果用
 │   └── Dockerfile
-├── server/                 # バックエンド
-│   ├── prisma/
-│   │   ├── schema.prisma   # Prismaの設定、スキーマ定義
-│   │   └── migrations      # Prismaのマイグレーション履歴
-│   ├── generated/
-│   │   └── prisma/         # ORMの自動生成コード群
-│   ├── src/                # JavaScriptコード群
-│   ├── dist/               # tscの出力結果用
+├── server/                     # バックエンド
+│   ├── src/                    # JavaScriptコード群
+│   ├── dist/                   # tscの出力結果用
 │   └── Dockerfile
+├── packages/                   # 共通パッケージ
+│   ├── orm/                    # 共通スキーマ定義
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma   # Prismaの設定、スキーマ定義
+│   │   │   └── migrations      # Prismaのマイグレーション履歴
+│   │   ├── generated/
+│   │   │   ├── prisma/         # Prisma Client 生成コード群
+│   │   │   └── zod/            # zod-prisma-types 生成コード群
+│   ├── shared-schema/          # スキーマ型定義のnpmパッケージ
+│   │   ├── src/                # TypeScriptコード群（zod出力を拡張したもの）
+│   │   └── dist/               # tscの出力結果用（パッケージとしてclient, serverへ提供するもの）
 ├── db/
 └── docker-compose.yaml
 
@@ -61,11 +73,10 @@
 
 ## コードの書式
 
-- JavaScriptのコードはESMで記述してください。
-- JavaScriptのコードには、必ずJSDocを付けてください。
-- tscで型検証を行ってください。
+- TypeScriptのコードはESM形式で記述してください。
 - エディタ内の警告にもなるべく対処してください。
 - tsconfig.jsonを編集しないでください。
+- DBスキーマの型定義は、必ずshared-schemaの内容のみを使用してください。
 
 ## コマンド実行
 
