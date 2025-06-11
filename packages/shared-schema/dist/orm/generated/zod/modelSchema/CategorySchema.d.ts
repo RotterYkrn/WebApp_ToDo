@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 export declare const CategorySchema: z.ZodObject<{
     id: z.ZodNumber;
     name: z.ZodString;

@@ -30,15 +30,17 @@
   - Prisma
     - ORM
     - https://www.prisma.io/docs
-  - zod
-    - zod-prisma-types を用いて、Prismaのスキーマ定義をTypeScriptに変換
-    - 変換したものにバリデーションをつけて拡張したものを、スキーマの型定義として使用
   - MySQL
 - 設計タイプ
   - TDD + DDD
   - OOP + FP
     - Value Objectの型定義にはFPのコンセプトを用いています
     - Entityの型定義にはOOPのコンセプトを用いています
+- 拡張予定
+  - 今の段階では以下のものは使用しない
+  - zod
+    - zod-prisma-types を用いて、Prismaのスキーマ定義をTypeScriptに変換
+    - 変換したものにバリデーションをつけて拡張したものを、スキーマの型定義として使用
 
 # ディレクトリ構造
 
@@ -54,15 +56,11 @@
 ├── server/                     # バックエンド
 │   ├── src/                    # JavaScriptコード群
 │   ├── dist/                   # tscの出力結果用
+│   ├── prisma/
+│   │   ├── schema.prisma       # Prismaの設定、スキーマ定義
+│   │   └── migrations/         # Prismaのマイグレーション履歴
 │   └── Dockerfile
-├── packages/                   # 共通パッケージ
-│   ├── orm/                    # 共通スキーマ定義
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma   # Prismaの設定、スキーマ定義
-│   │   │   └── migrations      # Prismaのマイグレーション履歴
-│   │   ├── generated/
-│   │   │   ├── prisma/         # Prisma Client 生成コード群
-│   │   │   └── zod/            # zod-prisma-types 生成コード群
+├── (packages/)                 # 共通パッケージ
 │   ├── shared-schema/          # スキーマ型定義のnpmパッケージ
 │   │   ├── src/                # TypeScriptコード群（zod出力を拡張したもの）
 │   │   └── dist/               # tscの出力結果用（パッケージとしてclient, serverへ提供するもの）
@@ -76,7 +74,7 @@
 - TypeScriptのコードはESM形式で記述してください。
 - エディタ内の警告にもなるべく対処してください。
 - tsconfig.jsonを編集しないでください。
-- DBスキーマの型定義は、必ずshared-schemaの内容のみを使用してください。
+- (拡張予定のため無視してよい)DBスキーマの型定義は、必ずshared-schemaの内容のみを使用してください。
 
 ## コマンド実行
 

@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 export declare const UserSchema: z.ZodObject<{
     id: z.ZodNumber;
     email: z.ZodString;

@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import { z } from 'zod';
 export declare const DailyPlanItemSchema: z.ZodObject<{
     id: z.ZodNumber;
     dailyPlanId: z.ZodNumber;
