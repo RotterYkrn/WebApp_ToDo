@@ -2,34 +2,42 @@
 
 ## Current Work Focus
 
-Initializing the project context by creating the necessary Memory Bank files based on the provided `docs/document.md` and project structure.
+Implementing the frontend user interface and logic to interact with the existing backend APIs.
 
 ## Recent Changes
 
-- Created `memory-bank/projectbrief.md`.
-- Created `memory-bank/productContext.md`.
-- Created `memory-bank/systemPatterns.md`.
-- Created `memory-bank/techContext.md`.
+- Initialized Memory Bank core files (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `progress.md`, `activeContext.md`).
+- Confirmed Docker Compose environment setup and Prisma migrations are applied.
+- Verified basic client-server communication via browser access to the authentication page.
+- Updated Memory Bank files (`progress.md`, `activeContext.md`) to reflect that backend APIs for core features are largely implemented.
 
 ## Next Steps
 
-1. Create `memory-bank/progress.md`.
-2. Read all Memory Bank files to fully load the project context.
-3. Based on the loaded context and the user's request to "develop this application", formulate a development plan in PLAN MODE.
-4. Present the plan to the user using `plan_mode_respond`.
+1. Begin implementing the frontend UI and logic for the Daily Plan feature. This includes:
+    - Fetching existing Daily Plan data for a given date.
+    - Displaying Daily Plan items.
+    - Adding new items to the Daily Plan (from ToDo/Habit lists or standalone).
+    - Reordering Daily Plan items.
+    - Marking Daily Plan items as completed.
+2. Implement frontend UI and logic for ToDo and Habit list management.
+3. Implement frontend UI and logic for Settings and Authentication.
+4. Implement robust error handling on the frontend.
+5. Add tests.
 
 ## Active Decisions and Considerations
 
-- Need to clarify the primary code formatter/linter to use for the entire project, as both Biome, ESLint, and Prettier configurations exist. `.clinerules` specifies Biome for frontend and ESLint for backend, which will be followed.
-- The initial task is broad ("develop this application"). The plan needs to break this down into smaller, manageable steps, likely starting with setting up the development environment and implementing core data models/APIs.
+- The primary code formatter/linter to use is Biome for frontend and ESLint for backend, as specified in `.clinerules`.
+- Frontend implementation will focus on consuming the already implemented backend APIs.
+- Need to consider how to manage state on the frontend without a major framework. Vanilla JS with a simple state management pattern will be used.
 
 ## Important Patterns and Preferences
 
-- Adhere to vanilla JS, ESM, JSDoc, and tsc for type checking.
+- Adhere to vanilla JS, ESM, JSDoc, and tsc for type checking on the frontend.
 - Follow the specified directory structure.
 - Use Docker Compose for the development environment.
 
 ## Learnings and Project Insights
 
-- The project is in its early stages, with basic file structure and some configuration (`docker-compose.yaml`, initial Prisma schema, basic server/client files).
-- Memory Bank was not initialized, requiring initial setup.
+- The backend development is further along than initially documented, with most core APIs already implemented.
+- The main development effort now shifts to the frontend.
+- Need to ensure consistency between frontend implementation and backend API expectations (data formats, error responses, etc.).
