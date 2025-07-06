@@ -1,19 +1,19 @@
 services:
 
-  client:
+  frontend:
 
     build: 
       context: .
-      dockerfile: ./client/Dockerfile
+      dockerfile: ../../shared/frontend/docker/Dockerfile
       target: development
 
     ports:
       - "8080:5173"
     
     volumes:
-      - ./client:/app/client
+      - ./frontend:/app/frontend
       # - ./packages/shared-schema:/app/packages/shared-schema
-      - /app/client/node_modules
+      - /app/frontend/node_modules
     
     environment:
       NODE_ENV: development
@@ -25,25 +25,22 @@ services:
       - app-network
 
     depends_on:
-      - server
+      - backend
 
-  server:
+  backend:
 
     build: 
       context: .
-      dockerfile: ./server/Dockerfile
+      dockerfile: ./backend/Dockerfile
 
     ports:
       - "3000:3000"
       - "5555:5555"
 
     volumes:
-      - ./server:/app/server
+      - ./backend:/app/backend
       # - ./packages/shared-schema:/app/packages/shared-schema
-      - /app/server/node_modules
-    
-    env_file:
-      - .env
+      - /app/backend/node_modules
     
     environment:
       NODE_ENV: development
@@ -64,13 +61,13 @@ services:
     image: mysql:9.3
 
     env_file:
-      - .env
+      - ../../shared/db/mysql/.env
 
     ports:
       - "3306:3306"
 
     volumes:
-      - ./db/conf.d:/etc/mysql/conf.d
+      - ../../shared/db/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - db-data:/var/lib/mysql
       
     networks:

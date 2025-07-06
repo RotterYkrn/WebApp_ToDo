@@ -1,0 +1,18 @@
+#error-message {
+  color: red;
+  margin-bottom: 10px;
+}
+
+#todo-list {
+  list-style: none;
+  padding: 0;
+}
+
+#todo-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+#todo-list li:last-child {
+  border-bottom: none;
+}
