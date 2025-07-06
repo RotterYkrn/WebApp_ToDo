@@ -2,8 +2,8 @@
     "name": "webapp-todo",
     "private": true,
     "workspaces": [
-        "client",
-        "server",
+        "frontend",
+        "backend",
         "packages/*"
     ]
 }

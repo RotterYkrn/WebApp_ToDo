@@ -4,7 +4,7 @@ services:
 
     build: 
       context: .
-      dockerfile: ../../shared/frontend/docker/Dockerfile
+      dockerfile: ../../shared/frontend/node/Dockerfile
       target: development
 
     ports:
@@ -58,7 +58,9 @@ services:
   
   db:
 
-    image: mysql:9.3
+    build:
+      context: .
+      dockerfile: ../../shared/db/mysql/Dockerfile
 
     env_file:
       - ../../shared/db/mysql/.env
@@ -67,7 +69,6 @@ services:
       - "3306:3306"
 
     volumes:
-      - ../../shared/db/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - db-data:/var/lib/mysql
       
     networks:
