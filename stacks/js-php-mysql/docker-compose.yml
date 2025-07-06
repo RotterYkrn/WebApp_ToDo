@@ -1,0 +1,78 @@
+services:
+
+  frontend:
+
+    build: 
+      context: .
+      dockerfile: ../../shared/frontend/node/Dockerfile
+      target: development
+
+    ports:
+      - "8080:5173"
+    
+    volumes:
+      - ./frontend:/app/frontend
+      # - ./packages/shared-schema:/app/packages/shared-schema
+      - /app/frontend/node_modules
+    
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLIN: true
+      
+    tty: true
+      
+    networks:
+      - app-network
+
+    depends_on:
+      - backend
+
+  backend:
+
+    build: 
+      context: .
+      dockerfile: ../../shared/backend/php/Dockerfile
+
+    ports:
+      - "8080:8000"
+
+    volumes:
+      - ./backend:/app/backend
+    
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: true
+      MYSQL_SERVER: db
+      TZ: ${TZ}
+      
+    tty: true
+      
+    networks:
+      - app-network
+
+    depends_on:
+      - db
+  
+  db:
+
+    build: 
+      context: .
+      dockerfile: ../../shared/db/mysql/Dockerfile
+
+    env_file:
+      - ../../shared/db/mysql/.env
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - db-data:/var/lib/mysql
+      
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  db-data:
