@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ユーザーモデル
+model User {
+  id         Int           @id @default(autoincrement())
+  email      String        @unique
+  password   String
+  appleId    String?       @unique // Apple連携ID
+  googleId   String?       @unique // Google連携ID
+  todos      Todo[]
+  habits     Habit[]
+  dailyPlans DailyPlan[]
+  settings   UserSettings?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+// ユーザー設定モデル
+model UserSettings {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique
+  dateChangeTime String   @default("00:00") // 日付変更時間（デフォルト：午前0時）
+  theme          String   @default("light") // テーマ設定（light/dark）
+  language       String   @default("ja") // 表示言語
+  notifications  Boolean  @default(true) // 通知設定
+  user           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+// カテゴリモデル
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  todos     Todo[]
+  habits    Habit[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ToDoリストのタスクモデル
+model Todo {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  categoryId    Int?
+  title         String
+  dueDate       DateTime?
+  description   String?
+  priority      Int? // 優先度 (例: 1=高, 2=中, 3=低)
+  parentId      Int? // サブタスクの場合の親タスクID
+  user          User            @relation(fields: [userId], references: [id])
+  category      Category?       @relation(fields: [categoryId], references: [id])
+  parent        Todo?           @relation("Subtasks", fields: [parentId], references: [id])
+  subtasks      Todo[]          @relation("Subtasks")
+  dailyPlanItem DailyPlanItem[] // このToDoを含むDailyPlanItem
+  completed     Boolean         @default(false) // 完了状態
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+// 習慣リストのタスクモデル
+model Habit {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  categoryId    Int?
+  title         String
+  description   String?
+  autoInclude   Boolean         @default(false) // 自動で予定に入れるか
+  user          User            @relation(fields: [userId], references: [id])
+  category      Category?       @relation(fields: [categoryId], references: [id])
+  dailyPlanItem DailyPlanItem[] // この習慣を含むDailyPlanItem
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+// 1日の予定モデル
+model DailyPlan {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  date      DateTime        @db.Date // 日付のみを保持
+  user      User            @relation(fields: [userId], references: [id])
+  items     DailyPlanItem[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([userId, date]) // 1ユーザーは同じ日付のDailyPlanを複数持てない
+}
+
+// 1日の予定の項目モデル
+model DailyPlanItem {
+  id          Int       @id @default(autoincrement())
+  dailyPlanId Int
+  todoId      Int? // ToDoの場合
+  habitId     Int? // 習慣の場合
+  title       String // ToDo/習慣のタイトルをコピーまたは独自入力
+  description String? // ToDo/習慣の説明をコピーまたは独自入力
+  time        DateTime? // 時刻設定 (日付部分は無視して時刻のみ使用)
+  priority    Int? // 優先度 (DailyPlanItem固有の優先度)
+  completed   Boolean   @default(false) // 完了状態
+  order       Int // 並び順
+  dailyPlan   DailyPlan @relation(fields: [dailyPlanId], references: [id])
+  todo        Todo?     @relation(fields: [todoId], references: [id])
+  habit       Habit?    @relation(fields: [habitId], references: [id])
+  // todoIdとhabitIdのどちらか一方のみが設定されることを想定しています。
+  // 両方が同時に設定されたり、両方ともnullになったりしないよう、アプリケーション側で制御してください。
+  // todoIdとhabitIdの両方がnullの場合、title/descriptionは独自入力となります。
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([dailyPlanId, todoId]) // 1つのDailyPlanに同じToDoは1つまで
+  @@unique([dailyPlanId, habitId]) // 1つのDailyPlanに同じHabitは1つまで
+}
