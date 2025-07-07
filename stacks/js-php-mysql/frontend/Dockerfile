@@ -1,10 +1,19 @@
-FROM webapp-todo-frontend-node-base:latest
+FROM node:23-alpine AS base
 
 WORKDIR /app
 
-COPY packages/shared-schema/package.json ./packages/shared-schema/
+COPY package*.json .
+
 RUN npm install
 
-COPY ./packages/shared-schema ./packages/shared-schema
+COPY . .
 
-WORKDIR /app/backend
+FROM base AS development
+CMD ["npm", "run", "dev"]
+
+FROM base AS production
+RUN npm run build
+
+FROM nginx:alpine AS production-deploy
+COPY --from=production /app/frontend/dist /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]

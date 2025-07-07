@@ -3,13 +3,10 @@ FROM node:23-alpine AS base
 WORKDIR /app
 
 COPY package*.json .
-COPY frontend/package.json frontend/
 
 RUN npm install
 
-COPY ./frontend ./frontend
-
-WORKDIR /app/frontend
+COPY . .
 
 FROM base AS development
 CMD ["npm", "run", "dev"]
