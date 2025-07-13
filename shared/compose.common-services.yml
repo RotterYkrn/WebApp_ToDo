@@ -1,0 +1,28 @@
+services:
+
+  webapp:
+    
+    environment:
+      CHOKIDAR_USEPOLLIN: true
+      
+    tty: true
+      
+    networks:
+      - app-network
+  
+  mysql:
+
+    build: 
+      context: ./db/mysql
+
+    env_file:
+      - ./db/mysql/.env
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - db-data:/var/lib/mysql
+      
+    networks:
+      - app-network

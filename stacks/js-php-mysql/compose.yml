@@ -1,0 +1,59 @@
+services:
+
+  frontend:
+
+    extends:
+      file: ../../shared/compose.common-services.yml
+      service: webapp
+
+    build: 
+      context: .
+      dockerfile: ./docker/frontend/Dockerfile
+      target: development
+
+    ports:
+      - "8080:5173"
+    
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+    environment:
+      NODE_ENV: development
+
+    depends_on:
+      - backend
+
+  backend:
+
+    extends:
+      context: .
+      file: ../../shared/compose.common-services.yml
+      service: webapp
+
+    build:
+      dockerfile: ./docker/backend/Dockerfile
+      target: backend-php-fpm
+
+    ports:
+      - "9000:9000"
+
+    volumes:
+      - ./src:/var/www/html
+      - /app/vendor
+
+    depends_on:
+      - db
+  
+  db:
+
+    extends:
+      file: ../../shared/compose.common-services.yml
+      service: mysql
+
+networks:
+  app-network:
+
+volumes:
+  db-data:
+    name: webapp-todo-db
