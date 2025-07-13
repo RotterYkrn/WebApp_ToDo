@@ -1,0 +1,19 @@
+{
+    "name": "rotterykrn/js-php-mysql",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Rotterykrn\\JsPhpMysql\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "RotterYkrn",
+            "email": "sugaku.ohno@gmail.com"
+        }
+    ],
+    "license": "proprietary",
+    "require": {
+        "cycle/orm": "^2.10"
+    }
+}

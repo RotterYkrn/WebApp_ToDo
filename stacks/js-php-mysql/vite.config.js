@@ -10,10 +10,9 @@ export default defineConfig({
     server: {
         host: true,
         proxy: {
-            "/api": {
-                target: "http://backend:9000",
+            "^/.*\\.php$": {
+                target: "http://nginx", // nginx コンテナを通して php-fpm に届く
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, "/api"),
             },
         },
     },

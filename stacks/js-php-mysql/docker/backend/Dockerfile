@@ -1,8 +1,16 @@
 FROM php:8.4-alpine AS backend-php-alpine
 
-WORKDIR /app
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "/app"]
+WORKDIR /var/www/html
+
+COPY composer.json composer.lock ./
+
+RUN composer install
+
+COPY ./src /var/www/html/src
+
+CMD ["php", "-S", "0.0.0.0:9000", "-t", "/var/www/html/src"]
 
 
 FROM php:8.4-fpm AS backend-php-fpm
