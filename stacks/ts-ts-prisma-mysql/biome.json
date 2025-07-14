@@ -13,7 +13,7 @@
 		"enabled": true,
 		"indentStyle": "tab",
 		"lineEnding": "lf",
-		"lineWidth": 80,
+		"lineWidth": 120,
 		"ignore": ["**/dist/**", "**/node_modules/**"]
 	},
 	"organizeImports": {
@@ -23,11 +23,6 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
 		}
 	}
 }
