@@ -1,10 +1,14 @@
-FROM webapp-todo-backend-node-base:latest
+FROM node:23-alpine
 
 WORKDIR /app
 
-COPY packages/shared-schema/package.json ./packages/shared-schema/
+COPY package*.json .
+COPY backend/package.json backend/
+
 RUN npm install
 
-COPY ./packages/shared-schema ./packages/shared-schema
-
 WORKDIR /app/backend
+
+COPY ./backend .
+
+CMD ["npm", "run", "dev"]
