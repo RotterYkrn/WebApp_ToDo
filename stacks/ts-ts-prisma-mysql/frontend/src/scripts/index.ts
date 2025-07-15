@@ -1,3 +1,5 @@
+import createFooter from "./footer";
+
 const tasks = [
 	{
 		title: "🛒 買い物に行く",
@@ -23,6 +25,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 			window.location.href = "/signin";
 		});
 	});
+
+	document.body.appendChild(createFooter());
 
 	// メイン処理
 	try {
