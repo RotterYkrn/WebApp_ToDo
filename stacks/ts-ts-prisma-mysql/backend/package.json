@@ -5,7 +5,6 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "lint": "biome check --write ./src",
         "start": "tsx src/app.ts",
         "dev": "npx prisma generate && npx tsx watch src/app.ts"
     },

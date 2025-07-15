@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ToDo リスト</title>
-  <link rel="stylesheet" href="styles/style.css">
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ToDo リスト</title>
+        <link rel="stylesheet" href="styles/style.css" />
+    </head>
 
-<body>
-  <h1>ToDo リスト</h1>
-  <div id="user-info" style="display: none;"></div> <!-- ユーザー情報表示エリア -->
-  <button id="logout-button" style="display: none;">ログアウト</button> <!-- ログアウトボタン -->
-  <div id="error-message"></div>
+    <body style="display: none">
+        <h1>ToDo リスト</h1>
+        <div id="user-info" style="display: none"></div>
+        <!-- ユーザー情報表示エリア -->
+        <button id="signout-button">サインアウト</button>
 
-  <h2>今日の予定</h2>
-  <div id="daily-plan-container">
-    <!-- Daily Plan Items will be rendered here by JavaScript -->
-  </div>
+        <section id="daily-plan">
+            <h2>今日の予定</h2>
+            <div id="task-list">
+                <!-- Daily Plan Items will be rendered here by JavaScript -->
+            </div>
+        </section>
 
-  <h2>ToDo リスト</h2>
-  <ul id="todo-list">
-    </ul>
-  </body>
+        <footer>
+            <p>
+                <a href="/todo">ToDo リスト</a> |
+                <a href="/hobby">習慣リスト</a>
+            </p>
+            <p>&copy; 2023 ToDo リスト</p>
+        </footer>
+    </body>
 
-  <script type="module" src="scripts/index.ts"></script>
+    <script type="module" src="scripts/index.ts"></script>
 </html>

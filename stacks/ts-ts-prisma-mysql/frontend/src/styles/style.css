@@ -1,18 +1,30 @@
 #error-message {
-  color: red;
-  margin-bottom: 10px;
+	color: red;
+	margin-bottom: 10px;
+}
+.task {
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	margin-bottom: 10px;
+	overflow: hidden;
 }
 
-#todo-list {
-  list-style: none;
-  padding: 0;
+.task-title {
+	width: 100%;
+	text-align: left;
+	padding: 10px;
+	background: #f0f0f0;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	font-size: 1rem;
 }
 
-#todo-list li {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+.task-detail {
+	padding: 10px;
+	display: none; /* 最初は非表示 */
 }
 
-#todo-list li:last-child {
-  border-bottom: none;
+.task.open .task-detail {
+	display: block; /* クラス `open` が付くと表示される */
 }
