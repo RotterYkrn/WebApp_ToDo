@@ -7,7 +7,7 @@ const createFooter = (): HTMLElement => {
     const links = [
         { path: '/', label: '今日の予定' },
         { path: '/todo', label: 'ToDo リスト' },
-        { path: '/hobby', label: '習慣リスト' },
+        { path: '/habit', label: '習慣リスト' },
     ];
 
     nav.innerHTML = links
