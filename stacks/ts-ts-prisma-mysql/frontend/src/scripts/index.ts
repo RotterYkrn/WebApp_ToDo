@@ -8,9 +8,14 @@ class HttpRequestService extends Context.Tag("HttpRequestService")<
 	HttpRequestFn
 	>() { };
 
-const LiveFetchService = Layer.succeed(HttpRequestService, fetch);
+const LiveHttpRequestService = Layer.succeed(HttpRequestService, fetch);
 
-const runEffectWithLayer = <A, E, R>(
+const LiveServiceLayers = Layer.mergeAll(LiveHttpRequestService);
+
+type HttpRequestError = Error;
+type HttpRequestEffect = Effect.Effect<Response, HttpRequestError, HttpRequestService>;
+
+const runPromiseWithLayer = <A, E, R>(
 	effect: Effect.Effect<A, E, R>,
 	layer: Layer.Layer<R, E, never> // Rはeffectが必要とする環境、Eはエラー型
 ): Promise<A> => {
@@ -25,7 +30,7 @@ const runEffectWithLayer = <A, E, R>(
 const httpRequest = (
 	path: string,
 	options: RequestInit
-): Effect.Effect<Response, Error, HttpRequestService> => // RにHttpRequestServiceが追加された
+): HttpRequestEffect => // RにHttpRequestServiceが追加された
 	Effect.gen(function* (_) {
 		const fetcherFn = yield* _(HttpRequestService);
 
@@ -45,94 +50,144 @@ interface SessionData {
   loggedIn: boolean;
 }
 
-const parseJson = <T>(resEffect: Effect.Effect<Response, Error, HttpRequestService>): Effect.Effect<T, Error, HttpRequestService> =>
+const parseResponseJson = <T>() => <R>(resEffect: Effect.Effect<Response, HttpRequestError, R>): Effect.Effect<T, HttpRequestError, R> =>
 	pipe(
 		resEffect,
 		Effect.flatMap((res) => Effect.tryPromise({
-			try: () => res.json() as Promise<T>, // ★ ここでJSONパース
+			try: () => res.json() as Promise<T>,
 			catch: (e) => new Error(`JSON parsing failed: ${String(e)}`)
 		})),
-	)
-
-const checkSessionLogic = () => {
-	return pipe(
-		httpRequest("/api/check-session", {
-			method: "GET",
-			credentials: "include", // クッキーを送るために必須！
-		}),
-		parseJson<SessionData>,
-		Effect.match({
-			onSuccess: (data) => {
-				return data.loggedIn;
-			},
-			onFailure: (e) => {
-				console.error("通信エラー", e);
-				return false;
-			},
-		}),
 	);
-};
+
+const getHttpResponseObjectWithHandle = <T, S>(
+	path: string,
+	options: RequestInit,
+	handleSuccess: (data: T) => Effect.Effect<S, never, never>,
+	handleFailure: (e: HttpRequestError) => Effect.Effect<S, never, never>
+) => pipe(
+	httpRequest(path, { ...options, method: "GET" }),
+	parseResponseJson<T>(),
+	Effect.flatMap(handleSuccess),
+	Effect.catchAll(handleFailure),
+);
+
+const postHttpRequestWithHandle = (
+	path: string,
+	options: RequestInit,
+	handleSuccess: () => Effect.Effect<void, never, never>,
+	handleFailure: (e: HttpRequestError) => Effect.Effect<void, never, never>
+) => pipe(
+	httpRequest(path, { ...options, method: "POST" }),
+	Effect.flatMap(handleSuccess),
+	Effect.catchAll(handleFailure),
+);
+
+const checkSessionLogic = () =>
+	getHttpResponseObjectWithHandle<SessionData, boolean>(
+		"/api/check-session",
+		{
+			credentials: "include",
+		},
+		(data) => Effect.succeed(data.loggedIn),
+		(e) => {
+			console.error("通信エラー", e);
+			return Effect.succeed(false);
+		}
+	);
 
 const checkSession = async (): Promise<boolean> => {
-	return await runEffectWithLayer(checkSessionLogic(), LiveFetchService);
+	return await runPromiseWithLayer(checkSessionLogic(), LiveServiceLayers);
 };
 
-window.addEventListener("DOMContentLoaded", async () => {
-	// イベント設定
-	document.getElementById("signout-button")?.addEventListener("click", () => {
-		fetch("/api/signout", {
-			method: "POST",
-			credentials: "include", // クッキーを送るために必須！
-		}).then(() => {
+const authenticated =
+	(callback: () => Promise<void>) =>
+		async (): Promise<void> => {
+			if (await checkSession()) {
+				await callback()
+			} else {
+				window.location.href = "/signin";
+			}
+		};
+
+const signoutLogic = () =>
+	postHttpRequestWithHandle(
+		"/api/signout",
+		{
+			credentials: "include",
+		},
+		() => {
 			window.location.href = "/signin";
+			return Effect.succeed(undefined);
+		},
+		(e) => {
+			console.error("通信エラー", e);
+			return Effect.succeed(undefined);
+		}
+	);
+
+const signout = async (): Promise<void> => {
+	await runPromiseWithLayer(signoutLogic(), LiveServiceLayers);
+};
+
+type Task = {
+	title: string;
+	detail: string;
+}
+
+const viewTaskListLogic = () =>
+	getHttpResponseObjectWithHandle<Task[], HTMLElement[]>(
+		"/api/daily-plan",
+		{
+			credentials: "include",
+		},
+		(data) => {
+			return Effect.succeed(createTaskListView(data));
+		},
+		(e) => {
+			console.error("通信エラー", e);
+			return Effect.succeed([]);
+		}
+	);
+
+const viewTaskList = async (): Promise<HTMLElement[]> => {
+	return await runPromiseWithLayer(viewTaskListLogic(), LiveServiceLayers);
+};
+
+const createTaskListView = (tasks: Task[]): HTMLElement[] =>
+	tasks.map((task) => {
+		const taskElem = document.createElement("article");
+		taskElem.className = "task";
+
+		const titleElem = document.createElement("button");
+		titleElem.className = "task-title";
+		titleElem.setAttribute("aria-expanded", "false");
+		titleElem.textContent = task.title;
+
+		const detailElem = document.createElement("p");
+		detailElem.className = "task-detail";
+		detailElem.textContent = task.detail;
+
+		titleElem.addEventListener("click", () => {
+			const isOpen = taskElem.classList.toggle("open");
+			titleElem.setAttribute("aria-expanded", isOpen.toString());
 		});
+
+		taskElem.appendChild(titleElem);
+		taskElem.appendChild(detailElem);
+		return taskElem;
 	});
 
-	document.body.appendChild(createFooter());
-
-	if (!await checkSession()) {
-		window.location.href = "/signin";
-		return;
-	}
+window.addEventListener("DOMContentLoaded", authenticated(async () => {
+	// イベント設定
+	document.getElementById("signout-button")?.addEventListener("click", signout);
 
 	document.body.style.display = "block";
 
+	document.body.appendChild(createFooter());
+
 	// メイン処理
-	try {
-		const tasks = await fetch("/api/daily-plan", {
-			method: "GET",
-		})
-			.then((res) => res.json())
-			.then((data) => data as { title: string; detail: string }[]);
-
-		const taskList = document.getElementById("task-list");
-
-		if (taskList) {
-			const taskElements = tasks.map((task) => {
-				const taskElem = document.createElement("article");
-				taskElem.className = "task";
-
-				const titleElem = document.createElement("button");
-				titleElem.className = "task-title";
-				titleElem.setAttribute("aria-expanded", "false");
-				titleElem.textContent = task.title;
-
-				const detailElem = document.createElement("p");
-				detailElem.className = "task-detail";
-				detailElem.textContent = task.detail;
-
-				titleElem.addEventListener("click", () => {
-					const isOpen = taskElem.classList.toggle("open");
-					titleElem.setAttribute("aria-expanded", isOpen.toString());
-				});
-
-				taskElem.appendChild(titleElem);
-				taskElem.appendChild(detailElem);
-				return taskElem;
-			});
-			taskList.append(...taskElements);
-		}
-	} catch (err) {
-		console.error("通信エラー", err);
+	const taskList = document.getElementById("task-list");
+	if (taskList) {
+		taskList.append(...(await viewTaskList()));
 	}
-});
+}));
