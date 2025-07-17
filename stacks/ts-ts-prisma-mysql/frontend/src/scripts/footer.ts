@@ -3,7 +3,6 @@ const createFooter = (): HTMLElement => {
 
     const nav = document.createElement('p');
     const currentPath = location.pathname;
-
     const links = [
         { path: '/', label: '今日の予定' },
         { path: '/todo', label: 'ToDo リスト' },

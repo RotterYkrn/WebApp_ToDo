@@ -1,133 +1,9 @@
-import { Effect, Context, Layer, pipe } from "effect";
+import { Effect } from "effect";
+import { runPromiseWithLayer } from "./utils";
+import { getHttpResponseObjectWithHandle, HttpRequestLayers } from "./httpRequest";
+import authenticated from "./authenticate";
+import signout from "./signout";
 import createFooter from "./footer";
-
-type HttpRequestFn = typeof fetch;
-
-class HttpRequestService extends Context.Tag("HttpRequestService")<
-	HttpRequestService,
-	HttpRequestFn
-	>() { };
-
-const LiveHttpRequestService = Layer.succeed(HttpRequestService, fetch);
-
-const LiveServiceLayers = Layer.mergeAll(LiveHttpRequestService);
-
-type HttpRequestError = Error;
-type HttpRequestEffect = Effect.Effect<Response, HttpRequestError, HttpRequestService>;
-
-const runPromiseWithLayer = <A, E, R>(
-	effect: Effect.Effect<A, E, R>,
-	layer: Layer.Layer<R, E, never> // Rはeffectが必要とする環境、Eはエラー型
-): Promise<A> => {
-	return Effect.runPromise(
-		pipe(
-			effect,
-			Effect.provide(layer) // ここで指定されたレイヤーを環境として提供
-		)
-	);
-};
-
-const httpRequest = (
-	path: string,
-	options: RequestInit
-): HttpRequestEffect => // RにHttpRequestServiceが追加された
-	Effect.gen(function* (_) {
-		const fetcherFn = yield* _(HttpRequestService);
-
-		const res = yield* _(Effect.tryPromise({
-			try: () => fetcherFn(path, { ...options }), // fetcherFnを使用
-			catch: (e) => new Error(`Network error during fetch: ${String(e)}`)
-		}));
-
-		if (!res.ok) {
-			yield* _(Effect.fail(new Error(`HTTP error ${res.status}: ${path}`)));
-		}
-
-		return res;
-	});
-
-interface SessionData {
-  loggedIn: boolean;
-}
-
-const parseResponseJson = <T>() => <R>(resEffect: Effect.Effect<Response, HttpRequestError, R>): Effect.Effect<T, HttpRequestError, R> =>
-	pipe(
-		resEffect,
-		Effect.flatMap((res) => Effect.tryPromise({
-			try: () => res.json() as Promise<T>,
-			catch: (e) => new Error(`JSON parsing failed: ${String(e)}`)
-		})),
-	);
-
-const getHttpResponseObjectWithHandle = <T, S>(
-	path: string,
-	options: RequestInit,
-	handleSuccess: (data: T) => Effect.Effect<S, never, never>,
-	handleFailure: (e: HttpRequestError) => Effect.Effect<S, never, never>
-) => pipe(
-	httpRequest(path, { ...options, method: "GET" }),
-	parseResponseJson<T>(),
-	Effect.flatMap(handleSuccess),
-	Effect.catchAll(handleFailure),
-);
-
-const postHttpRequestWithHandle = (
-	path: string,
-	options: RequestInit,
-	handleSuccess: () => Effect.Effect<void, never, never>,
-	handleFailure: (e: HttpRequestError) => Effect.Effect<void, never, never>
-) => pipe(
-	httpRequest(path, { ...options, method: "POST" }),
-	Effect.flatMap(handleSuccess),
-	Effect.catchAll(handleFailure),
-);
-
-const checkSessionLogic = () =>
-	getHttpResponseObjectWithHandle<SessionData, boolean>(
-		"/api/check-session",
-		{
-			credentials: "include",
-		},
-		(data) => Effect.succeed(data.loggedIn),
-		(e) => {
-			console.error("通信エラー", e);
-			return Effect.succeed(false);
-		}
-	);
-
-const checkSession = async (): Promise<boolean> => {
-	return await runPromiseWithLayer(checkSessionLogic(), LiveServiceLayers);
-};
-
-const authenticated =
-	(callback: () => Promise<void>) =>
-		async (): Promise<void> => {
-			if (await checkSession()) {
-				await callback()
-			} else {
-				window.location.href = "/signin";
-			}
-		};
-
-const signoutLogic = () =>
-	postHttpRequestWithHandle(
-		"/api/signout",
-		{
-			credentials: "include",
-		},
-		() => {
-			window.location.href = "/signin";
-			return Effect.succeed(undefined);
-		},
-		(e) => {
-			console.error("通信エラー", e);
-			return Effect.succeed(undefined);
-		}
-	);
-
-const signout = async (): Promise<void> => {
-	await runPromiseWithLayer(signoutLogic(), LiveServiceLayers);
-};
 
 type Task = {
 	title: string;
@@ -150,7 +26,7 @@ const viewTaskListLogic = () =>
 	);
 
 const viewTaskList = async (): Promise<HTMLElement[]> => {
-	return await runPromiseWithLayer(viewTaskListLogic(), LiveServiceLayers);
+	return await runPromiseWithLayer(viewTaskListLogic(), HttpRequestLayers);
 };
 
 const createTaskListView = (tasks: Task[]): HTMLElement[] =>
