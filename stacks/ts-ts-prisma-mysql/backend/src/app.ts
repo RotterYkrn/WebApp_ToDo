@@ -44,7 +44,26 @@ app.post("/api/signup", (req, res) => {
     const password = req.body.password;
 
     res.json({ success: true });
-}); 
+});
+
+const tasks = [
+	{
+		title: "🛒 買い物に行く",
+		detail: "スーパーで牛乳・パン・卵を購入する。ついでに日用品もチェック。",
+	},
+	{
+		title: "🧹 部屋の掃除",
+		detail: "リビングとキッチンを中心に掃除機をかけて片付ける。",
+	},
+	{
+		title: "📧 メール確認",
+		detail: "クライアントからの返信を確認し、返事を書く。",
+	},
+];
+
+app.get("/api/daily-plan", (req, res) => {
+    res.json(tasks);
+});
 
 app.listen(3000, () => {
     console.log("http://localhost:3000 started.");
