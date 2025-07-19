@@ -1,4 +1,5 @@
 import { Effect, Context, Layer, pipe } from "effect";
+import { LoggerService, ConsoleLoggerLive } from "./utils";
 
 type FetchFn = typeof fetch;
 
@@ -7,9 +8,12 @@ class FetchService extends Context.Tag("FetchService")<
     FetchFn
     >() { };
 
-type HttpRequestServices = FetchService;
+const FetchLive = Layer.succeed(FetchService, fetch);
+
+type HttpRequestServices = FetchService | LoggerService;
 const HttpRequestLives = Layer.mergeAll(
-    Layer.succeed(FetchService, fetch)
+    FetchLive,
+    ConsoleLoggerLive
 );
 
 type HttpRequestError = Error;
