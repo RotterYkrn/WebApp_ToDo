@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { runPromiseWithLayer } from "./utils";
-import { getHttpResponseObjectWithHandle, HttpRequestLayers } from "./httpRequest";
+import { getHttpResponseObjectWithHandle, HttpRequestLives } from "./httpRequest";
 import authenticated from "./authenticate";
 import signout from "./signout";
 import createFooter from "./footer";
@@ -10,7 +10,7 @@ type Task = {
 	detail: string;
 }
 
-const viewTaskListLogic = () =>
+const createTaskListFlow = () =>
 	getHttpResponseObjectWithHandle<Task[], HTMLElement[]>(
 		"/api/daily-plan",
 		{
@@ -25,8 +25,8 @@ const viewTaskListLogic = () =>
 		}
 	);
 
-const viewTaskList = async (): Promise<HTMLElement[]> => {
-	return await runPromiseWithLayer(viewTaskListLogic(), HttpRequestLayers);
+const createTaskList = async (): Promise<HTMLElement[]> => {
+	return await runPromiseWithLayer(createTaskListFlow(), HttpRequestLives);
 };
 
 const createTaskListView = (tasks: Task[]): HTMLElement[] =>
@@ -64,6 +64,6 @@ window.addEventListener("DOMContentLoaded", authenticated(async () => {
 	// メイン処理
 	const taskList = document.getElementById("task-list");
 	if (taskList) {
-		taskList.append(...(await viewTaskList()));
+		taskList.append(...(await createTaskList()));
 	}
 }));

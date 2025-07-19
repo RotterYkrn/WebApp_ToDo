@@ -1,8 +1,8 @@
 import { Effect } from "effect";
 import { runPromiseWithLayer } from "./utils";
-import { postHttpRequestWithHandle, HttpRequestLayers } from "./httpRequest";
+import { postHttpRequestWithHandle, HttpRequestLives } from "./httpRequest";
 
-const signoutLogic = () =>
+const signoutFlow = () =>
 	postHttpRequestWithHandle(
 		"/api/signout",
 		{
@@ -19,7 +19,7 @@ const signoutLogic = () =>
 	);
 
 const signout = async (): Promise<void> => {
-	await runPromiseWithLayer(signoutLogic(), HttpRequestLayers);
+	await runPromiseWithLayer(signoutFlow(), HttpRequestLives);
 };
 
 export default signout;

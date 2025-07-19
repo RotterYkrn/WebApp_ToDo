@@ -1,12 +1,12 @@
 import { Effect } from "effect";
-import { getHttpResponseObjectWithHandle, HttpRequestLayers } from "./httpRequest";
+import { getHttpResponseObjectWithHandle, HttpRequestLives } from "./httpRequest";
 import { runPromiseWithLayer } from "./utils";
 
 interface SessionData {
   loggedIn: boolean;
 }
 
-const checkSessionLogic = () =>
+const checkSessionFlow = () =>
 	getHttpResponseObjectWithHandle<SessionData, boolean>(
 		"/api/check-session",
 		{
@@ -20,7 +20,7 @@ const checkSessionLogic = () =>
 	);
 
 const checkSession = async (): Promise<boolean> => {
-	return await runPromiseWithLayer(checkSessionLogic(), HttpRequestLayers);
+	return await runPromiseWithLayer(checkSessionFlow(), HttpRequestLives);
 };
 
 const authenticated =

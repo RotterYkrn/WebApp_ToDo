@@ -8,7 +8,7 @@ class FetchService extends Context.Tag("FetchService")<
     >() { };
 
 type HttpRequestServices = FetchService;
-const HttpRequestLayers = Layer.mergeAll(
+const HttpRequestLives = Layer.mergeAll(
     Layer.succeed(FetchService, fetch)
 );
 
@@ -71,7 +71,7 @@ const parseResponseJson = <T>() =>
 export {
     FetchService,
     HttpRequestServices,
-    HttpRequestLayers,
+    HttpRequestLives,
     HttpRequestError,
     HttpRequestEffect,
     getHttpResponseObjectWithHandle,
