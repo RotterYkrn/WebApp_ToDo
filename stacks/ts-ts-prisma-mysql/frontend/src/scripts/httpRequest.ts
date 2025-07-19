@@ -42,8 +42,8 @@ const httpRequest = (
 const getHttpResponseObjectWithHandle = <T, S>(
 	path: string,
 	options: RequestInit,
-	handleSuccess: (data: T) => Effect.Effect<S, never, never>,
-	handleFailure: (e: HttpRequestError) => Effect.Effect<S, never, never>
+	handleSuccess: (data: T) => Effect.Effect<S, never, LoggerService>,
+	handleFailure: (e: HttpRequestError) => Effect.Effect<S, never, LoggerService>
 ) => pipe(
 	httpRequest(path, { ...options, method: "GET" }),
 	parseResponseJson<T>(),
@@ -54,8 +54,8 @@ const getHttpResponseObjectWithHandle = <T, S>(
 const postHttpRequestWithHandle = (
 	path: string,
 	options: RequestInit,
-	handleSuccess: () => Effect.Effect<void, never, never>,
-	handleFailure: (e: HttpRequestError) => Effect.Effect<void, never, never>
+	handleSuccess: () => Effect.Effect<void, never, LoggerService>,
+	handleFailure: (e: HttpRequestError) => Effect.Effect<void, never, LoggerService>
 ) => pipe(
 	httpRequest(path, { ...options, method: "POST" }),
 	Effect.flatMap(handleSuccess),

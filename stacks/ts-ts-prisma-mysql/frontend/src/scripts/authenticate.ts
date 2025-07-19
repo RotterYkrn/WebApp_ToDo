@@ -1,22 +1,27 @@
 import { Effect } from "effect";
-import { getHttpResponseObjectWithHandle, HttpRequestLives } from "./httpRequest";
-import { runPromiseWithLayer } from "./utils";
+import { getHttpResponseObjectWithHandle, HttpRequestLives, HttpRequestError } from "./httpRequest";
+import { runPromiseWithLayer, LoggerService } from "./utils";
 
 interface SessionData {
   loggedIn: boolean;
 }
 
+const processSessionData = (data: SessionData) => Effect.succeed(data.loggedIn);
+
+const handleCheckSessionError = (e: HttpRequestError): Effect.Effect<boolean, never, LoggerService> =>
+	Effect.gen(function*(_) {
+		const logger = yield* _(LoggerService);
+		yield* _(logger.error("Failed to check session: ", e));
+		yield* _(logger.log("セッションチェック失敗。サインインページへリダイレクトします。"));
+		return false;
+	});
+
 const checkSessionFlow = () =>
 	getHttpResponseObjectWithHandle<SessionData, boolean>(
 		"/api/check-session",
-		{
-			credentials: "include",
-		},
-		(data) => Effect.succeed(data.loggedIn),
-		(e) => {
-			console.error("通信エラー", e);
-			return Effect.succeed(false);
-		}
+		{ credentials: "include" },
+		processSessionData,
+		handleCheckSessionError,
 	);
 
 const checkSession = async (): Promise<boolean> => {

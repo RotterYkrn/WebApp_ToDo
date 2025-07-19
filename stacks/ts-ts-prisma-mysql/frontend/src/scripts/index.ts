@@ -1,6 +1,6 @@
 import { Effect } from "effect";
-import { runPromiseWithLayer } from "./utils";
-import { getHttpResponseObjectWithHandle, HttpRequestLives } from "./httpRequest";
+import { runPromiseWithLayer, LoggerService } from "./utils";
+import { getHttpResponseObjectWithHandle, HttpRequestLives, HttpRequestError } from "./httpRequest";
 import authenticated from "./authenticate";
 import signout from "./signout";
 import createFooter from "./footer";
@@ -10,19 +10,23 @@ type Task = {
 	detail: string;
 }
 
+const processTaskData = (data: Task[]) => Effect.succeed(createTaskListView(data));
+
+const handleCreateTaskListError = (e: HttpRequestError): Effect.Effect<HTMLElement[], never, LoggerService> =>
+	Effect.gen(function* (_) {
+		const logger = yield* _(LoggerService);
+		yield* _(logger.error("Failed to create task list: ", e));
+		return [];
+	});
+
 const createTaskListFlow = () =>
 	getHttpResponseObjectWithHandle<Task[], HTMLElement[]>(
 		"/api/daily-plan",
 		{
 			credentials: "include",
 		},
-		(data) => {
-			return Effect.succeed(createTaskListView(data));
-		},
-		(e) => {
-			console.error("通信エラー", e);
-			return Effect.succeed([]);
-		}
+		processTaskData,
+		handleCreateTaskListError
 	);
 
 const createTaskList = async (): Promise<HTMLElement[]> => {
