@@ -26,7 +26,7 @@ const handleCreateTaskListError = (e: AppError): Effect.Effect<HTMLElement[], ne
 
 const createTaskListFlow = () =>
 	getHttpResponseObjectWithHandle<Task[], HTMLElement[]>(
-		"/api/daily-plan",
+		"/api/todo",
 		{},
 		processTaskData,
 		handleCreateTaskListError

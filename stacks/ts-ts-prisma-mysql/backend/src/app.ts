@@ -65,6 +65,14 @@ app.get("/api/daily-plan", (req, res) => {
     res.json(tasks);
 });
 
+app.get("/api/todo", (req, res) => {
+    res.json(tasks);
+});
+
+app.get("/api/habit", (req, res) => {
+    res.json(tasks);
+});
+
 app.listen(3000, () => {
     console.log("http://localhost:3000 started.");
 });
