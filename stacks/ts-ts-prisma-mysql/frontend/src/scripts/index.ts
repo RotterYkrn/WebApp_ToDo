@@ -1,9 +1,14 @@
-import { Effect } from "effect";
-import { runPromiseWithLayer, LoggerService } from "./utils";
-import { getHttpResponseObjectWithHandle, HttpRequestLives, HttpRequestError } from "./httpRequest";
+import { Effect, Layer } from "effect";
+import { runPromiseWithLayer } from "./utils";
+import { NetworkError, ParseJsonError } from "./errors";
+import { getHttpResponseObjectWithHandle } from "./utils";
+import { LoggerService } from "./services";
+import { FetchLive, ConsoleLoggerLive } from "./layers";
 import authenticated from "./authenticate";
 import signout from "./signout";
 import createFooter from "./footer";
+
+type AppError = NetworkError | ParseJsonError;
 
 type Task = {
 	title: string;
@@ -12,7 +17,7 @@ type Task = {
 
 const processTaskData = (data: Task[]) => Effect.succeed(createTaskListView(data));
 
-const handleCreateTaskListError = (e: HttpRequestError): Effect.Effect<HTMLElement[], never, LoggerService> =>
+const handleCreateTaskListError = (e: AppError): Effect.Effect<HTMLElement[], never, LoggerService> =>
 	Effect.gen(function* (_) {
 		const logger = yield* _(LoggerService);
 		yield* _(logger.error("Failed to create task list: ", e));
@@ -30,7 +35,7 @@ const createTaskListFlow = () =>
 	);
 
 const createTaskList = async (): Promise<HTMLElement[]> => {
-	return await runPromiseWithLayer(createTaskListFlow(), HttpRequestLives);
+	return await runPromiseWithLayer(createTaskListFlow(), Layer.mergeAll(FetchLive, ConsoleLoggerLive));
 };
 
 const createTaskListView = (tasks: Task[]): HTMLElement[] =>

@@ -1,6 +1,6 @@
-import { Effect } from "effect";
-import { runPromiseWithLayer } from "./utils";
-import { postHttpRequestWithHandle, HttpRequestLives } from "./httpRequest";
+import { Effect, Layer } from "effect";
+import { runPromiseWithLayer, postHttpRequestWithHandle } from "./utils";
+import { FetchLive, ConsoleLoggerLive } from "./layers";
 
 const signoutFlow = () =>
 	postHttpRequestWithHandle(
@@ -19,7 +19,7 @@ const signoutFlow = () =>
 	);
 
 const signout = async (): Promise<void> => {
-	await runPromiseWithLayer(signoutFlow(), HttpRequestLives);
+	await runPromiseWithLayer(signoutFlow(), Layer.mergeAll(FetchLive, ConsoleLoggerLive));
 };
 
 export default signout;

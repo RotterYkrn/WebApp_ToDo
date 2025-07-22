@@ -1,6 +1,8 @@
-import { Effect } from "effect";
-import { getHttpResponseObjectWithHandle, HttpRequestLives, HttpRequestError } from "./httpRequest";
-import { runPromiseWithLayer, LoggerService } from "./utils";
+import { Effect, Layer } from "effect";
+import { runPromiseWithLayer, getHttpResponseObjectWithHandle } from "./utils";
+import { ConsoleLoggerLive, FetchLive } from "./layers";
+import { LoggerService } from "./services";
+import { NetworkError } from "./errors";
 
 interface SessionData {
   loggedIn: boolean;
@@ -8,7 +10,7 @@ interface SessionData {
 
 const processSessionData = (data: SessionData) => Effect.succeed(data.loggedIn);
 
-const handleCheckSessionError = (e: HttpRequestError): Effect.Effect<boolean, never, LoggerService> =>
+const handleCheckSessionError = (e: NetworkError): Effect.Effect<boolean, never, LoggerService> =>
 	Effect.gen(function*(_) {
 		const logger = yield* _(LoggerService);
 		yield* _(logger.error("Failed to check session: ", e));
@@ -25,7 +27,7 @@ const checkSessionFlow = () =>
 	);
 
 const checkSession = async (): Promise<boolean> => {
-	return await runPromiseWithLayer(checkSessionFlow(), HttpRequestLives);
+	return await runPromiseWithLayer(checkSessionFlow(), Layer.mergeAll(FetchLive, ConsoleLoggerLive));
 };
 
 const authenticated =
