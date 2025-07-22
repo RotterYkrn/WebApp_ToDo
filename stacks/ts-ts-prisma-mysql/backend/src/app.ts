@@ -34,6 +34,7 @@ app.post("/api/signin", (req, res) => {
 });
 
 app.post("/api/signout", (req, res) => {
+    console.log("signed out");
     res.clearCookie("sessionToken");
     res.json({ success: true });
 });
@@ -43,6 +44,7 @@ app.post("/api/signup", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    console.log(`signed up as ${username} (${email}): ${password}`);
     res.json({ success: true });
 });
 
@@ -71,6 +73,42 @@ app.get("/api/todo", (req, res) => {
 
 app.get("/api/habit", (req, res) => {
     res.json(tasks);
+});
+
+class Settings {
+    notifications: boolean;
+    theme: "light" | "dark" | "system";
+    username: string;
+    password: string;
+
+    constructor(
+        notifications: boolean,
+        theme: "light" | "dark" | "system",
+        username: string,
+        password: string
+    ) {
+        this.notifications = notifications;
+        this.theme = theme;
+        this.username = username;
+        this.password = password;
+    }
+};
+
+let settings = new Settings(true, "dark", "dummy_username", "dummy_password");
+
+app.get("/api/settings", (req, res) => {
+    res.json(settings);
+});
+
+app.post("/api/settings", (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const notifications = req.body.notifications;
+    const theme = req.body.theme;
+    
+    settings = new Settings(notifications, theme, username, password);
+    console.log(`updated settings: ${JSON.stringify(settings)}`);
+    res.json({ success: true });
 });
 
 app.listen(3000, () => {

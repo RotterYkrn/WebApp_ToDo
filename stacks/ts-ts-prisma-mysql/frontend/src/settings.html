@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>設定</title>
+        <link rel="stylesheet" href="styles/style.css" />
+    </head>
+    <body>
+        <h1>設定</h1>
+        <form id="form">
+            <div>
+                <label for="username">ユーザー名:</label>
+                <span id="display-username">dummy_username</span>
+                <input type="text" id="username" required />
+            </div>
+            <div>
+                <label for="password">パスワード:</label>
+                <span id="display-password">********</span>
+                <input type="password" id="password" required />
+            </div>
+
+            <div>
+                <label for="notifications">通知を有効にする:</label>
+                <input type="checkbox" id="notifications" checked />
+            </div>
+
+            <div>
+                <label for="theme">テーマ:</label>
+                <span id="display-theme">ダーク</span>
+                <select id="theme">
+                    <option value="system">システム</option>
+                    <option value="light">ライト</option>
+                    <option value="dark" selected>ダーク</option>
+                </select>
+            </div>
+
+            <button type="submit">更新</button>
+            <div id="error-message"></div>
+        </form>
+
+        <script type="module" src="scripts/settings.ts"></script>
+    </body>
+</html>
