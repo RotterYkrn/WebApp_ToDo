@@ -1,6 +1,9 @@
-import { getHttpResponseObjectWithHandle, runPromiseWithLayer } from "./utils";
+import { runPromiseWithLayer } from "@/shares/utils";
 import { Effect, Layer } from "effect";
-import { ConsoleLoggerLive, FetchLive } from "./layers";
+import { getHttpResponseObjectWithHandle } from "@/shares/http/use-cases";
+import { ConsoleLoggerLive } from "@/shares/logger/layers";
+import { HttpLive } from "@/shares/http/layers";
+import createFooter from "@/shares/ui/footer";
 
 interface Settings {
     notifications: boolean;
@@ -30,7 +33,9 @@ const viewSettings = () => getHttpResponseObjectWithHandle<Settings, void>(
 );
 
 window.addEventListener("DOMContentLoaded", async () => {
-    await runPromiseWithLayer(viewSettings(), Layer.mergeAll(FetchLive, ConsoleLoggerLive));
+    await runPromiseWithLayer(viewSettings(), Layer.mergeAll(HttpLive, ConsoleLoggerLive));
+
+	document.body.appendChild(createFooter());
 
     const form = document.getElementById("form");
 

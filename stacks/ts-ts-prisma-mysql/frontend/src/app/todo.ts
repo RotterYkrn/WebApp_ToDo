@@ -1,12 +1,12 @@
 import { Effect, Layer } from "effect";
-import { runPromiseWithLayer } from "./utils";
-import { NetworkError, ParseJsonError } from "./errors";
-import { getHttpResponseObjectWithHandle } from "./utils";
-import { LoggerService } from "./services";
-import { FetchLive, ConsoleLoggerLive } from "./layers";
-import authenticated from "./authenticate";
-import signout from "./signout";
-import createFooter from "./footer";
+import { runPromiseWithLayer } from "@/shares/utils";
+import { NetworkError, ParseJsonError } from "@/shares/errors";
+import { LoggerService } from "@/shares/logger/services";
+import { HttpLive } from "@/shares/http/layers";
+import { ConsoleLoggerLive } from "@/shares/logger/layers";
+import { getHttpResponseObjectWithHandle } from "@/shares/http/use-cases";
+import { authenticated, signout } from "@/features/auths/components";
+import createFooter from "@/shares/ui/footer";
 
 type AppError = NetworkError | ParseJsonError;
 
@@ -26,14 +26,14 @@ const handleCreateTaskListError = (e: AppError): Effect.Effect<HTMLElement[], ne
 
 const createTaskListFlow = () =>
 	getHttpResponseObjectWithHandle<Task[], HTMLElement[]>(
-		"/api/daily-plan",
+		"/api/todo",
 		{},
 		processTaskData,
 		handleCreateTaskListError
 	);
 
 const createTaskList = async (): Promise<HTMLElement[]> => {
-	return await runPromiseWithLayer(createTaskListFlow(), Layer.mergeAll(FetchLive, ConsoleLoggerLive));
+	return await runPromiseWithLayer(createTaskListFlow(), Layer.mergeAll(HttpLive, ConsoleLoggerLive));
 };
 
 const createTaskListView = (tasks: Task[]): HTMLElement[] =>

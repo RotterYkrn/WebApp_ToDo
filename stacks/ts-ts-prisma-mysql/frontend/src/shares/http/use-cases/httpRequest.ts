@@ -1,16 +1,17 @@
 import { Effect, pipe } from "effect";
-import { FetchService, LoggerService } from "../services";
-import { NetworkError, ParseJsonError } from "../errors";
+import { HttpService } from "@/shares/http/services";
+import { LoggerService } from "@/shares/logger/services";
+import { NetworkError, ParseJsonError } from "@/shares/errors";
 
 export const httpRequest = (
     path: string,
     options: RequestInit
-): Effect.Effect<Response, NetworkError, FetchService> => // RにHttpRequestServiceが追加された
+): Effect.Effect<Response, NetworkError, HttpService> =>
     Effect.gen(function* (_) {
-        const fetcherFn = yield* _(FetchService);
+        const httpFn = yield* _(HttpService);
 
         const res = yield* _(Effect.tryPromise({
-            try: () => fetcherFn(path, { ...options }), // fetcherFnを使用
+            try: () => httpFn(path, { ...options }),
             catch: (e) => new Error(`Network error during fetch: ${String(e)}`)
         }));
 
@@ -20,8 +21,7 @@ export const httpRequest = (
 
         return res;
     });
-
-    
+        
 export const getHttpResponseObjectWithHandle = <T, S>(
     path: string,
     options: RequestInit,
@@ -33,7 +33,7 @@ export const getHttpResponseObjectWithHandle = <T, S>(
     Effect.flatMap(handleSuccess),
     Effect.catchAll(handleFailure),
 );
-
+    
 export const postHttpRequestWithHandle = (
     path: string,
     options: RequestInit,
@@ -43,7 +43,7 @@ export const postHttpRequestWithHandle = (
     httpRequest(path, { ...options, method: "POST" }),
     Effect.flatMap(handleSuccess),
     Effect.catchAll(handleFailure),
-    );
+);
 
 export const parseResponseJson = <T>() =>
     <R>(resEffect: Effect.Effect<Response, NetworkError, R>): Effect.Effect<T, ParseJsonError, R> =>
