@@ -6,7 +6,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         try: () => fetch(path, { ...options, method: "GET" }),
         catch: (e) => new Error(`Network error during fetch: ${path}\n${String(e)}`)
     }).pipe(handleResponse(`HTTP error during GET: ${path}\n`)),
-    post: (path: string, options?: RequestInit) =>Effect.tryPromise({
+    post: (path: string, options?: RequestInit) => Effect.tryPromise({
         try: () => fetch(path, { ...options, method: "POST" }),
         catch: (e) => new Error(`Network error during fetch: ${path}\n${String(e)}`)
     }).pipe(handleResponse(`HTTP error during POST: ${path}\n`)),

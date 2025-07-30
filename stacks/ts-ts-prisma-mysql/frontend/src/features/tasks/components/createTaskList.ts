@@ -1,6 +1,6 @@
 import { Effect, pipe } from "effect/index";
 import { ApiService, parseResponseJson } from "@/core/http";
-import createFooter from "@/core/ui/footer";
+import { createFooter } from "@/core/ui";
 import { signout } from "@/features/auths";
 
 export interface Task {

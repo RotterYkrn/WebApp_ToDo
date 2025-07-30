@@ -1,6 +1,6 @@
 import { runPromiseWithLayer } from "@/core/utils";
 import { Effect, pipe } from "effect";
-import createFooter from "@/core/ui/footer";
+import { createFooter } from "@/core/ui";
 import { ApiService, ApiLive, parseResponseJson } from "@/core/http";
 
 interface Settings {

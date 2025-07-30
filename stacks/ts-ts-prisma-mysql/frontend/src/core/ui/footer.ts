@@ -1,4 +1,4 @@
-const createFooter = (): HTMLElement => {
+export const createFooter = (): HTMLElement => {
     const footer = document.createElement('footer');
 
     const nav = document.createElement('p');
@@ -25,5 +25,3 @@ const createFooter = (): HTMLElement => {
 
     return footer;
 };
-
-export default createFooter;
