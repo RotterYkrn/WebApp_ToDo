@@ -1,9 +1,7 @@
-import { runPromiseWithLayer } from "@/shares/utils";
-import { Effect, Layer } from "effect";
-import { getHttpResponseObjectWithHandle } from "@/shares/http/use-cases";
-import { ConsoleLoggerLive } from "@/shares/logger/layers";
-import { HttpLive } from "@/shares/http/layers";
-import createFooter from "@/shares/ui/footer";
+import { runPromiseWithLayer } from "@/core/utils";
+import { Effect, pipe } from "effect";
+import createFooter from "@/core/ui/footer";
+import { ApiService, ApiLive, parseResponseJson } from "@/core/http";
 
 interface Settings {
     notifications: boolean;
@@ -12,28 +10,33 @@ interface Settings {
     password: string;
 }
 
-const viewSettings = () => getHttpResponseObjectWithHandle<Settings, void>(
-    "/api/settings",
-    {},
-    (data) => {
-        const curUsername = (document.getElementById("display-username") as HTMLInputElement);
-        const curNotifications = (document.getElementById("notifications") as HTMLInputElement);
-        const curTheme = (document.getElementById("display-theme") as HTMLInputElement);
+const viewSettings = () => pipe(
+    Effect.gen(function* () {
+        const apiService = yield* ApiService;
+        return yield* apiService.get("/api/settings");
+    }),
+    parseResponseJson<Settings>(),
+    Effect.flatMap((data) => Effect.gen(function* () {
+        yield* Effect.sync(() => {
+            const curUsername = document.getElementById("display-username") as HTMLInputElement;
+            curUsername.textContent = data.username;
+        });
 
-        curUsername.textContent = data.username;
-        curNotifications.checked = data.notifications;
-        curTheme.textContent = data.theme;
+        yield* Effect.sync(() => {
+            const curNotifications = document.getElementById("notifications") as HTMLInputElement;
+            curNotifications.checked = data.notifications;
+        });
 
-        return Effect.succeed(void 0);
-    },
-    (error) => {
-        console.error(error);
-        return Effect.succeed(void 0);
-    },
+        yield* Effect.sync(() => {
+            const curTheme = document.getElementById("display-theme") as HTMLInputElement;
+            curTheme.textContent = data.theme;
+        });
+    })),
+    Effect.mapError((e) => e),
 );
 
 window.addEventListener("DOMContentLoaded", async () => {
-    await runPromiseWithLayer(viewSettings(), Layer.mergeAll(HttpLive, ConsoleLoggerLive));
+    await runPromiseWithLayer(viewSettings(), ApiLive);
 
 	document.body.appendChild(createFooter());
 

@@ -1,3 +1,3 @@
 export interface SessionData {
-  loggedIn: boolean;
-}
+    loggedIn: boolean;
+};

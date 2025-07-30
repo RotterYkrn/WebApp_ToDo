@@ -8,6 +8,13 @@ export default defineConfig({
 		outDir: resolve(__dirname, "dist"),
 	},
 
+	resolve: {
+		alias: {
+			"@": resolve(__dirname, "src"),
+		},
+		extensions: ['.ts'], // import するファイルの拡張子
+	},
+
 	server: {
 		host: true,
 		proxy: {
