@@ -1,5 +1,6 @@
-// vitest.config.ts
+import { resolve } from "node:path";
 import { defineConfig } from 'vitest/config';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   test: {
@@ -10,4 +11,6 @@ export default defineConfig({
     //   reporter: ['text', 'json', 'html'],
     // },
   },
+
+	plugins: [tsconfigPaths()],
 });

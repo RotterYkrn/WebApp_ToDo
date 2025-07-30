@@ -4,11 +4,11 @@ import { ApiService } from "@/core/http";
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
     get: (path: string, options?: RequestInit) => Effect.tryPromise({
         try: () => fetch(path, { ...options, method: "GET" }),
-        catch: (e) => new Error(`Network error during fetch: ${path}\n${String(e)}`)
+        catch: (e) => new Error(`Network error during fetch: ${path}\n${e instanceof Error ? e.message : String(e)}`)
     }).pipe(handleResponse(`HTTP error during GET: ${path}\n`)),
     post: (path: string, options?: RequestInit) => Effect.tryPromise({
         try: () => fetch(path, { ...options, method: "POST" }),
-        catch: (e) => new Error(`Network error during fetch: ${path}\n${String(e)}`)
+        catch: (e) => new Error(`Network error during fetch: ${path}\n${e instanceof Error ? e.message : String(e)}`)
     }).pipe(handleResponse(`HTTP error during POST: ${path}\n`)),
 }));
 
