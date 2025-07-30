@@ -90,91 +90,89 @@ describe("ApiLive", () => {
         vi.clearAllMocks();
     });
 
-    describe("ApiService", () => {
-        describe("get", () => {
-            it.effect("should return a successful response on GET", () =>
-                testApiSucceed(
-                    "get",
-                    "/test/get-success",
-                    200,
-                    { message: "Success" }
-                )
-            );
-
-            it.effect("should return an error on network failure during GET", () =>
-                testApiFailed(
-                    "get",
-                    "/test/get-failure",
-                    new NetworkError({ message: "Network failure" })
-                )
-            );
-
-            it.effect("should return an error on HTTP error during GET", () =>
-                testApiFailed(
-                    "get",
-                    "/test/get-http-error",
-                    new HttpError({ status: 500 })
-                )
-            );
-        });
-
-        describe("post", () => {
-            it.effect("should return a successful response on POST", () =>
-                testApiSucceed(
-                    "post",
-                    "/test/post-success",
-                    200,
-                    { message: "Created" },
-                    { data: "some data" }
-                )
-            );
-
-            it.effect("should return an error on network failure during POST", () =>
-                testApiFailed(
-                    "post",
-                    "/test/post-failure",
-                    new NetworkError({ message: "Network failure" })
-                )
-            );
-
-            it.effect("should return an error on HTTP error during POST", () =>
-                testApiFailed(
-                    "post",
-                    "/test/post-http-error",
-                    new HttpError({ status: 500 })
-                )
-            );
-        });
-    });
-
-    describe("handleResponse", () => {
-        it.effect("should succeed if response is ok", () =>
-            Effect.gen(function* () {
-                const response = new Response("{}", { status: 200 });
-
-                const result = yield* pipe(
-                    Effect.succeed(response),
-                    handleResponse("Error"),
-                );
-
-                expect(result).toBe(response);
-            }),
+    describe("get", () => {
+        it.effect("成功、レスポンスを返す", () =>
+            testApiSucceed(
+                "get",
+                "/test/get-success",
+                200,
+                { message: "Success" }
+            )
         );
 
-        it.effect("should fail if response is not ok", () =>
-            Effect.gen(function* () {
-                const response = new Response("{}", { status: 500 });
+        it.effect("ネットワークエラー", () =>
+            testApiFailed(
+                "get",
+                "/test/get-failure",
+                new NetworkError({ message: "Network failure" })
+            )
+        );
 
-                const result = yield* Effect.exit(pipe(
-                    Effect.succeed(response),
-                    handleResponse("Custom Error: "),
-                ));
-
-                expect(Exit.isFailure(result)).toBe(true);
-                expect(result).toStrictEqual(Exit.fail(
-                    new Error("Custom Error: 500"))
-                );
-            }),
+        it.effect("HTTP エラー", () =>
+            testApiFailed(
+                "get",
+                "/test/get-http-error",
+                new HttpError({ status: 500 })
+            )
         );
     });
+
+    describe("post", () => {
+        it.effect("成功", () =>
+            testApiSucceed(
+                "post",
+                "/test/post-success",
+                200,
+                { message: "Created" },
+                { data: "some data" }
+            )
+        );
+
+        it.effect("ネットワークエラー", () =>
+            testApiFailed(
+                "post",
+                "/test/post-failure",
+                new NetworkError({ message: "Network failure" })
+            )
+        );
+
+        it.effect("HTTP エラー", () =>
+            testApiFailed(
+                "post",
+                "/test/post-http-error",
+                new HttpError({ status: 500 })
+            )
+        );
+    });
+});
+
+describe("handleResponse", () => {
+    it.effect("成功、レスポンスをそのまま返す", () =>
+        Effect.gen(function* () {
+            const response = new Response("{}", { status: 200 });
+
+            const result = yield* pipe(
+                Effect.succeed(response),
+                handleResponse("Error"),
+            );
+
+            expect(result).toBe(response);
+        }),
+    );
+
+    it.effect("失敗、エラーを返す", () =>
+        Effect.gen(function* () {
+            const response = new Response("{}", { status: 500 });
+
+            const result = yield* Effect.exit(pipe(
+                Effect.succeed(response),
+                handleResponse("Custom Error: "),
+            ));
+
+            expect(Exit.isFailure(result)).toBe(true);
+            expect(result).toStrictEqual(Exit.fail(
+                new Error("Custom Error: 500"))
+            );
+        }),
+    );
 });
