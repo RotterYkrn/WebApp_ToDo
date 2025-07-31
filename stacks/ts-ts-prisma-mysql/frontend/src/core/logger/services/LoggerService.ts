@@ -1,4 +1,4 @@
-import { Effect, Context } from "effect";
+import { Effect } from "effect";
 
 export type Logger = {
   log: (message: string, ...args: unknown[]) => Effect.Effect<void>;
@@ -7,7 +7,7 @@ export type Logger = {
   error: (message: string, ...args: unknown[]) => Effect.Effect<void>;
 };
 
-export class LoggerService extends Context.Tag("LoggerService")<
+export class LoggerService extends Effect.Tag("LoggerService")<
   LoggerService,
   Logger
   >() { }

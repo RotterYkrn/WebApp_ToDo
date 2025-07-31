@@ -1,4 +1,4 @@
-import { Context, Effect } from "effect";
+import { Effect } from "effect";
 import { ApiError, ApiService } from "@/core/http";
 import { AuthError } from "../types/AuthError";
 
@@ -7,7 +7,7 @@ export interface Auth {
   readonly redirectToSignIn: Effect.Effect<void>;
 }
 
-export class AuthService extends Context.Tag("AuthService")<
+export class AuthService extends Effect.Tag("AuthService")<
     AuthService,
     Auth
     >() { };
