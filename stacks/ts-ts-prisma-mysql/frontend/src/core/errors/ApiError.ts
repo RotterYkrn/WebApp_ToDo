@@ -20,7 +20,7 @@ export class TimeoutError extends Data.TaggedError("TimeoutError")<{
 
 export class ParseJsonError extends Data.TaggedError("ParseJsonError")<{
     readonly message: string;
-    readonly responseJson: Promise<unknown>;
+    readonly responseJson: unknown;
     readonly originalError: unknown;
 }> { }
 

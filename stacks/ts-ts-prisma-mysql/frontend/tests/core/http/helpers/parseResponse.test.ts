@@ -4,39 +4,62 @@ import { parseResponseJson } from "@/core/http/helpers/parseResponse";
 import { ParseJsonError } from "@/core/errors";
 
 describe("parseResponseJson", () => {
-    interface parseType {
+    interface ParseType {
         data: string
+        option?: string
     }
 
-    it.effect("成功、パースされたオブジェクトを返す", () =>
+    const testParseSucceed = (data: ParseType) =>
         Effect.gen(function* () {
-            const data: parseType = { data: "test" };
             const mockResponse = new Response(JSON.stringify(data), { status: 200 });
             const resEffect = Effect.succeed(mockResponse);
 
             const result = yield* resEffect.pipe(
-                parseResponseJson<parseType>()
+                parseResponseJson<ParseType>()
             );
 
             expect(result).toStrictEqual(data);
-        })
-    );
-
-    it.effect("失敗、パース不可", () =>
+        });
+    
+    const testParseFailed = (data: unknown) =>
         Effect.gen(function* () {
-            const mockResponse = new Response("invalid json", { status: 200 });
+            const mockResponse = new Response(JSON.stringify(data), { status: 200 });
             const resEffect = Effect.succeed(mockResponse);
 
             const result = yield* resEffect.pipe(
-                parseResponseJson(),
+                parseResponseJson<ParseType>(),
                 Effect.exit,
             );
 
-            expect(Exit.isFailure(result)).toBe(true);
+            expect(Exit.isFailure(result)).toBeTruthy();
             if (Exit.isFailure(result)) {
-                expect(Cause.squash(result.cause)).toBeInstanceOf(ParseJsonError);
+                const resultError = Cause.squash(result.cause) as ParseJsonError;
+                expect(resultError._tag).toBe("ParseJsonError");
+                if (resultError._tag === "ParseJsonError") {
+                    expect(resultError.message).toContain("JSON parsing");
+                    expect(resultError.responseJson).toStrictEqual(mockResponse.json());
+                }
             }
-        })
+        });
+
+    it.effect("成功、すべてのプロパティが存在", () =>
+        testParseSucceed({ data: "test", option: "test" })
+    );
+
+    it.effect("成功、必須プロパティのみ", () =>
+        testParseSucceed({ data: "test" })
+    );
+
+    it.effect.fails("失敗、リテラル型", () =>
+        testParseFailed("Invalid JSON")
+    );
+
+    it.effect.fails("失敗、必須プロパティ不足", () =>
+        testParseFailed({ option: "option" })
+    );
+
+    it.effect.fails("失敗、プロパティ過多", () =>
+        testParseFailed({ data: "data", option: "option", extra: "extra" })
     );
 
     it.effect("失敗、受け取った Effect が既に失敗している", () =>
@@ -49,7 +72,7 @@ describe("parseResponseJson", () => {
                 Effect.exit,
             );
 
-            expect(Exit.isFailure(result)).toBe(true);
+            expect(Exit.isFailure(result)).toBeTruthy();
             if (Exit.isFailure(result)) {
                 expect(Cause.squash(result.cause)).toBe(error);
             }
