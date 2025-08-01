@@ -2,7 +2,7 @@ import { Cause, Effect, Exit, pipe } from "effect";
 import { describe, it, expect, vi, beforeEach, type Mock } from "@effect/vitest";
 import { ApiLive, handleResponse } from "@/core/http/services/ApiLive";
 import { ApiService } from "@/core/http";
-import { HttpError, ApiError } from "@/core/errors";
+import { HttpError, ApiError, NetworkError } from "@/core/errors";
 
 // global.fetch のモック
 global.fetch = vi.fn();
@@ -14,6 +14,16 @@ const mockFetch = (body: unknown, init: ResponseInit) => {
 const mockFetchError = (error: unknown) => {
 	(fetch as Mock).mockRejectedValue(error);
 };
+
+const executeApi = (method: "get" | "post", path: string, requestBody?: unknown) => 
+    ApiService.pipe(
+        Effect.flatMap(api => 
+            method === "get"
+                ? api.get(path)
+                : api.post(path, { body: JSON.stringify(requestBody) })
+        ),
+        Effect.provide(ApiLive),
+    );
     
 const testApiSucceed = (
     method: "get" | "post",
@@ -24,14 +34,7 @@ const testApiSucceed = (
 ) => Effect.gen(function* () {
     mockFetch(responseBody, { status });
 
-    const response = yield* ApiService.pipe(
-        Effect.flatMap((api) =>
-            method === "get"
-                ? api.get(path)
-                : api.post(path, { body: JSON.stringify(requestBody) })
-        ),
-        Effect.provide(ApiLive),
-    );
+    const response = yield* executeApi(method, path, requestBody);
 
     const data = yield* Effect.promise(() => response.json());
 
@@ -43,33 +46,43 @@ const testApiSucceed = (
     expect(data).toEqual(responseBody);
 });
 
+const validateApiError = <A>(
+    result: Exit.Exit<A, ApiError>,
+    expectedTag: string,
+    expectedValues: (error: ApiError) => void
+) => {
+    expect(Exit.isFailure(result)).toBeTruthy();
+    if (Exit.isFailure(result)) {
+        const resultError = Cause.squash(result.cause) as ApiError;
+        expect(resultError._tag).toBe(expectedTag);
+        if (resultError._tag === expectedTag) {
+            expectedValues(resultError);
+        }
+    }
+};
+
 const testApiFailed_NetworkError = (
     method: "get" | "post",
     path: string,
 ) => Effect.gen(function* () {
-    const error = new Error("Network Error");
-    mockFetchError(error);
+    const fetchError = new Error("Network Error");
+    mockFetchError(fetchError);
 
-    const result = yield* Effect.exit(ApiService.pipe(
-        Effect.flatMap(api => 
-            method === "get"
-                ? api.get(path)
-                : api.post(path)
-        ),
-        Effect.provide(ApiLive),
-    ));
-            
-    expect(Exit.isFailure(result)).toBeTruthy();
-    if (Exit.isFailure(result)) {
-        const resultError = Cause.squash(result.cause) as ApiError;
-        expect(resultError._tag).toBe("NetworkError");
-        if (resultError._tag === "NetworkError") {
-            expect(resultError.path).toBe(path);
-            expect(resultError.message).toContain("Network error");
-            expect(resultError.message).toContain(method.toUpperCase());
-            expect(resultError.originalError).toStrictEqual(error);
+    const result = yield* Effect.exit(
+        executeApi(method, path)
+    );
+
+    validateApiError(
+        result,
+        "NetworkError",
+        (e) => {
+            const networkError = e as NetworkError;
+            expect(networkError.path).toBe(path);
+            expect(networkError.message).toContain("Network error");
+            expect(networkError.message).toContain(method.toUpperCase());
+            expect(networkError.originalError).toStrictEqual(fetchError);
         }
-    }
+    );
 });
 
 const testApiFailed_HttpError = (
@@ -79,26 +92,21 @@ const testApiFailed_HttpError = (
 ) => Effect.gen(function* () {
     mockFetch({}, { status });
 
-    const result = yield* Effect.exit(ApiService.pipe(
-        Effect.flatMap(api =>
-            method === "get"
-                ? api.get(path)
-                : api.post(path)
-        ),
-        Effect.provide(ApiLive),
-    ));
+    const result = yield* Effect.exit(
+        executeApi(method, path)
+    );
             
-    expect(Exit.isFailure(result)).toBeTruthy();
-    if (Exit.isFailure(result)) {
-        const resultError = Cause.squash(result.cause) as ApiError;
-        expect(resultError._tag).toBe("HttpError");
-        if (resultError._tag === "HttpError") {
-            expect(resultError.path).toBe(path);
-            expect(resultError.message).toContain("HTTP error");
-            expect(resultError.message).toContain(method.toUpperCase());
-            expect(resultError.status).toBe(status);
+    validateApiError(
+        result,
+        "HttpError",
+        (e) => {
+            const httpError = e as HttpError;
+            expect(httpError.path).toBe(path);
+            expect(httpError.message).toContain("HTTP error");
+            expect(httpError.message).toContain(method.toUpperCase());
+            expect(httpError.status).toBe(status);
         }
-    }
+    );
 });
 
 describe("ApiLive", () => {
@@ -186,13 +194,16 @@ describe("handleResponse", () => {
                 handleResponse(path, message),
             ));
 
-            expect(Exit.isFailure(result)).toBe(true);
-            if (Exit.isFailure(result)) {
-                const resultError = Cause.squash(result.cause) as HttpError;
-                expect(resultError.path).toBe(path);
-                expect(resultError.status).toBe(status);
-                expect(resultError.message).toBe(message);
-            }
-        }),
+            validateApiError(
+                result,
+                "HttpError",
+                (e) => {
+                    const httpError = e as HttpError;
+                    expect(httpError.path).toBe(path);
+                    expect(httpError.status).toBe(status);
+                    expect(httpError.message).toBe(message);
+                }
+            );
+        })
     );
 });
