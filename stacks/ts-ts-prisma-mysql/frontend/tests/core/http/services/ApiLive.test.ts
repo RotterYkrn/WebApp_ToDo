@@ -1,14 +1,11 @@
-import { Cause, Data, Effect, Exit, pipe } from "effect";
+import { Cause, Effect, Exit, pipe } from "effect";
 import { describe, it, expect, vi, beforeEach, type Mock } from "@effect/vitest";
 import { ApiLive, handleResponse } from "@/core/http/services/ApiLive";
 import { ApiService } from "@/core/http";
+import { HttpError, ApiError } from "@/core/errors";
 
 // global.fetch のモック
 global.fetch = vi.fn();
-
-class NetworkError extends Data.TaggedClass("NetworkError")<{ readonly message: string }> { };
-
-class HttpError extends Data.TaggedClass("HttpError")<{ readonly status: number }> { };
 
 const mockFetch = (body: unknown, init: ResponseInit) => {
 	(fetch as Mock).mockResolvedValue(new Response(JSON.stringify(body), init));
@@ -46,26 +43,12 @@ const testApiSucceed = (
     expect(data).toEqual(responseBody);
 });
 
-const testApiFailed = (
+const testApiFailed_NetworkError = (
     method: "get" | "post",
     path: string,
-    info: NetworkError | HttpError,
 ) => Effect.gen(function* () {
-    let category: "Network" | "HTTP";
-    let message: string;
-
-    switch (info._tag) {
-        case "NetworkError":
-            mockFetchError(info.message);
-            category = "Network";
-            message = info.message;
-            break;
-        case "HttpError":
-            mockFetch({}, { status: info.status });
-            category = "HTTP";
-            message = info.status.toString();
-            break;
-    }
+    const error = new Error("Network Error");
+    mockFetchError(error);
 
     const result = yield* Effect.exit(ApiService.pipe(
         Effect.flatMap(api => 
@@ -78,10 +61,43 @@ const testApiFailed = (
             
     expect(Exit.isFailure(result)).toBeTruthy();
     if (Exit.isFailure(result)) {
-        const error = Cause.squash(result.cause) as Error;
-        expect(error.message).toContain(`${category} error`);
-        expect(error.message).toContain(path);
-        expect(error.message).toContain(message);
+        const resultError = Cause.squash(result.cause) as ApiError;
+        expect(resultError._tag).toBe("NetworkError");
+        if (resultError._tag === "NetworkError") {
+            expect(resultError.path).toBe(path);
+            expect(resultError.message).toContain("Network error");
+            expect(resultError.message).toContain(method.toUpperCase());
+            expect(resultError.originalError).toStrictEqual(error);
+        }
+    }
+});
+
+const testApiFailed_HttpError = (
+    method: "get" | "post",
+    path: string,
+    status: number,
+) => Effect.gen(function* () {
+    mockFetch({}, { status });
+
+    const result = yield* Effect.exit(ApiService.pipe(
+        Effect.flatMap(api =>
+            method === "get"
+                ? api.get(path)
+                : api.post(path)
+        ),
+        Effect.provide(ApiLive),
+    ));
+            
+    expect(Exit.isFailure(result)).toBeTruthy();
+    if (Exit.isFailure(result)) {
+        const resultError = Cause.squash(result.cause) as ApiError;
+        expect(resultError._tag).toBe("HttpError");
+        if (resultError._tag === "HttpError") {
+            expect(resultError.path).toBe(path);
+            expect(resultError.message).toContain("HTTP error");
+            expect(resultError.message).toContain(method.toUpperCase());
+            expect(resultError.status).toBe(status);
+        }
     }
 });
 
@@ -100,19 +116,18 @@ describe("ApiLive", () => {
             )
         );
 
-        it.effect("ネットワークエラー", () =>
-            testApiFailed(
+        it.effect("失敗：ネットワークエラー", () =>
+            testApiFailed_NetworkError(
                 "get",
                 "/test/get-failure",
-                new NetworkError({ message: "Network failure" })
             )
         );
 
-        it.effect("HTTP エラー", () =>
-            testApiFailed(
+        it.effect("失敗：HTTP エラー", () =>
+            testApiFailed_HttpError(
                 "get",
                 "/test/get-http-error",
-                new HttpError({ status: 500 })
+                500,
             )
         );
     });
@@ -128,19 +143,18 @@ describe("ApiLive", () => {
             )
         );
 
-        it.effect("ネットワークエラー", () =>
-            testApiFailed(
+        it.effect("失敗：ネットワークエラー", () =>
+            testApiFailed_NetworkError(
                 "post",
                 "/test/post-failure",
-                new NetworkError({ message: "Network failure" })
             )
         );
 
-        it.effect("HTTP エラー", () =>
-            testApiFailed(
+        it.effect("失敗：HTTP エラー", () =>
+            testApiFailed_HttpError(
                 "post",
                 "/test/post-http-error",
-                new HttpError({ status: 500 })
+                500,
             )
         );
     });
@@ -153,7 +167,7 @@ describe("handleResponse", () => {
 
             const result = yield* pipe(
                 Effect.succeed(response),
-                handleResponse("Error"),
+                handleResponse("/test/handle-response", "Error"),
             );
 
             expect(result).toBe(response);
@@ -162,17 +176,23 @@ describe("handleResponse", () => {
 
     it.effect("失敗、エラーを返す", () =>
         Effect.gen(function* () {
-            const response = new Response("{}", { status: 500 });
+            const path = "/test/handle-response-error";
+            const status = 500;
+            const message = "HTTP Error during TEST";
+            const response = new Response("{}", { status });
 
             const result = yield* Effect.exit(pipe(
                 Effect.succeed(response),
-                handleResponse("Custom Error: "),
+                handleResponse(path, message),
             ));
 
             expect(Exit.isFailure(result)).toBe(true);
-            expect(result).toStrictEqual(Exit.fail(
-                new Error("Custom Error: 500"))
-            );
+            if (Exit.isFailure(result)) {
+                const resultError = Cause.squash(result.cause) as HttpError;
+                expect(resultError.path).toBe(path);
+                expect(resultError.status).toBe(status);
+                expect(resultError.message).toBe(message);
+            }
         }),
     );
 });

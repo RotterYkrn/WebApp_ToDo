@@ -1,2 +1,1 @@
-export { NetworkError } from "./NetworkError";
-export { ParseJsonError } from "./JsonParseError";
+export { ApiError, NetworkError, HttpError, TimeoutError, ParseJsonError, UnknownApiError } from "./ApiError"

@@ -1,5 +1,6 @@
 import { Effect, pipe } from "effect";
 import { ParseJsonError } from "@/core/errors";
+import { _ } from "vitest/dist/chunks/reporters.d.BFLkQcL6";
 
 export const parseResponseJson = <T>() =>
     <E, R>(resEffect: Effect.Effect<Response, E, R>): Effect.Effect<T, E | ParseJsonError, R> =>
@@ -7,6 +8,10 @@ export const parseResponseJson = <T>() =>
             resEffect,
             Effect.flatMap((res) => Effect.tryPromise({
                 try: () => res.json() as Promise<T>,
-                catch: (e) => new Error(`JSON parsing failed: ${String(e)}`)
+                catch: (e) => new ParseJsonError({
+                    message: "Response JSON parsing failed",
+                    responseJson: res.json(),
+                    originalError: e,
+                })
             })),
         );
