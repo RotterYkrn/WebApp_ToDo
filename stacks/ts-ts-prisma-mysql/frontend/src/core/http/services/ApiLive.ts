@@ -1,6 +1,7 @@
 import { Effect, Layer } from "effect";
 import { ApiService } from "@/core/http";
 import { HttpError, NetworkError } from "@/core/errors";
+import { classifyHttpError } from "../helpers/classifyHttpError";
 
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
     get: (path: string, options?: RequestInit) => Effect.tryPromise({
@@ -27,11 +28,10 @@ export const handleResponse = (path: string, message: string) =>
             Effect.flatMap((res) =>
                 res.ok
                     ? Effect.succeed(res)
-                    : Effect.fail(new HttpError({
+                    : Effect.fail(classifyHttpError(res, {
                         path,
-                        status: res.status,
                         message,
-                        responseBody: res.body
+                        responseBody: res.body,
                     }))
             ),
         );

@@ -2,7 +2,13 @@ import { Cause, Effect, Exit, pipe } from "effect";
 import { describe, it, expect, vi, beforeEach, type Mock } from "@effect/vitest";
 import { ApiLive, handleResponse } from "@/core/http/services/ApiLive";
 import { ApiService } from "@/core/http";
-import { HttpError, ApiError, NetworkError } from "@/core/errors";
+import {
+    ApiError,
+    NetworkError,
+    BadRequestError,
+    InternalServerError,
+} from "@/core/errors";
+import { HttpStatus } from "@/core/http/types/HttpStatus";
 
 // global.fetch のモック
 global.fetch = vi.fn();
@@ -89,26 +95,34 @@ const testApiFailed_HttpError = (
     method: "get" | "post",
     path: string,
     status: number,
+    expectedTag: "BadRequestError" | "InternalServerError"
 ) => Effect.gen(function* () {
     mockFetch({}, { status });
 
     const result = yield* Effect.exit(
         executeApi(method, path)
     );
-            
+
     validateApiError(
         result,
-        "HttpError",
+        expectedTag,
         (e) => {
-            const httpError = e as HttpError;
+            const httpError = e as BadRequestError | InternalServerError;
             expect(httpError.path).toBe(path);
             expect(httpError.message).toContain("HTTP error");
             expect(httpError.message).toContain(method.toUpperCase());
-            expect(httpError.status).toBe(status);
         }
     );
 });
 
+/**
+ * HttpError のテストについては、ApiLive サービスが classifyHttpError ヘルパーを正しく呼び出し、
+ * その結果に基づいて適切に Effect.fail するかという、結合部分のテストに焦点を当てる。
+ * そのため、代表的なエラーステータスのみをテストする。
+ *
+ * classifyHttpError 自体の網羅的なテストは、
+ * `tests/core/http/helpers/classifyHttpError.test.ts` で行う。
+ */
 describe("ApiLive", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -119,7 +133,7 @@ describe("ApiLive", () => {
             testApiSucceed(
                 "get",
                 "/test/get-success",
-                200,
+                HttpStatus.OK,
                 { message: "Success" }
             )
         );
@@ -131,11 +145,21 @@ describe("ApiLive", () => {
             )
         );
 
-        it.effect("失敗：HTTP エラー", () =>
+        it.effect("失敗：HTTP 400 エラー", () =>
             testApiFailed_HttpError(
                 "get",
-                "/test/get-http-error",
-                500,
+                "/test/get-http-400-error",
+                HttpStatus.BAD_REQUEST,
+                "BadRequestError"
+            )
+        );
+
+        it.effect("失敗：HTTP 500 エラー", () =>
+            testApiFailed_HttpError(
+                "get",
+                "/test/get-http-500-error",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "InternalServerError"
             )
         );
     });
@@ -145,7 +169,7 @@ describe("ApiLive", () => {
             testApiSucceed(
                 "post",
                 "/test/post-success",
-                200,
+                HttpStatus.OK,
                 { message: "Created" },
                 { data: "some data" }
             )
@@ -158,11 +182,21 @@ describe("ApiLive", () => {
             )
         );
 
-        it.effect("失敗：HTTP エラー", () =>
+        it.effect("失敗：HTTP 400 エラー", () =>
             testApiFailed_HttpError(
                 "post",
-                "/test/post-http-error",
-                500,
+                "/test/post-http-400-error",
+                HttpStatus.BAD_REQUEST,
+                "BadRequestError"
+            )
+        );
+
+        it.effect("失敗：HTTP 500 エラー", () =>
+            testApiFailed_HttpError(
+                "post",
+                "/test/post-http-500-error",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "InternalServerError"
             )
         );
     });
@@ -171,7 +205,7 @@ describe("ApiLive", () => {
 describe("handleResponse", () => {
     it.effect("成功、レスポンスをそのまま返す", () =>
         Effect.gen(function* () {
-            const response = new Response("{}", { status: 200 });
+            const response = new Response("{}", { status: HttpStatus.OK });
 
             const result = yield* pipe(
                 Effect.succeed(response),
@@ -182,12 +216,11 @@ describe("handleResponse", () => {
         }),
     );
 
-    it.effect("失敗、エラーを返す", () =>
+    it.effect("失敗、400 エラーを返す", () =>
         Effect.gen(function* () {
-            const path = "/test/handle-response-error";
-            const status = 500;
+            const path = "/test/handle-response-400-error";
             const message = "HTTP Error during TEST";
-            const response = new Response("{}", { status });
+            const response = new Response("{}", { status: HttpStatus.BAD_REQUEST });
 
             const result = yield* Effect.exit(pipe(
                 Effect.succeed(response),
@@ -196,11 +229,33 @@ describe("handleResponse", () => {
 
             validateApiError(
                 result,
-                "HttpError",
+                "BadRequestError",
                 (e) => {
-                    const httpError = e as HttpError;
+                    const httpError = e as BadRequestError;
                     expect(httpError.path).toBe(path);
-                    expect(httpError.status).toBe(status);
+                    expect(httpError.message).toBe(message);
+                }
+            );
+        })
+    );
+
+    it.effect("失敗、500 エラーを返す", () =>
+        Effect.gen(function* () {
+            const path = "/test/handle-response-500-error";
+            const message = "HTTP Error during TEST";
+            const response = new Response("{}", { status: HttpStatus.INTERNAL_SERVER_ERROR });
+
+            const result = yield* Effect.exit(pipe(
+                Effect.succeed(response),
+                handleResponse(path, message),
+            ));
+
+            validateApiError(
+                result,
+                "InternalServerError",
+                (e) => {
+                    const httpError = e as InternalServerError;
+                    expect(httpError.path).toBe(path);
                     expect(httpError.message).toBe(message);
                 }
             );

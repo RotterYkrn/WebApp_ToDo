@@ -1,16 +1,10 @@
 import { Data } from "effect";
+import { HttpError } from "./HttpError";
 
 export class NetworkError extends Data.TaggedError("NetworkError")<{
     readonly path: string;
     readonly message: string;
     readonly originalError: unknown;
-}> { }
-
-export class HttpError extends Data.TaggedError("HttpError")<{
-    readonly status: number;
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
 }> { }
 
 export class TimeoutError extends Data.TaggedError("TimeoutError")<{
