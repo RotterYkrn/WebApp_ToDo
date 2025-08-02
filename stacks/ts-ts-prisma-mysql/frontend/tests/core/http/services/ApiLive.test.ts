@@ -61,9 +61,7 @@ const validateApiError = <A>(
     if (Exit.isFailure(result)) {
         const resultError = Cause.squash(result.cause) as ApiError;
         expect(resultError._tag).toBe(expectedTag);
-        if (resultError._tag === expectedTag) {
-            expectedValues(resultError);
-        }
+        expectedValues(resultError);
     }
 };
 
