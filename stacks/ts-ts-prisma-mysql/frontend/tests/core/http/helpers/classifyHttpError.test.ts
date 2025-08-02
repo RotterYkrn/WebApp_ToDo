@@ -1,7 +1,6 @@
 import {
     BadRequestError,
     ForbiddenError,
-    HttpError,
     InternalServerError,
     NotFoundError,
     OtherClientError,
@@ -20,8 +19,7 @@ describe("classifyHttpError", () => {
         responseBody: { foo: "bar" },
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const test = (status: number, expected: new (...args: any[]) => HttpError) => {
+    const test = <E>(status: number, expected: E) => {
         const res = new Response(null, { status });
         const error = classifyHttpError(res, errorInfo);
         expect(error).toBeInstanceOf(expected);
