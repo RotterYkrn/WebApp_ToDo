@@ -1,5 +1,5 @@
 import { Effect, pipe } from "effect";
-import { ParseJsonError } from "@/core/errors";
+import { ParseJsonError } from "@/errors";
 
 export const parseResponseJson = <T>() =>
     <E, R>(resEffect: Effect.Effect<Response, E, R>): Effect.Effect<T, E | ParseJsonError, R> =>

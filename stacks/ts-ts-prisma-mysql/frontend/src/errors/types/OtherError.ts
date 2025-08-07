@@ -1,5 +1,4 @@
 import { Data } from "effect";
-import { HttpError } from "./HttpError";
 
 export class NetworkError extends Data.TaggedError("NetworkError")<{
     readonly path: string;
@@ -18,18 +17,13 @@ export class ParseJsonError extends Data.TaggedError("ParseJsonError")<{
     readonly originalError: unknown;
 }> { }
 
-export class UnknownApiError extends Data.TaggedError("UnknownApiError")<{
+export class UnknownAppError extends Data.TaggedError("UnknownAppError")<{
     readonly message: string;
     readonly originalError: unknown;
 }> { }
 
-/**
- * ApiError のユニオン型
- * これが Effect のエラー型引数として使われます
- */
-export type ApiError =
-    NetworkError |
-    HttpError |
-    TimeoutError |
-    ParseJsonError |
-    UnknownApiError;
+export type OtherError =
+    | NetworkError
+    | TimeoutError
+    | ParseJsonError
+    | UnknownAppError;

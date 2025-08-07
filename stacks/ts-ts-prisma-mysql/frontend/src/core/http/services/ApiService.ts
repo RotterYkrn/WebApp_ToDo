@@ -1,9 +1,9 @@
 import { Effect } from "effect";
-import { ApiError } from "@/core/errors";
+import { AppError } from "@/errors";
 
 export interface Api {
-    get: (path: string, options?: RequestInit) => Effect.Effect<Response, ApiError>;
-    post: (path: string, options?: RequestInit) => Effect.Effect<Response, ApiError>;
+    get: (path: string, options?: RequestInit) => Effect.Effect<Response, AppError>;
+    post: (path: string, options?: RequestInit) => Effect.Effect<Response, AppError>;
 }
 
 export class ApiService extends Effect.Tag("ApiService")<

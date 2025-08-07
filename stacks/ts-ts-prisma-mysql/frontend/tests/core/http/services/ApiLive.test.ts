@@ -1,14 +1,12 @@
-import { Cause, Effect, Exit, pipe } from "effect";
+import { Effect, pipe } from "effect";
 import { describe, it, expect, vi, beforeEach, type Mock } from "@effect/vitest";
 import { ApiLive, handleResponse } from "@/core/http/services/ApiLive";
 import { ApiService } from "@/core/http";
 import {
-    ApiError,
-    NetworkError,
-    BadRequestError,
-    InternalServerError,
-} from "@/core/errors";
+    HttpError,
+} from "@/errors";
 import { HttpStatus } from "@/core/http/types/HttpStatus";
+import { validateAppError } from "tests/test-utils";
 
 // global.fetch のモック
 global.fetch = vi.fn();
@@ -52,19 +50,6 @@ const testApiSucceed = (
     expect(data).toEqual(responseBody);
 });
 
-const validateApiError = <A>(
-    result: Exit.Exit<A, ApiError>,
-    expectedTag: string,
-    expectedValues: (error: ApiError) => void
-) => {
-    expect(Exit.isFailure(result)).toBeTruthy();
-    if (Exit.isFailure(result)) {
-        const resultError = Cause.squash(result.cause) as ApiError;
-        expect(resultError._tag).toBe(expectedTag);
-        expectedValues(resultError);
-    }
-};
-
 const testApiFailed_NetworkError = (
     method: "get" | "post",
     path: string,
@@ -76,11 +61,10 @@ const testApiFailed_NetworkError = (
         executeApi(method, path)
     );
 
-    validateApiError(
+    validateAppError(
         result,
         "NetworkError",
-        (e) => {
-            const networkError = e as NetworkError;
+        (networkError) => {
             expect(networkError.path).toBe(path);
             expect(networkError.message).toContain("Network error");
             expect(networkError.message).toContain(method.toUpperCase());
@@ -93,7 +77,7 @@ const testApiFailed_HttpError = (
     method: "get" | "post",
     path: string,
     status: number,
-    expectedTag: "BadRequestError" | "InternalServerError"
+    expectedTag: HttpError["_tag"]
 ) => Effect.gen(function* () {
     mockFetch({}, { status });
 
@@ -101,11 +85,10 @@ const testApiFailed_HttpError = (
         executeApi(method, path)
     );
 
-    validateApiError(
+    validateAppError(
         result,
         expectedTag,
-        (e) => {
-            const httpError = e as BadRequestError | InternalServerError;
+        (httpError) => {
             expect(httpError.path).toBe(path);
             expect(httpError.message).toContain("HTTP error");
             expect(httpError.message).toContain(method.toUpperCase());
@@ -225,11 +208,10 @@ describe("handleResponse", () => {
                 handleResponse(path, message),
             ));
 
-            validateApiError(
+            validateAppError(
                 result,
                 "BadRequestError",
-                (e) => {
-                    const httpError = e as BadRequestError;
+                (httpError) => {
                     expect(httpError.path).toBe(path);
                     expect(httpError.message).toBe(message);
                 }
@@ -248,11 +230,10 @@ describe("handleResponse", () => {
                 handleResponse(path, message),
             ));
 
-            validateApiError(
+            validateAppError(
                 result,
                 "InternalServerError",
-                (e) => {
-                    const httpError = e as InternalServerError;
+                (httpError) => {
                     expect(httpError.path).toBe(path);
                     expect(httpError.message).toBe(message);
                 }

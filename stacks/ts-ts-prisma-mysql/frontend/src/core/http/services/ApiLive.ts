@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect";
 import { ApiService } from "@/core/http";
-import { HttpError, NetworkError } from "@/core/errors";
+import { NetworkError } from "@/errors";
 import { classifyHttpError } from "../helpers/classifyHttpError";
 
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
@@ -23,15 +23,12 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
 }));
 
 export const handleResponse = (path: string, message: string) =>
-    <E, R>(res: Effect.Effect<Response, E, R>): Effect.Effect<Response, E | HttpError, R> =>
-        res.pipe(
-            Effect.flatMap((res) =>
-                res.ok
-                    ? Effect.succeed(res)
-                    : Effect.fail(classifyHttpError(res, {
-                        path,
-                        message,
-                        responseBody: res.body,
-                    }))
-            ),
-        );
+    Effect.flatMap((res: Response) =>
+        res.ok
+            ? Effect.succeed(res)
+            : Effect.fail(classifyHttpError(res, {
+                path,
+                message,
+                responseBody: res.body,
+            }))
+    );

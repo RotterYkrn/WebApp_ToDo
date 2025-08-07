@@ -8,7 +8,7 @@ import {
     OtherServerError,
     UnauthorizedError,
     UnknownHttpError,
-} from "@/core/errors";
+} from "@/errors";
 import { HttpStatus } from "../types/HttpStatus";
 
 type ErrorInfo = {

@@ -7,7 +7,7 @@ import {
     OtherServerError,
     UnauthorizedError,
     UnknownHttpError,
-} from "@/core/errors";
+} from "@/errors";
 import { classifyHttpError } from "@/core/http/helpers/classifyHttpError";
 import { HttpStatus } from "@/core/http/types/HttpStatus";
 import { describe, expect, it } from "vitest";
