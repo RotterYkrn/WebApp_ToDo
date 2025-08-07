@@ -17,18 +17,3 @@ export const validateAppError = <A, T extends AppError["_tag"]>(
         }
     }
 };
-
-// export const validateApp = <A, E>(
-//     result: Exit.Exit<A, AppError>,
-//     expected: E,
-//     expectedValues: (error: AppError) => void
-// ) => {
-//     expect(Exit.isFailure(result)).toBeTruthy();
-//     if (Exit.isFailure(result)) {
-//         const resultError = Cause.squash(result.cause) as AppError;
-//         expect(resultError).toBeInstanceOf(expected);
-//         if (resultError instanceof expected) {
-//             expectedValues(resultError);
-//         }
-//     }
-// };
