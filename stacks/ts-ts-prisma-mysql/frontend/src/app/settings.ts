@@ -1,7 +1,7 @@
-import { runPromiseWithLayer } from "@/core/utils";
+import { runPromiseWithLayer } from "@/shares/utils";
 import { Effect, pipe } from "effect";
-import { createFooter } from "@/core/ui";
-import { ApiService, ApiLive, parseResponseJson } from "@/core/http";
+import { createFooter } from "@/shares/ui";
+import { ApiService, ApiLive, parseResponseJson } from "@/shares/http";
 
 interface Settings {
     notifications: boolean;

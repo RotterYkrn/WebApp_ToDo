@@ -36,7 +36,7 @@ app.post("/api/signin", (req, res) => {
 app.post("/api/signout", (req, res) => {
     console.log("signed out");
     res.clearCookie("sessionToken");
-    res.json({ success: true });
+    res.status(204).end();
 });
 
 app.post("/api/signup", (req, res) => {

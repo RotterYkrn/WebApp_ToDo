@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect";
-import { ApiService } from "@/core/http";
+import { ApiService } from "@/shares/http";
 import { NetworkError } from "@/errors";
 import { classifyHttpError } from "../helpers/classifyHttpError";
 

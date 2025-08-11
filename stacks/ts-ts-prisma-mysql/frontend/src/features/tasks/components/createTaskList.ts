@@ -1,7 +1,10 @@
-import { Effect, pipe } from "effect/index";
-import { ApiService, parseResponseJson } from "@/core/http";
-import { createFooter } from "@/core/ui";
-import { signout } from "@/features/auths";
+import { Effect, Layer, pipe, Runtime } from "effect/index";
+import { ApiLive, ApiService, parseResponseJson } from "@/shares/http";
+import { createFooter } from "@/shares/ui";
+import { AuthServiceLive } from "@/features/auths";
+import { ConsoleLoggerLive } from "@/shares/logger";
+import { AppManager } from "@/app/AppManager";
+import { AuthManager } from "@/features/auths/services/AuthManager";
 
 export interface Task {
 	title: string;
@@ -9,9 +12,20 @@ export interface Task {
 }
 
 export const initializePageContent = (path: string) => Effect.gen(function* () {
+	const AppLive = Layer.mergeAll(
+		ApiLive,
+		AuthServiceLive,
+		ConsoleLoggerLive
+	);
+	
+	const appManager = new AppManager(AppLive);
+	const authManager = new AuthManager(appManager);
+
 	// イベント設定
 	yield* Effect.sync(() =>
-		document.getElementById("signout-button")?.addEventListener("click", signout)
+		document.getElementById("signout-button")?.addEventListener("click", () => 
+			authManager.signout()
+		)
 	);
 
 	yield* Effect.sync(() =>

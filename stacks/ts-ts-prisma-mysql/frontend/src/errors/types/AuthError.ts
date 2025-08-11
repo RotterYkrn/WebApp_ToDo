@@ -4,4 +4,9 @@ export class Unauthorized extends Data.TaggedError("Unauthorized")<{
     readonly message: string;
 }> { }
 
-export type AuthError = Unauthorized;
+export class SignoutError extends Data.TaggedError("SignoutError")<{
+    readonly message: string;
+    readonly status: number;
+}> { }
+
+export type AuthError = Unauthorized | SignoutError;

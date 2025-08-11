@@ -1,9 +1,9 @@
 export {
-    AppError,
+    type AppError,
 } from "./types/AppError"
 
 export {
-    HttpError,
+    type HttpError,
     BadRequestError,
     UnauthorizedError,
     ForbiddenError,
@@ -15,12 +15,13 @@ export {
 } from "./types/HttpError"
 
 export {
-    AuthError,
+    type AuthError,
     Unauthorized,
+    SignoutError,
 } from "./types/AuthError"
 
 export {
-    OtherError,
+    type OtherError,
     NetworkError,
     TimeoutError,
     ParseJsonError,

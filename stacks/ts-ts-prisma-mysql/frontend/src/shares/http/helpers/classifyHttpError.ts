@@ -11,11 +11,11 @@ import {
 } from "@/errors";
 import { HttpStatus } from "../types/HttpStatus";
 
-type ErrorInfo = {
+interface ErrorInfo {
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-};
+}
 
 export const classifyHttpError = (res: Response, errorInfo: ErrorInfo): HttpError => {
     switch (res.status) {

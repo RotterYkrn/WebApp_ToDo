@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect";
-import { LoggerService } from "@/core/logger";
+import { LoggerService } from "@/shares/logger";
 
 export const consoleLogger = {
   log: (message: string, ...args: unknown[]) => Effect.sync(() => console.log(`[LOG] ${message}`, ...args)),
