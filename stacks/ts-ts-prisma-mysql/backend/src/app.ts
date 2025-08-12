@@ -1,5 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import { constants } from "http2";
 
 const app = express();
 
@@ -36,7 +37,7 @@ app.post("/api/signin", (req, res) => {
 app.post("/api/signout", (req, res) => {
     console.log("signed out");
     res.clearCookie("sessionToken");
-    res.status(204).end();
+    res.status(constants.HTTP_STATUS_NO_CONTENT).end();
 });
 
 app.post("/api/signup", (req, res) => {
