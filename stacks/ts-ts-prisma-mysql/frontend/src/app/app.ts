@@ -1,8 +1,9 @@
-import { AuthComponent, AuthManager, AuthServiceLive } from "@/features/auths";
-import { ApiLive } from "@/shares/http";
 import { Layer } from "effect";
-import { AppManager } from "./AppManager";
+import { AuthServiceLive } from "@/features/auths";
+import { ApiLive } from "@/shares/http";
 import { ConsoleLoggerLive } from "@/shares/logger";
+import { AppManager } from "./AppManager";
+
 
 const AppLive = Layer.mergeAll(
     ApiLive,
@@ -11,5 +12,3 @@ const AppLive = Layer.mergeAll(
 );
 
 const appManager = new AppManager(AppLive);
-const authManager = new AuthManager(appManager);
-const authComponent = new AuthComponent(authManager);

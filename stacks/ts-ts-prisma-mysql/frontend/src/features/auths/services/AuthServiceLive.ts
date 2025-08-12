@@ -17,7 +17,7 @@ export const AuthServiceLive = Layer.succeed(AuthService, AuthService.of({
         Effect.mapError((e) => e),
     ),
 
-    signout: () => pipe(
+    signOutApi: () => pipe(
         Effect.gen(function* () {
             const apiService = yield* ApiService;
             return yield* apiService.post("/api/signout", { credentials: "include" });

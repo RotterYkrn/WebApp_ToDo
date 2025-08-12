@@ -24,12 +24,12 @@ export class AuthManager {
             })
         );
 
-    public readonly signout = (): Promise<void> =>
+    public readonly performSignOut = (): Promise<void> =>
         Runtime.runPromise(this.appManager.appRuntime)(
             pipe(
                 Effect.gen(function* () {
                     const authService = yield* AuthService;
-                    yield* authService.signout();
+                    yield* authService.signOutApi();
                     yield* authService.redirectToSignIn();
                 }),
                 Effect.mapError((e) => e),

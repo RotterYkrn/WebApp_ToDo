@@ -4,7 +4,7 @@ import { AppError } from "@/errors";
 
 export interface Auth {
   readonly checkSession: () => Effect.Effect<boolean, AppError, ApiService>;
-  readonly signout: () => Effect.Effect<void, AppError, ApiService>;
+  readonly signOutApi: () => Effect.Effect<void, AppError, ApiService>;
   readonly redirectToSignIn: () => Effect.Effect<void>;
 }
 

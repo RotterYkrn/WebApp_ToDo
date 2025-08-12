@@ -10,6 +10,6 @@ export class AuthComponent {
         createButton(
             "signout-button",
             "サインアウト",
-            this.authManager.signout
+            this.authManager.performSignOut
         );
 }
