@@ -6,11 +6,9 @@ import { ApiService } from "@/shares/http";
 type AuthManagerServices = AuthService | ApiService;
 
 export class AuthManager {
-    private readonly appManager: IAppManager<AuthManagerServices>;
-
-    public constructor(appManager: IAppManager<AuthManagerServices>) {
-        this.appManager = appManager;
-    }
+    public constructor(
+        private readonly appManager: IAppManager<AuthManagerServices>
+    ) { }
 
     public readonly authenticated = <A, E>(callback: Effect.Effect<A, E>): Promise<A | void> =>
         Runtime.runPromise(this.appManager.appRuntime)(

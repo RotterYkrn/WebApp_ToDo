@@ -1,7 +1,7 @@
-import { Effect, Layer, pipe, Runtime } from "effect/index";
+import { Effect, Layer, pipe } from "effect/index";
 import { ApiLive, ApiService, parseResponseJson } from "@/shares/http";
 import { createFooter } from "@/shares/ui";
-import { AuthServiceLive } from "@/features/auths";
+import { AuthComponent, AuthServiceLive } from "@/features/auths";
 import { ConsoleLoggerLive } from "@/shares/logger";
 import { AppManager } from "@/app/AppManager";
 import { AuthManager } from "@/features/auths/services/AuthManager";
@@ -20,16 +20,21 @@ export const initializePageContent = (path: string) => Effect.gen(function* () {
 	
 	const appManager = new AppManager(AppLive);
 	const authManager = new AuthManager(appManager);
+	const authComponent = new AuthComponent(authManager);
 
 	// イベント設定
-	yield* Effect.sync(() =>
-		document.getElementById("signout-button")?.addEventListener("click", () => 
-			authManager.signout()
-		)
-	);
+	// yield* Effect.sync(() =>
+	// 	document.getElementById("signout-button")?.addEventListener("click", () => 
+	// 		authManager.signout()
+	// 	)
+	// );
 
 	yield* Effect.sync(() =>
 		document.body.style.display = "block"
+	);
+
+	yield* Effect.sync(() =>
+		document.body.appendChild(authComponent.createSignoutButton())
 	);
 
 	yield* Effect.sync(() =>
