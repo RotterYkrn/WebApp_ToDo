@@ -1,33 +1,29 @@
-import { Effect, Layer, pipe } from "effect/index";
+import { Effect, Layer, pipe } from "effect"; // "effect/index" から "effect" に変更
 import { ApiLive, ApiService, parseResponseJson } from "@/shares/http";
 import { createFooter } from "@/shares/ui";
 import { AuthComponent, AuthServiceLive } from "@/features/auths";
 import { ConsoleLoggerLive } from "@/shares/logger";
 import { AppManager } from "@/app/AppManager";
 import { AuthManager } from "@/features/auths/services/AuthManager";
+import { AppError } from "@/errors"; // AppErrorをインポート
 
 export interface Task {
 	title: string;
 	detail: string;
 }
 
+const AppLive = Layer.mergeAll(
+	ApiLive,
+	AuthServiceLive,
+	ConsoleLoggerLive
+);
+
+let tasks: Task[] = [];
+
 export const initializePageContent = (path: string) => Effect.gen(function* () {
-	const AppLive = Layer.mergeAll(
-		ApiLive,
-		AuthServiceLive,
-		ConsoleLoggerLive
-	);
-	
 	const appManager = new AppManager(AppLive);
 	const authManager = new AuthManager(appManager);
 	const authComponent = new AuthComponent(authManager);
-
-	// イベント設定
-	// yield* Effect.sync(() =>
-	// 	document.getElementById("signout-button")?.addEventListener("click", () => 
-	// 		authManager.signout()
-	// 	)
-	// );
 
 	yield* Effect.sync(() =>
 		document.body.style.display = "block"
@@ -50,6 +46,12 @@ export const initializePageContent = (path: string) => Effect.gen(function* () {
 		yield* Effect.sync(() =>
 			taskListElement.append(...taskList)
 		);
+
+		// 新しいタスク追加フォームを既存のタスクと同じ見た目で生成して追加
+		const taskFormElement = yield* Effect.sync(() => createAddTaskFormView(path));
+		yield* Effect.sync(() => {
+			taskListElement.append(taskFormElement);
+		});
 	}
 });
 
@@ -88,3 +90,105 @@ export const createTaskListView = (tasks: Task[]): HTMLElement[] =>
 		taskElem.appendChild(detailElem);
 		return taskElem;
 	});
+
+export const createAddTaskFormView = (path: string): HTMLElement => {
+	const taskElem = document.createElement("article");
+	taskElem.className = "task"; // 既存のタスクと同じクラス名
+
+	const titleElem = document.createElement("button");
+	titleElem.className = "task-title";
+	titleElem.setAttribute("aria-expanded", "false");
+	titleElem.textContent = "新しいタスクを追加"; // タイトル部分に「新しいタスクを追加」
+
+	const detailElem = document.createElement("p");
+	detailElem.className = "task-detail"; // 既存のタスクと同じクラス名
+	detailElem.innerHTML = `
+		<div><input type="text" id="new-task-title" placeholder="タスクのタイトル" required /></div>
+		<div><textarea id="new-task-detail" placeholder="タスクの詳細"></textarea></div>
+		<div><button id="add-task-submit-button">タスクを追加</button></div>
+	`;
+
+	const formContent = detailElem; // フォームのコンテンツはdetailElemにまとめる
+	formContent.style.display = "none"; // 最初は非表示
+
+	titleElem.addEventListener("click", () => {
+		const isOpen = taskElem.classList.toggle("open");
+		titleElem.setAttribute("aria-expanded", isOpen.toString());
+		formContent.style.display = formContent.style.display === "none" ? "block" : "none";
+	});
+
+	taskElem.appendChild(titleElem);
+	taskElem.appendChild(detailElem);
+
+	const addTaskButton = detailElem.querySelector<HTMLButtonElement>("#add-task-submit-button");
+	const newTaskTitleInput = detailElem.querySelector<HTMLInputElement>("#new-task-title");
+	const newTaskDetailTextarea = detailElem.querySelector<HTMLTextAreaElement>("#new-task-detail");
+
+	if (addTaskButton && newTaskTitleInput && newTaskDetailTextarea) {
+		addTaskButton.addEventListener("click", () => {
+			const title = newTaskTitleInput.value;
+			const detail = newTaskDetailTextarea.value;
+
+			if (title) {
+				Effect.runPromise(
+					pipe(
+						addTask(path, { title, detail }),
+						Effect.provide(AppLive), // provideLayer を provide に変更
+						Effect.mapError((e): AppError => e as AppError) // エラー型をAppErrorにキャスト
+					)
+				).then(
+					() => {
+						console.log("タスクが正常に追加されました。");
+						newTaskTitleInput.value = "";
+						newTaskDetailTextarea.value = "";
+						// タスクリストを再読み込み
+						const taskListElement = document.getElementById("task-list");
+						if (taskListElement) {
+							taskListElement.innerHTML = ""; // 既存のリストをクリア
+							Effect.runPromise(
+								pipe(
+									createTaskList(path),
+									Effect.provide(AppLive), // provideLayer を provide に変更
+									Effect.mapError((e): AppError => e as AppError) // エラー型をAppErrorにキャスト
+								)
+							).then(
+								(taskList: unknown) => { // unknownとして受け取り、内部でキャスト
+									taskListElement.append(...(taskList as HTMLElement[]));
+								}
+							).catch(
+								(e: AppError) => { // エラー型をAppErrorに指定
+									console.error("タスクリストの再読み込みに失敗しました:", e);
+								}
+							);
+						}
+					}
+				).catch(
+					(e: AppError) => { // エラー型をAppErrorに指定
+						console.error("タスクの追加に失敗しました:", e);
+						alert("タスクの追加に失敗しました。");
+					}
+				);
+			} else {
+				alert("タスクのタイトルは必須です。");
+			}
+		});
+	}
+
+	return taskElem;
+};
+
+export const addTask = (path: string, task: Task) => pipe(
+	Effect.gen(function* () {
+		const apiService = yield* ApiService;
+		return yield* apiService.post(path, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(task),
+			credentials: "include",
+		});
+	}),
+	parseResponseJson<Task>(),
+	Effect.mapError((e) => e),
+);
