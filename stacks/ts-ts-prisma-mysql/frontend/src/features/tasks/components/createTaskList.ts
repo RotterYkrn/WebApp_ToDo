@@ -1,8 +1,8 @@
 import { Effect, Layer, pipe } from "effect"; // "effect/index" から "effect" に変更
-import { ApiLive, ApiService, parseResponseJson } from "@/shares/http";
-import { createFooter } from "@/shares/ui";
+import { ApiLive, ApiService, parseResponseJson } from "@/shared/http";
+import { createFooter } from "@/shared/ui";
 import { AuthComponent, AuthServiceLive } from "@/features/auths";
-import { ConsoleLoggerLive } from "@/shares/logger";
+import { ConsoleLoggerLive } from "@/shared/logger";
 import { AppManager } from "@/app/AppManager";
 import { AuthManager } from "@/features/auths/services/AuthManager";
 import { AppError } from "@/errors"; // AppErrorをインポート

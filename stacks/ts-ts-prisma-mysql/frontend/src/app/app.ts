@@ -1,7 +1,7 @@
 import { Layer } from "effect";
 import { AuthServiceLive } from "@/features/auths";
-import { ApiLive } from "@/shares/http";
-import { ConsoleLoggerLive } from "@/shares/logger";
+import { ApiLive } from "@/shared/http";
+import { ConsoleLoggerLive } from "@/shared/logger";
 import { AppManager } from "./AppManager";
 
 

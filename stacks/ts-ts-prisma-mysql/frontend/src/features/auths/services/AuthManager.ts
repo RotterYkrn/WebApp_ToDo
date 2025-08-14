@@ -1,7 +1,7 @@
-import { IAppManager } from "@/shares/app";
+import { IAppManager } from "@/shared/app";
 import { Effect, pipe, Runtime } from "effect/index";
 import { AuthService } from "./AuthService";
-import { ApiService } from "@/shares/http";
+import { ApiService } from "@/shared/http";
 
 type AuthManagerServices = AuthService | ApiService;
 

@@ -1,4 +1,4 @@
-import { createButton } from "@/shares/ui";
+import { createButton } from "@/shared/ui";
 import { AuthManager } from "../services/AuthManager";
 
 export class AuthComponent {

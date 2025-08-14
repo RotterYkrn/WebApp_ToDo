@@ -8,8 +8,8 @@ import {
     UnauthorizedError,
     UnknownHttpError,
 } from "@/errors";
-import { classifyHttpError } from "@/shares/http/helpers/classifyHttpError";
-import { HttpStatus } from "@/shares/http/types/HttpStatus";
+import { classifyHttpError } from "@/shared/http/helpers/classifyHttpError";
+import { HttpStatus } from "@/shared/http/types/HttpStatus";
 import { describe, expect, it } from "vitest";
 
 describe("classifyHttpError", () => {

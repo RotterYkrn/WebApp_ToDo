@@ -1,5 +1,5 @@
 import { Effect, Layer, pipe } from "effect";
-import { ApiService, HttpStatus, parseResponseJson } from "@/shares/http";
+import { ApiService, HttpStatus, parseResponseJson } from "@/shared/http";
 import { AuthService } from "./AuthService";
 import { SessionData } from "../types/SessionData";
 import { SignoutError } from "@/errors";

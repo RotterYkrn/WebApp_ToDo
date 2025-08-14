@@ -1,4 +1,4 @@
-import { IAppManager } from "@/shares/app";
+import { IAppManager } from "@/shared/app";
 import { Effect, Layer, Runtime } from "effect";
 
 export class AppManager<R> implements IAppManager<R> {

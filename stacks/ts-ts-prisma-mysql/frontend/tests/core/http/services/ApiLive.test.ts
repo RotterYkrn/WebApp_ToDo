@@ -1,11 +1,11 @@
 import { Effect, pipe } from "effect";
 import { describe, it, expect, vi, beforeEach, type Mock } from "@effect/vitest";
-import { ApiLive, handleResponse } from "@/shares/http/services/ApiLive";
-import { ApiService } from "@/shares/http";
+import { ApiLive, handleResponse } from "@/shared/http/services/ApiLive";
+import { ApiService } from "@/shared/http";
 import {
     HttpError,
 } from "@/errors";
-import { HttpStatus } from "@/shares/http/types/HttpStatus";
+import { HttpStatus } from "@/shared/http/types/HttpStatus";
 import { validateAppError } from "tests/test-utils";
 
 // global.fetch のモック

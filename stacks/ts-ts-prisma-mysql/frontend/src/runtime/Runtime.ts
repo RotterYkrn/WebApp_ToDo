@@ -1,4 +1,4 @@
-import { ApiLive } from "@/shares/http";
+import { ApiLive } from "@/shared/http";
 import { AuthServiceLive } from "@/features/auths/services/AuthServiceLive";
 import { Effect, Layer } from "effect";
 

@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { ApiService } from "@/shares/http";
+import { ApiService } from "@/shared/http";
 import { AppError } from "@/errors";
 
 export interface Auth {
