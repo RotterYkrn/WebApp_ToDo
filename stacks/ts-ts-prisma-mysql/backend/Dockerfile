@@ -9,6 +9,4 @@ RUN npm install
 
 WORKDIR /app/backend
 
-COPY ./backend .
-
 CMD ["npm", "run", "dev"]

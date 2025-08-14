@@ -12,9 +12,7 @@
 
         /* Language and Environment */
         "target": "esnext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-        "lib": [
-            "ESNext"
-        ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
+        // "lib": [],                                        /* Specify a set of bundled library declaration files that describe the target runtime environment. */
         // "jsx": "preserve",                                /* Specify what JSX code is generated. */
         // "libReplacement": true,                           /* Enable lib replacement. */
         // "experimentalDecorators": true,                   /* Enable experimental support for legacy experimental decorators. */
@@ -25,23 +23,25 @@
         // "reactNamespace": "",                             /* Specify the object invoked for 'createElement'. This only applies when targeting 'react' JSX emit. */
         // "noLib": true,                                    /* Disable including any library files, including the default lib.d.ts. */
         // "useDefineForClassFields": true,                  /* Emit ECMAScript-standard-compliant class fields. */
-        // "moduleDetection": "force" /* Control what method is used to detect module-format JS files. */,
+        // "moduleDetection": "auto",                        /* Control what method is used to detect module-format JS files. */
 
         /* Modules */
         "module": "esnext" /* Specify what module code is generated. */,
         // "rootDir": "./src" /* Specify the root folder within your source files. */,
         "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
         "baseUrl": "./" /* Specify the base directory to resolve non-relative module names. */,
-        "paths": {
-            "@/*": ["src/*"],
-            //"@shared/*": ["../shared/*"],
-            "@prisma/client/*": ["../generated/prisma/*"]
-        } /* Specify a set of entries that re-map imports to additional lookup locations. */,
+        // "paths": {
+        //   "@prisma/client*": ["../../server/generated/prisma/*"]
+        // } /* Specify a set of entries that re-map imports to additional lookup locations. */,
+        // "rootDirs": [
+        //   "./src",
+        //   "@prisma/client"
+        // ] /* Allow multiple folders to be treated as one when resolving modules. */,
         // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
-        // "types": [] /* Specify type package names to be included without being referenced in a source file. */,
+        // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */
         // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
         // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
-        // "allowImportingTsExtensions": true,               /* Allow imports to include TypeScript file extensions. Requires '--moduleResolution bundler' and either '--noEmit' or '--emitDeclarationOnly' to be set. */
+        // "allowImportingTsExtensions": false /* Allow imports to include TypeScript file extensions. Requires '--moduleResolution bundler' and either '--noEmit' or '--emitDeclarationOnly' to be set. */,
         // "rewriteRelativeImportExtensions": true,          /* Rewrite '.ts', '.tsx', '.mts', and '.cts' file extensions in relative import paths to their JavaScript equivalent in output files. */
         // "resolvePackageJsonExports": true,                /* Use the package.json 'exports' field when resolving package imports. */
         // "resolvePackageJsonImports": true,                /* Use the package.json 'imports' field when resolving imports. */
@@ -52,14 +52,14 @@
         // "noResolve": true,                                /* Disallow 'import's, 'require's or '<reference>'s from expanding the number of files TypeScript should add to a project. */
 
         /* JavaScript Support */
-        // "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
-        // "checkJs": true /* Enable error reporting in type-checked JavaScript files. */,
+        // "allowJs": true,                                  /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */
+        // "checkJs": true,                                  /* Enable error reporting in type-checked JavaScript files. */
         // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from 'node_modules'. Only applicable with 'allowJs'. */
 
         /* Emit */
         "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
         // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
-        // "emitDeclarationOnly": true /* Only output d.ts files and not JavaScript files. */,
+        // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
         // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
         // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
         // "noEmit": true,                                   /* Disable emitting files from a compilation. */
@@ -81,7 +81,7 @@
 
         /* Interop Constraints */
         // "isolatedModules": true,                          /* Ensure that each file can be safely transpiled without relying on other imports. */
-        // "verbatimModuleSyntax": true,                     /* Do not transform or elide any imports or exports not marked as type-only, ensuring they are written in the output file's format based on the 'module' setting. */
+        "verbatimModuleSyntax": true /* Do not transform or elide any imports or exports not marked as type-only, ensuring they are written in the output file's format based on the 'module' setting. */,
         // "isolatedDeclarations": true,                     /* Require sufficient annotation on exports so other tools can trivially generate declaration files. */
         // "erasableSyntaxOnly": true,                       /* Do not allow runtime constructs that are not part of ECMAScript. */
         // "allowSyntheticDefaultImports": true,             /* Allow 'import x from y' when a module doesn't have a default export. */
@@ -109,12 +109,12 @@
         "noImplicitOverride": true /* Ensure overriding members in derived classes are marked with an override modifier. */,
         "noPropertyAccessFromIndexSignature": true /* Enforces using indexed accessors for keys declared using an indexed type. */,
         "allowUnusedLabels": true /* Disable error reporting for unused labels. */,
-        "allowUnreachableCode": true /* Disable error reporting for unreachable code. */
+        "allowUnreachableCode": true /* Disable error reporting for unreachable code. */,
 
         /* Completeness */
         // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-        // "skipLibCheck": true /* Skip type checking all .d.ts files. */
+        "skipLibCheck": true /* Skip type checking all .d.ts files. */
     },
-    "include": ["src/**/*.ts", "../shared/**/*.ts"],
+    "include": ["./**/*.ts"],
     "exclude": ["node_modules", "dist"]
 }

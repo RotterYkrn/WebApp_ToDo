@@ -9,6 +9,7 @@
         "dev": "npx prisma generate && npx tsx watch src/app.ts"
     },
     "dependencies": {
+        "@app/shared": "file:../shared",
         "@prisma/client": "^6.6.0",
         "bcrypt": "^6.0.0",
         "cookie-parser": "^1.4.7",

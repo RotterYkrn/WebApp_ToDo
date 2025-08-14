@@ -22,6 +22,7 @@
     },
     "license": "UNLICENSED",
     "dependencies": {
+        "@app/shared": "file:../shared",
         "effect": "^3.16.16"
     }
 }

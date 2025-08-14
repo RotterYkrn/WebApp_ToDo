@@ -9,8 +9,6 @@ RUN npm install
 
 WORKDIR /app/frontend
 
-COPY ./frontend .
-
 FROM base AS development
 CMD ["npm", "run", "dev"]
 

@@ -18,8 +18,6 @@ const AppLive = Layer.mergeAll(
 	ConsoleLoggerLive
 );
 
-let tasks: Task[] = [];
-
 export const initializePageContent = (path: string) => Effect.gen(function* () {
 	const appManager = new AppManager(AppLive);
 	const authManager = new AuthManager(appManager);

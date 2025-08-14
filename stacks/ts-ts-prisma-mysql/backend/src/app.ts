@@ -1,13 +1,14 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { constants } from "http2";
+import { AuthPath, DailyPlanPath, HabitPath, TodoPath, UserSettingPath } from "@app/shared/app-paths";
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/api/check-session", (req, res) => {
+app.get(AuthPath.CHECK_SESSION, (req, res) => {
     const sessionToken = req.cookies?.sessionToken;
 
     if (sessionToken === "true") {
@@ -17,7 +18,7 @@ app.get("/api/check-session", (req, res) => {
     }
 });
 
-app.post("/api/signin", (req, res) => {
+app.post(AuthPath.SIGN_IN, (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -34,13 +35,13 @@ app.post("/api/signin", (req, res) => {
     }
 });
 
-app.post("/api/signout", (req, res) => {
+app.post(AuthPath.SIGN_OUT, (req, res) => {
     console.log("signed out");
     res.clearCookie("sessionToken");
     res.status(constants.HTTP_STATUS_NO_CONTENT).end();
 });
 
-app.post("/api/signup", (req, res) => {
+app.post(AuthPath.SIGN_UP, (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
@@ -64,15 +65,15 @@ const tasks = [
 	},
 ];
 
-app.get("/api/daily-plan", (req, res) => {
+app.get(DailyPlanPath.GET_ALL, (req, res) => {
     res.json(tasks);
 });
 
-app.get("/api/todo", (req, res) => {
+app.get(TodoPath.GET_ALL, (req, res) => {
     res.json(tasks);
 });
 
-app.get("/api/habit", (req, res) => {
+app.get(HabitPath.GET_ALL, (req, res) => {
     res.json(tasks);
 });
 
@@ -97,11 +98,11 @@ class Settings {
 
 let settings = new Settings(true, "dark", "dummy_username", "dummy_password");
 
-app.get("/api/settings", (req, res) => {
+app.get(UserSettingPath.GET, (req, res) => {
     res.json(settings);
 });
 
-app.post("/api/settings", (req, res) => {
+app.post(UserSettingPath.UPDATE, (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const notifications = req.body.notifications;

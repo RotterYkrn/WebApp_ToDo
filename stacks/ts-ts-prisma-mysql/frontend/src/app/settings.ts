@@ -2,6 +2,7 @@ import { runPromiseWithLayer } from "@/shared/utils";
 import { Effect, pipe } from "effect";
 import { createFooter } from "@/shared/ui";
 import { ApiService, ApiLive, parseResponseJson } from "@/shared/http";
+import { UserSettingPath } from "@app/shared/app-paths";
 
 interface Settings {
     notifications: boolean;
@@ -13,7 +14,7 @@ interface Settings {
 const viewSettings = () => pipe(
     Effect.gen(function* () {
         const apiService = yield* ApiService;
-        return yield* apiService.get("/api/settings");
+        return yield* apiService.get(UserSettingPath.GET);
     }),
     parseResponseJson<Settings>(),
     Effect.flatMap((data) => Effect.gen(function* () {

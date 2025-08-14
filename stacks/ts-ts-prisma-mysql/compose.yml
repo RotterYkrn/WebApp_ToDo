@@ -1,66 +1,63 @@
 services:
+    frontend:
+        extends:
+            file: ../../shared/compose.common-services.yml
+            service: webapp
 
-  frontend:
+        build:
+            context: .
+            dockerfile: ./frontend/Dockerfile
+            target: development
 
-    extends:
-      file: ../../shared/compose.common-services.yml
-      service: webapp
+        ports:
+            - "8080:5173"
 
-    build: 
-      context: .
-      dockerfile: ./frontend/Dockerfile
-      target: development
+        volumes:
+            - ./frontend:/app/frontend
+            # - ./packages/shared-schema:/app/packages/shared-schema
+            - ./shared:/app/shared
+            - /app/frontend/node_modules
 
-    ports:
-      - "8080:5173"
+        environment:
+            NODE_ENV: development
 
-    volumes:
-      - ./frontend:/app/frontend
-      # - ./packages/shared-schema:/app/packages/shared-schema
-      - /app/frontend/node_modules
+        depends_on:
+            - backend
 
-    environment:
-      NODE_ENV: development
+    backend:
+        extends:
+            file: ../../shared/compose.common-services.yml
+            service: webapp
 
-    depends_on:
-      - backend
+        build:
+            context: .
+            dockerfile: ./backend/Dockerfile
 
-  backend:
+        ports:
+            - "3000:3000"
+            - "5555:5555"
 
-    extends:
-      file: ../../shared/compose.common-services.yml
-      service: webapp
+        volumes:
+            - ./backend:/app/backend
+            # - ./packages/shared-schema:/app/packages/shared-schema
+            - ./shared:/app/shared
+            - /app/backend/node_modules
 
-    build: 
-      context: .
-      dockerfile: ./backend/Dockerfile
+        environment:
+            NODE_ENV: development
+            MYSQL_SERVER: db
 
-    ports:
-      - "3000:3000"
-      - "5555:5555"
+        depends_on:
+            - db
 
-    volumes:
-      - ./backend:/app/backend
-      # - ./packages/shared-schema:/app/packages/shared-schema
-      
-      - /app/backend/node_modules
-
-    environment:
-      NODE_ENV: development
-      MYSQL_SERVER: db
-
-    depends_on:
-      - db
-  
-  db:
-
-    extends:
-      file: ../../shared/compose.common-services.yml
-      service: mysql
+    db:
+        extends:
+            file: ../../shared/compose.common-services.yml
+            service: mysql
 
 networks:
-  app-network:
+    app-network:
 
 volumes:
-  db-data:
-    name: webapp-todo-db
+    db-data:
+        name: webapp-todo-db

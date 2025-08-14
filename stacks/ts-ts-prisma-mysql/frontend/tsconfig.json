@@ -36,6 +36,7 @@
         "baseUrl": "./",
         "paths": {
             "@/*": ["./src/*"],
+            "@shared/*": ["../shared/*"],
             "@test-utils": ["./tests/test-utils"]
             //"@my-package/shared-schema": ["../../packages/shared-schema/src"]
         },
@@ -119,6 +120,6 @@
         // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
         "skipLibCheck": true /* Skip type checking all .d.ts files. */
     },
-    "include": ["src/**/*.ts", "tests/**/*.ts"],
+    "include": ["src/**/*.ts", "tests/**/*.ts", "../shared/**/*.ts"],
     "exclude": ["**/node_modules", "dist", "dist-tsc"]
 }

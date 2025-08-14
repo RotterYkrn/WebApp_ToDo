@@ -1,0 +1,15 @@
+{
+    "name": "@app/shared",
+    "version": "1.0.0",
+    "type": "module",
+    "exports": {
+        "./app-paths": "./dist/app-paths/index.js",
+        "./schemas": "./dist/schemas/index.js"
+    },
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "typescript": "^5.2.2"
+    }
+}
