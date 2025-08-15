@@ -1,3 +1,3 @@
-export * from "./page-paths";
-export * from "./user-paths";
-export * from "./auth-paths";
+export * from "./page-paths.js";
+export * from "./user-paths.js";
+export * from "./auth-paths.js";

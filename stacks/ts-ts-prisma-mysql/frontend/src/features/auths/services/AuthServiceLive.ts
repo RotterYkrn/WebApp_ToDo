@@ -3,7 +3,7 @@ import { ApiService, HttpStatus, parseResponseJson } from "@/shared/http";
 import { AuthService } from "./AuthService";
 import { SessionData } from "../types/SessionData";
 import { SignoutError } from "@/errors";
-import { AuthPath, PagePath } from "@app/shared/app-paths";
+import { ApiAuthPath, PagePath } from "@app/shared/app-paths";
 
 export const processSessionData = (data: SessionData) => Effect.succeed(data.loggedIn);
 
@@ -11,7 +11,7 @@ export const AuthServiceLive = Layer.succeed(AuthService, AuthService.of({
     checkSession: () => pipe(
         Effect.gen(function* () {
             const apiService = yield* ApiService;
-            return yield* apiService.get(AuthPath.CHECK_SESSION, { credentials: "include" });
+            return yield* apiService.get(ApiAuthPath.CHECK_SESSION, { credentials: "include" });
         }),
         parseResponseJson<SessionData>(),
         Effect.flatMap(processSessionData),
@@ -21,7 +21,7 @@ export const AuthServiceLive = Layer.succeed(AuthService, AuthService.of({
     signOutApi: () => pipe(
         Effect.gen(function* () {
             const apiService = yield* ApiService;
-            return yield* apiService.post(AuthPath.SIGN_OUT, { credentials: "include" });
+            return yield* apiService.post(ApiAuthPath.SIGN_OUT, { credentials: "include" });
         }),
         Effect.flatMap((res) => 
             res.status === HttpStatus.NO_CONTENT

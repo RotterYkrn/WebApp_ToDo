@@ -7,6 +7,10 @@ COPY backend/package.json backend/
 
 RUN npm install
 
+COPY ./shared /app/shared
+WORKDIR /app/shared
+RUN npm link
+
 WORKDIR /app/backend
 
 CMD ["npm", "run", "dev"]

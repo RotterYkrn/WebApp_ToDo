@@ -1,14 +1,14 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import { constants } from "http2";
-import { AuthPath, DailyPlanPath, HabitPath, TodoPath, UserSettingPath } from "@app/shared/app-paths";
+import { ApiAuthPath, ApiDailyPlanPath, ApiHabitPath, ApiTodoPath, ApiUserSettingPath } from "@app/shared/app-paths";
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.get(AuthPath.CHECK_SESSION, (req, res) => {
+app.get(ApiAuthPath.CHECK_SESSION, (req, res) => {
     const sessionToken = req.cookies?.sessionToken;
 
     if (sessionToken === "true") {
@@ -18,7 +18,7 @@ app.get(AuthPath.CHECK_SESSION, (req, res) => {
     }
 });
 
-app.post(AuthPath.SIGN_IN, (req, res) => {
+app.post(ApiAuthPath.SIGN_IN, (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -35,13 +35,13 @@ app.post(AuthPath.SIGN_IN, (req, res) => {
     }
 });
 
-app.post(AuthPath.SIGN_OUT, (req, res) => {
+app.post(ApiAuthPath.SIGN_OUT, (req, res) => {
     console.log("signed out");
     res.clearCookie("sessionToken");
     res.status(constants.HTTP_STATUS_NO_CONTENT).end();
 });
 
-app.post(AuthPath.SIGN_UP, (req, res) => {
+app.post(ApiAuthPath.SIGN_UP, (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
@@ -65,15 +65,15 @@ const tasks = [
 	},
 ];
 
-app.get(DailyPlanPath.GET_ALL, (req, res) => {
+app.get(ApiDailyPlanPath.GET_ALL, (req, res) => {
     res.json(tasks);
 });
 
-app.get(TodoPath.GET_ALL, (req, res) => {
+app.get(ApiTodoPath.GET_ALL, (req, res) => {
     res.json(tasks);
 });
 
-app.get(HabitPath.GET_ALL, (req, res) => {
+app.get(ApiHabitPath.GET_ALL, (req, res) => {
     res.json(tasks);
 });
 
@@ -98,11 +98,11 @@ class Settings {
 
 let settings = new Settings(true, "dark", "dummy_username", "dummy_password");
 
-app.get(UserSettingPath.GET, (req, res) => {
+app.get(ApiUserSettingPath.GET, (req, res) => {
     res.json(settings);
 });
 
-app.post(UserSettingPath.UPDATE, (req, res) => {
+app.post(ApiUserSettingPath.UPDATE, (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const notifications = req.body.notifications;

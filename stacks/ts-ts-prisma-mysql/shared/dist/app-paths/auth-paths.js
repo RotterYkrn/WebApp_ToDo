@@ -1,4 +1,4 @@
-export const AuthPath = {
+export const ApiAuthPath = {
     SIGN_UP: "/api/auth/sign-up",
     SIGN_IN: "/api/auth/sign-in",
     SIGN_OUT: "/api/auth/sign-out",

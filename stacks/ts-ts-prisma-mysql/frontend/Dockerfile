@@ -7,6 +7,10 @@ COPY frontend/package.json frontend/
 
 RUN npm install
 
+COPY ./shared /app/shared
+WORKDIR /app/shared
+RUN npm link
+
 WORKDIR /app/frontend
 
 FROM base AS development
