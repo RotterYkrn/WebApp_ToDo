@@ -1,6 +1,8 @@
+const API_AUTH_ROOT = "/api/auth";
 export const ApiAuthPath = {
-    SIGN_UP: "/api/auth/sign-up",
-    SIGN_IN: "/api/auth/sign-in",
-    SIGN_OUT: "/api/auth/sign-out",
-    CHECK_SESSION: "/api/auth/check-session",
+    ROOT: API_AUTH_ROOT,
+    SIGN_UP: `${API_AUTH_ROOT}/sign-up`,
+    SIGN_IN: `${API_AUTH_ROOT}/sign-in`,
+    SIGN_OUT: `${API_AUTH_ROOT}/sign-out`,
+    CHECK_SESSION: `${API_AUTH_ROOT}/check-session`,
 };
