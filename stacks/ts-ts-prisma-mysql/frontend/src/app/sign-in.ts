@@ -1,4 +1,4 @@
-import { ApiAuthPath, PagePath } from "@app/shared/app-paths";
+import { ApiAuthPathFull, PagePath } from "@app/shared/app-paths";
 
 window.addEventListener("DOMContentLoaded", async () => {
 	const form = document.getElementById("form");
@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 			const email = (document.getElementById("email") as HTMLInputElement)?.value ?? null;
 			const password = (document.getElementById("password") as HTMLInputElement)?.value ?? null;
 
-			const res = await fetch(ApiAuthPath.SIGN_IN, {
+			const res = await fetch(ApiAuthPathFull.SIGN_IN, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

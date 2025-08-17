@@ -96,7 +96,7 @@ export const createAddTaskFormView = (path: string): HTMLElement => {
 	const titleElem = document.createElement("button");
 	titleElem.className = "task-title";
 	titleElem.setAttribute("aria-expanded", "false");
-	titleElem.textContent = "新しいタスクを追加"; // タイトル部分に「新しいタスクを追加」
+	titleElem.textContent = "⊕ 新しいタスクを追加"; // タイトル部分に「新しいタスクを追加」
 
 	const detailElem = document.createElement("p");
 	detailElem.className = "task-detail"; // 既存のタスクと同じクラス名
