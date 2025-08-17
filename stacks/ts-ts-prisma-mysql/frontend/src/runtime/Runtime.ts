@@ -1,10 +1,10 @@
 import { ApiLive } from "@/shared/http";
-import { AuthServiceLive } from "@/features/auths/services/AuthServiceLive";
+import { AuthLive } from "@/features/auths/services/AuthLive";
 import { Effect, Layer } from "effect";
 
 export const AppLive = Layer.mergeAll(
     ApiLive,
-    AuthServiceLive
+    AuthLive
 );
 
 export const appRuntime = Effect.runSync(

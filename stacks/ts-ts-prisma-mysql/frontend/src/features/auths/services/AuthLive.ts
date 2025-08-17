@@ -7,7 +7,7 @@ import { ApiAuthPathFull, PagePath } from "@app/shared/app-paths";
 
 export const processSessionData = (data: SessionData) => Effect.succeed(data.loggedIn);
 
-export const AuthServiceLive = Layer.succeed(AuthService, AuthService.of({
+export const AuthLive = Layer.succeed(AuthService, AuthService.of({
     checkSession: () => pipe(
         Effect.gen(function* () {
             const apiService = yield* ApiService;

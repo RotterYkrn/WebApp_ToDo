@@ -1,10 +1,10 @@
 import { Effect, Layer } from "effect";
-import { authenticated, AuthServiceLive } from "@/features/auths";
+import { authenticated, AuthLive } from "@/features/auths";
 import { ApiLive } from "@/shared/http";
 import { initializePageContent } from "@/features/tasks";
 import { ApiDailyPlanPath } from "@app/shared/app-paths";
 
-const AppLive = Layer.merge(ApiLive, AuthServiceLive);
+const AppLive = Layer.merge(ApiLive, AuthLive);
 
 window.addEventListener("DOMContentLoaded", async () =>
 	await Effect.runPromise(
