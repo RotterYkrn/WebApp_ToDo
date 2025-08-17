@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 
-export type Logger = {
+export type ILoggerService = {
   log: (message: string, ...args: unknown[]) => Effect.Effect<void>;
   info: (message: string, ...args: unknown[]) => Effect.Effect<void>;
   warn: (message: string, ...args: unknown[]) => Effect.Effect<void>;
@@ -9,5 +9,5 @@ export type Logger = {
 
 export class LoggerService extends Effect.Tag("LoggerService")<
   LoggerService,
-  Logger
+  ILoggerService
   >() { }
