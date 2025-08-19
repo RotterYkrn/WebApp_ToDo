@@ -1,8 +1,8 @@
-import { runPromiseWithLayer } from "@/shared/utils";
-import { Effect, pipe } from "effect";
+import { ApiLive, ApiService, parseResponseJson } from "@/shared/http";
 import { createFooter } from "@/shared/ui";
-import { ApiService, ApiLive, parseResponseJson } from "@/shared/http";
-import { ApiUserSettingPath } from "@app/shared/app-paths";
+import { runPromiseWithLayer } from "@/shared/utils";
+import { ApiUserSettingPath } from "@app/shared";
+import { Effect, pipe } from "effect";
 
 interface Settings {
     notifications: boolean;

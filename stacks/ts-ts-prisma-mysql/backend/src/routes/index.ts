@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ApiAuthPathLocal, ApiDailyPlanPath, ApiHabitPath, ApiTodoPath, ApiUserPath } from "@app/shared/app-paths";
+import { ApiAuthPathLocal, ApiDailyPlanPath, ApiHabitPath, ApiTodoPath, ApiUserPath } from "@app/shared";
 import authRouter from "./auths.js";
 import userRouter from "./users.js";
 import dailyPlanRouter from "./daily-plans.js";

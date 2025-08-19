@@ -3,8 +3,9 @@
     "version": "1.0.0",
     "type": "module",
     "exports": {
+        ".": "./dist/index.js",
         "./app-paths": "./dist/app-paths/index.js",
-        "./schemas": "./dist/schemas/index.js"
+        "./task-types": "./dist/task-types/index.js"
     },
     "scripts": {
         "build": "tsc"

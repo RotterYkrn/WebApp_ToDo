@@ -1,4 +1,4 @@
-import { ApiAuthPathFull, PagePath } from "@app/shared/app-paths";
+import { ApiAuthPathFull, PagePath } from "@app/shared";
 
 window.addEventListener("DOMContentLoaded", async () => {
 	const form = document.getElementById("form");

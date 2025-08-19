@@ -1,15 +1,22 @@
 import { createButton } from "@/shared/ui";
-import { AuthManager } from "../services/AuthManager";
+import { performSignOut } from "../services/AuthUseCase";
+import { AuthService } from "../services/AuthService";
+import { ApiService } from "@/shared/http";
+import { IAppManager } from "@/shared/app";
+
+type AuthManagerServices = AuthService | ApiService;
 
 export class AuthComponent {
     constructor(
-        private readonly authManager: AuthManager
+        private readonly appManager: IAppManager<AuthManagerServices>
     ) { }
 
     public readonly createSignoutButton = (): HTMLButtonElement =>
         createButton(
-            "signout-button",
-            "サインアウト",
-            this.authManager.performSignOut
+            {
+                id: "signout-button",
+                textContent: "サインアウト",
+            },
+            () => this.appManager.runPromise(performSignOut())
         );
 }

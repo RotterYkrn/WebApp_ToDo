@@ -1,8 +1,8 @@
-import { Effect, Layer } from "effect";
 import { authenticated, AuthLive } from "@/features/auths";
-import { ApiLive } from "@/shared/http";
 import { initializePageContent } from "@/features/tasks";
-import { ApiHabitPath } from "@app/shared/app-paths";
+import { ApiLive } from "@/shared/http";
+import { ApiHabitPath } from "@app/shared";
+import { Effect, Layer } from "effect";
 
 const AppLive = Layer.merge(ApiLive, AuthLive);
 

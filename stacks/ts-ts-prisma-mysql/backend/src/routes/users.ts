@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ApiUserSettingPath } from "@app/shared/app-paths";
+import { ApiUserSettingPath } from "@app/shared";
 
 const router = Router();
 

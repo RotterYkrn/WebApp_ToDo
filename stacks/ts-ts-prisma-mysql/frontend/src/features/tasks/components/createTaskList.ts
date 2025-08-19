@@ -4,7 +4,6 @@ import { createFooter } from "@/shared/ui";
 import { AuthComponent, AuthLive } from "@/features/auths";
 import { ConsoleLoggerLive } from "@/shared/logger";
 import { AppManager } from "@/app/AppManager";
-import { AuthManager } from "@/features/auths/services/AuthManager";
 import { AppError } from "@/errors"; // AppErrorをインポート
 
 export interface Task {
@@ -20,8 +19,7 @@ const AppLive = Layer.mergeAll(
 
 export const initializePageContent = (path: string) => Effect.gen(function* () {
 	const appManager = new AppManager(AppLive);
-	const authManager = new AuthManager(appManager);
-	const authComponent = new AuthComponent(authManager);
+	const authComponent = new AuthComponent(appManager);
 
 	yield* Effect.sync(() =>
 		document.body.style.display = "block"

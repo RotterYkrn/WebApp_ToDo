@@ -2,7 +2,7 @@ import { Effect, Layer } from "effect";
 import { authenticated, AuthLive } from "@/features/auths";
 import { ApiLive } from "@/shared/http";
 import { initializePageContent } from "@/features/tasks";
-import { ApiTodoPath } from "@app/shared/app-paths";
+import { ApiTodoPath } from "@app/shared";
 
 const AppLive = Layer.merge(ApiLive, AuthLive);
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ApiAuthPathLocal } from "@app/shared/app-paths";
+import { ApiAuthPathLocal } from "@app/shared";
 import { constants } from "http2";
 
 const router = Router();

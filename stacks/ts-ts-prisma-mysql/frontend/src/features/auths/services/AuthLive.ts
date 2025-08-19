@@ -3,7 +3,7 @@ import { ApiService, HttpStatus, parseResponseJson } from "@/shared/http";
 import { AuthService } from "./AuthService";
 import { SessionData } from "../types/SessionData";
 import { SignoutError } from "@/errors";
-import { ApiAuthPathFull, PagePath } from "@app/shared/app-paths";
+import { ApiAuthPathFull, PagePath } from "@app/shared";
 
 export const processSessionData = (data: SessionData) => Effect.succeed(data.loggedIn);
 
