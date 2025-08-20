@@ -1,10 +1,10 @@
-import { Effect, Layer, pipe } from "effect"; // "effect/index" から "effect" に変更
-import { ApiLive, ApiService, parseResponseJson } from "@/shared/http";
-import { createFooter } from "@/shared/ui";
-import { AuthComponent, AuthLive } from "@/features/auths";
-import { ConsoleLoggerLive } from "@/shared/logger";
 import { AppManager } from "@/app/AppManager";
 import { AppError } from "@/errors"; // AppErrorをインポート
+import { AuthLive, createSignoutButton } from "@/features/auths";
+import { ApiLive, ApiService, parseResponseJson } from "@/shared/http";
+import { ConsoleLoggerLive } from "@/shared/logger";
+import { createFooter } from "@/shared/ui";
+import { Effect, Layer, pipe } from "effect"; // "effect/index" から "effect" に変更
 
 export interface Task {
 	title: string;
@@ -19,14 +19,13 @@ const AppLive = Layer.mergeAll(
 
 export const initializePageContent = (path: string) => Effect.gen(function* () {
 	const appManager = new AppManager(AppLive);
-	const authComponent = new AuthComponent(appManager);
 
 	yield* Effect.sync(() =>
 		document.body.style.display = "block"
 	);
 
 	yield* Effect.sync(() =>
-		document.body.appendChild(authComponent.createSignoutButton())
+		document.body.appendChild(createSignoutButton(appManager))
 	);
 
 	yield* Effect.sync(() =>
