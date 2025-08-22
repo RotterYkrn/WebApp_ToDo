@@ -1,2 +1,3 @@
 export { createButton } from "./button";
-export { createFooter } from "./footer";
+export { buildFooter } from "./footer";
+

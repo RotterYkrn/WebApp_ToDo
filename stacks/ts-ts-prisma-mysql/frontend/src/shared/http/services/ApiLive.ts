@@ -1,7 +1,8 @@
-import { Effect, Layer } from "effect";
-import { ApiService } from "@/shared/http";
 import { NetworkError } from "@/errors";
+import { ApiService } from "@/shared/http";
+import { Effect, Layer } from "effect";
 import { classifyHttpError } from "../helpers/classifyHttpError";
+import { PostOptionType } from "../types/api-types";
 
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
     get: (path: string, options?: RequestInit) => Effect.tryPromise({
@@ -12,8 +13,15 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
             originalError: e
         })
     }).pipe(handleResponse(path, "HTTP error during GET")),
-    post: (path: string, options?: RequestInit) => Effect.tryPromise({
-        try: () => fetch(path, { ...options, method: "POST" }),
+    post: (path: string, options?: PostOptionType) => Effect.tryPromise({
+        try: () => fetch(path, {
+            ...options?.options,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(options?.body)
+        }),
         catch: (e) => new NetworkError({
             path,
             message: "Network error during POST",

@@ -6,3 +6,8 @@ export var TaskType;
     TaskType[TaskType["HABIT"] = 2] = "HABIT";
 })(TaskType || (TaskType = {}));
 ;
+export const TaskApiPathMap = {
+    [TaskType.DAILY_PLAN]: ApiDailyPlanPath,
+    [TaskType.TODO]: ApiTodoPath,
+    [TaskType.HABIT]: ApiHabitPath,
+};

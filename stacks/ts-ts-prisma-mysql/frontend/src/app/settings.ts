@@ -1,5 +1,5 @@
 import { ApiLive, ApiService, parseResponseJson } from "@/shared/http";
-import { createFooter } from "@/shared/ui";
+import { buildFooter } from "@/shared/ui";
 import { runPromiseWithLayer } from "@/shared/utils";
 import { ApiUserSettingPath } from "@app/shared";
 import { Effect, pipe } from "effect";
@@ -39,7 +39,7 @@ const viewSettings = () => pipe(
 window.addEventListener("DOMContentLoaded", async () => {
     await runPromiseWithLayer(viewSettings(), ApiLive);
 
-	document.body.appendChild(createFooter());
+	document.body.appendChild(Effect.runSync(buildFooter()));
 
     const form = document.getElementById("form");
 

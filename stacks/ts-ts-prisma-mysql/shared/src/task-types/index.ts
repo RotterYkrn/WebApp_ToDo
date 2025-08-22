@@ -17,8 +17,8 @@ export type TaskResponseMap = {
     [TaskType.HABIT]: Task;
 };
 
-export type TaskApiPathMap = {
-    [TaskType.DAILY_PLAN]: typeof ApiDailyPlanPath;
-    [TaskType.TODO]: typeof ApiTodoPath;
-    [TaskType.HABIT]: typeof ApiHabitPath;
+export const TaskApiPathMap = {
+    [TaskType.DAILY_PLAN]: ApiDailyPlanPath,
+    [TaskType.TODO]: ApiTodoPath,
+    [TaskType.HABIT]: ApiHabitPath,
 };

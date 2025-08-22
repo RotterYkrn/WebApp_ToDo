@@ -1,4 +1,6 @@
-export const createFooter = (): HTMLElement => {
+import { Effect } from "effect";
+
+export const buildFooter = (): Effect.Effect<HTMLElement> => {
     const footer = document.createElement('footer');
 
     const nav = document.createElement('p');
@@ -23,5 +25,5 @@ export const createFooter = (): HTMLElement => {
 
     footer.append(nav, copy);
 
-    return footer;
+    return Effect.succeed(footer);
 };

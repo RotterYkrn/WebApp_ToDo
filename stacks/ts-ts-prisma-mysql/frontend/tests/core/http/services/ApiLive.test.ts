@@ -1,11 +1,11 @@
-import { Effect, pipe } from "effect";
-import { describe, it, expect, vi, beforeEach, type Mock } from "@effect/vitest";
-import { ApiLive, handleResponse } from "@/shared/http/services/ApiLive";
-import { ApiService } from "@/shared/http";
 import {
     HttpError,
 } from "@/errors";
+import { ApiService } from "@/shared/http";
+import { ApiLive, handleResponse } from "@/shared/http/services/ApiLive";
 import { HttpStatus } from "@/shared/http/types/HttpStatus";
+import { beforeEach, describe, expect, it, vi, type Mock } from "@effect/vitest";
+import { Effect, pipe } from "effect";
 import { validateAppError } from "tests/test-utils";
 
 // global.fetch のモック
@@ -24,7 +24,7 @@ const executeApi = (method: "get" | "post", path: string, requestBody?: unknown)
         Effect.flatMap(api => 
             method === "get"
                 ? api.get(path)
-                : api.post(path, { body: JSON.stringify(requestBody) })
+                : api.post(path, { body: requestBody })
         ),
         Effect.provide(ApiLive),
     );
