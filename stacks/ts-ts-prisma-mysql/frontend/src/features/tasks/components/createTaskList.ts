@@ -25,7 +25,7 @@ export const initializePageContent = (_: string) => Effect.gen(function* () {
 		document.body.style.display = "block"
 	);
 
-	const signOutButton = yield* authComponent.renderSignoutButton();
+	const signOutButton = yield* authComponent.buildSignOutButton();
 	yield* Effect.sync(() => {
 		document.body.appendChild(signOutButton);
 	});

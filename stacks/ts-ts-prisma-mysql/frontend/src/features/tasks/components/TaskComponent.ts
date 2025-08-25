@@ -10,12 +10,15 @@ export class TaskComponent {
         private appManager: IAppManager<TaskService | ApiService>
     ) { }
 
-    public readonly buildTaskGroup = <T extends TaskType>(taskType: TaskType, tasks: TaskResponseMap[T][]): Effect.Effect<HTMLDivElement> => {
+    public readonly buildTaskGroup = <T extends TaskType>(
+        taskType: TaskType,
+        tasks: TaskResponseMap[T][]
+    ): Effect.Effect<HTMLDivElement> => {
         const self = this;
         return Effect.gen(function* () {
             const taskListGroup = document.createElement("div");
-            const taskList = yield* self.renderTaskList(tasks);
-            const addTaskForm = yield* self.renderAddTaskForm(taskType);
+            const taskList = yield* self.buildTaskList(tasks);
+            const addTaskForm = yield* self.buildAddTaskForm(taskType);
 
             taskListGroup.append(
                 ...taskList,
@@ -26,7 +29,7 @@ export class TaskComponent {
         });
     }
 
-    private readonly renderTaskList = (tasks: TaskResponseMap[TaskType][]): Effect.Effect<HTMLElement[]> =>
+    private readonly buildTaskList = (tasks: TaskResponseMap[TaskType][]): Effect.Effect<HTMLElement[]> =>
         Effect.succeed(tasks.map(task => {
             const taskElem = document.createElement("article");
             taskElem.className = "task";
@@ -50,7 +53,7 @@ export class TaskComponent {
             return taskElem;
         }));
 
-    private readonly renderAddTaskForm = (taskType: TaskType): Effect.Effect<HTMLElement> => {
+    private readonly buildAddTaskForm = (taskType: TaskType): Effect.Effect<HTMLElement> => {
         const taskElem = document.createElement("article");
         taskElem.className = "task"; // 既存のタスクと同じクラス名
 

@@ -10,7 +10,7 @@ export class AuthComponent {
         private appManager: IAppManager<AuthService | ApiService>
     ) { }
 
-    public readonly renderSignoutButton = (): Effect.Effect<HTMLButtonElement> =>
+    public readonly buildSignOutButton = (): Effect.Effect<HTMLButtonElement> =>
         createButton(
             {
                 id: "sign-out-button",
