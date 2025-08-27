@@ -4,13 +4,17 @@
     "type": "module",
     "exports": {
         ".": "./dist/index.js",
-        "./app-paths": "./dist/app-paths/index.js",
-        "./task-types": "./dist/task-types/index.js"
+        "./paths": "./dist/paths/index.js",
+        "./schemas": "./dist/schemas/index.js",
+        "./types": "./dist/types/index.js"
     },
     "scripts": {
         "build": "tsc"
     },
     "devDependencies": {
         "typescript": "^5.9.2"
+    },
+    "dependencies": {
+        "effect": "^3.17.9"
     }
 }

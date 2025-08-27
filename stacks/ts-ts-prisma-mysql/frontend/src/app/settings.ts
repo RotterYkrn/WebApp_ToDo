@@ -1,6 +1,6 @@
-import { ApiLive, ApiService, parseResponseJson } from "@/shared/http";
+import { ApiLive, ApiService } from "@/shared/http";
 import { buildFooter } from "@/shared/ui";
-import { runPromiseWithLayer } from "@/shared/utils";
+import { parseResponseJson, runPromiseWithLayer } from "@/shared/utils";
 import { ApiUserSettingPath } from "@app/shared";
 import { Effect, pipe } from "effect";
 

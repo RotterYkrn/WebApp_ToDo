@@ -1,8 +1,8 @@
 import { AppError } from "@/errors";
 import { IAppManager } from "@/shared/app";
 import { ApiService } from "@/shared/http";
-import { TaskResponseMap, TaskType } from "@app/shared";
-import { Effect, pipe } from "effect";
+import { TaskSchemaMap, TaskType } from "@app/shared";
+import { Chunk, Effect, pipe } from "effect";
 import { TaskService } from "../services/TaskService";
 
 export class TaskComponent {
@@ -12,7 +12,7 @@ export class TaskComponent {
 
     public readonly buildTaskGroup = <T extends TaskType>(
         taskType: TaskType,
-        tasks: TaskResponseMap[T][]
+        tasks: TaskSchemaMap[T]["ChunkType"]
     ): Effect.Effect<HTMLDivElement> => {
         const self = this;
         return Effect.gen(function* () {
@@ -29,8 +29,8 @@ export class TaskComponent {
         });
     }
 
-    private readonly buildTaskList = (tasks: TaskResponseMap[TaskType][]): Effect.Effect<HTMLElement[]> =>
-        Effect.succeed(tasks.map(task => {
+    private readonly buildTaskList = (tasks: TaskSchemaMap[TaskType]["ChunkType"]): Effect.Effect<Chunk.Chunk<HTMLElement>> =>
+        Effect.succeed(Chunk.map(tasks, task => {
             const taskElem = document.createElement("article");
             taskElem.className = "task";
 

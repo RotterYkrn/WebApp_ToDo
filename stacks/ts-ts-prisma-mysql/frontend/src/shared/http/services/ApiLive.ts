@@ -1,8 +1,8 @@
 import { NetworkError } from "@/errors";
-import { ApiService } from "@/shared/http";
 import { Effect, Layer } from "effect";
 import { classifyHttpError } from "../helpers/classifyHttpError";
 import { PostOptionType } from "../types/api-types";
+import { ApiService } from "./ApiService";
 
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
     get: (path: string, options?: RequestInit) => Effect.tryPromise({

@@ -1,5 +1,6 @@
 import { SignoutError } from "@/errors";
-import { ApiService, HttpStatus, parseResponseJson } from "@/shared/http";
+import { ApiService, HttpStatus } from "@/shared/http";
+import { parseResponseJson } from "@/shared/utils";
 import { ApiAuthPathFull, PagePath } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
 import { SessionData } from "../types/SessionData";

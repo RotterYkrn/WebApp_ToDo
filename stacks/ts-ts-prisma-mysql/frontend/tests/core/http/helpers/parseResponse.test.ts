@@ -1,6 +1,6 @@
+import { parseResponseJson } from "@/shared/utils";
+import { describe, expect, it } from "@effect/vitest";
 import { Cause, Effect, Exit } from "effect";
-import { describe, it, expect } from "@effect/vitest";
-import { parseResponseJson } from "@/shared/http/helpers/parseResponse";
 import { validateAppError } from "tests/test-utils";
 
 describe("parseResponseJson", () => {

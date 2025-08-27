@@ -11,9 +11,14 @@ export class TimeoutError extends Data.TaggedError("TimeoutError")<{
     readonly message: string;
 }> { }
 
-export class ParseJsonError extends Data.TaggedError("ParseJsonError")<{
+export class ResponseJsonError extends Data.TaggedError("ResponseJsonError")<{
     readonly message: string;
-    readonly responseJson: unknown;
+    readonly originalError: unknown;
+}> { }
+
+export class ParseSchemaError extends Data.TaggedError("ParseSchemaError")<{
+    readonly message: string;
+    readonly failedObject: unknown;
     readonly originalError: unknown;
 }> { }
 
@@ -25,5 +30,6 @@ export class UnknownAppError extends Data.TaggedError("UnknownAppError")<{
 export type OtherError =
     | NetworkError
     | TimeoutError
-    | ParseJsonError
+    | ResponseJsonError
+    | ParseSchemaError
     | UnknownAppError;
