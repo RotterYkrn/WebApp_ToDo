@@ -1,10 +1,10 @@
 export declare enum TaskType {
-    DAILY_PLAN = 0,
-    TODO = 1,
-    HABIT = 2
+    DAILY_PLAN = "daily-plan",
+    TODO = "todo",
+    HABIT = "habit"
 }
 export declare const TaskSchemaMap: {
-    0: {
+    "daily-plan": {
         Schema: import("effect/Schema").Struct<{
             title: typeof import("effect/Schema").String;
             detail: typeof import("effect/Schema").String;
@@ -16,7 +16,7 @@ export declare const TaskSchemaMap: {
         Type: import("../schemas/task.js").Task_;
         ChunkType: import("../schemas/task.js").TaskChunk_;
     };
-    1: {
+    todo: {
         Schema: import("effect/Schema").Struct<{
             title: typeof import("effect/Schema").String;
             detail: typeof import("effect/Schema").String;
@@ -28,7 +28,7 @@ export declare const TaskSchemaMap: {
         Type: import("../schemas/task.js").Task_;
         ChunkType: import("../schemas/task.js").TaskChunk_;
     };
-    2: {
+    habit: {
         Schema: import("effect/Schema").Struct<{
             title: typeof import("effect/Schema").String;
             detail: typeof import("effect/Schema").String;
@@ -45,7 +45,7 @@ export declare const TaskSchemaMap: {
 };
 export type TaskSchemaMap = typeof TaskSchemaMap;
 export declare const TaskApiPathMap: {
-    0: {
+    "daily-plan": {
         readonly ROOT: "/api/daily-plans";
         readonly GET_ALL: "/api/daily-plans";
         readonly CREATE: "/api/daily-plans";
@@ -53,7 +53,7 @@ export declare const TaskApiPathMap: {
         readonly UPDATE: (itemId: import("../paths/types.js").Id) => `${"/api/daily-plans"}/${import("../paths/types.js").Id}`;
         readonly DELETE: (itemId: import("../paths/types.js").Id) => `${"/api/daily-plans"}/${import("../paths/types.js").Id}`;
     };
-    1: {
+    todo: {
         readonly ROOT: "/api/todos";
         readonly GET_ALL: "/api/todos";
         readonly CREATE: "/api/todos";
@@ -61,7 +61,7 @@ export declare const TaskApiPathMap: {
         readonly UPDATE: (itemId: import("../paths/types.js").Id) => `${"/api/todos"}/${import("../paths/types.js").Id}`;
         readonly DELETE: (itemId: import("../paths/types.js").Id) => `${"/api/todos"}/${import("../paths/types.js").Id}`;
     };
-    2: {
+    habit: {
         readonly ROOT: "/api/habits";
         readonly GET_ALL: "/api/habits";
         readonly CREATE: "/api/habits";

@@ -2,7 +2,7 @@ import { AppManager } from "@/app/AppManager";
 import { AuthComponent, AuthLive } from "@/features/auths";
 import { ApiLive } from "@/shared/http";
 import { ConsoleLoggerLive } from "@/shared/logger";
-import { buildFooter } from "@/shared/ui";
+import { buildFooter, buildHeader } from "@/shared/ui";
 import { TaskType } from "@app/shared";
 import { Effect, Layer } from "effect"; // "effect/index" から "effect" に変更
 import { TaskLive } from "../services/TaskLive";
@@ -16,7 +16,7 @@ const AppLive = Layer.mergeAll(
 	ConsoleLoggerLive
 );
 
-export const initializePageContent = (_: string) => Effect.gen(function* () {
+export const initializePageContent = (_: TaskType) => Effect.gen(function* () {
 	const appManager = new AppManager(AppLive);
 	const authComponent = new AuthComponent(appManager);
 	const taskComponent = new TaskComponent(appManager);
@@ -25,25 +25,22 @@ export const initializePageContent = (_: string) => Effect.gen(function* () {
 		document.body.style.display = "block"
 	);
 
-	const signOutButton = yield* authComponent.buildSignOutButton();
-	yield* Effect.sync(() => {
-		document.body.appendChild(signOutButton);
-	});
-
-	yield* Effect.sync(() => {
-		const footer = Effect.runSync(buildFooter());
-		document.body.appendChild(footer);
-	});
-
-	const taskListElement = yield* Effect.sync(() => 
-		document.getElementById("task-list")
+	const pageContent = document.createElement("div");
+	pageContent.id = "page-content";
+	pageContent.append(
+		yield* buildHeader(),
+		yield* taskComponent.buildTaskSection(
+			TaskType.DAILY_PLAN,
+			yield* getAllTasks(TaskType.DAILY_PLAN)
+		),
+		yield* authComponent.buildSignOutButton(),
+		yield* buildFooter()
 	);
 
-	if (taskListElement) {
-		const tasks = yield* getAllTasks(TaskType.DAILY_PLAN);
-		const taskList = yield* taskComponent.buildTaskGroup(TaskType.DAILY_PLAN, tasks);
-		yield* Effect.sync(() => {
-			taskListElement.append(taskList);
-		});
-	}
+	yield* Effect.sync(() => {
+		const appRoot = document.getElementById("app-root");
+		if (appRoot) {
+			appRoot.append(pageContent);
+		}
+	});
 });

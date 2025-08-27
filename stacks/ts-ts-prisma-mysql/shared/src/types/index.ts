@@ -2,9 +2,9 @@ import { ApiDailyPlanPath, ApiHabitPath, ApiTodoPath } from "../paths/index.js";
 import { Task, TaskB } from "../schemas/task.js";
 
 export enum TaskType {
-    DAILY_PLAN,
-    TODO,
-    HABIT,
+    DAILY_PLAN = "daily-plan",
+    TODO = "todo",
+    HABIT = "habit",
 };
 
 export const TaskSchemaMap = {

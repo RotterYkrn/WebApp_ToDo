@@ -10,16 +10,52 @@ export class TaskComponent {
         private appManager: IAppManager<TaskService | ApiService>
     ) { }
 
-    public readonly buildTaskGroup = <T extends TaskType>(
-        taskType: TaskType,
+    public readonly buildTaskSection = <T extends TaskType>(
+        taskType: T,
+        tasks: TaskSchemaMap[T]["ChunkType"]
+    ): Effect.Effect<HTMLElement> => {
+        const self = this;
+        return Effect.gen(function* () {
+            const taskSection = document.createElement("section");
+            taskSection.id = taskType;
+
+            const title = yield* self.buildSectionTitle(taskType);
+            const taskGroup = yield* self.buildTaskGroup(taskType, tasks);
+            taskSection.append(
+                title,
+                taskGroup
+            );
+
+            return taskSection;
+        });
+    }
+
+    private readonly buildSectionTitle = (taskType: TaskType): Effect.Effect<HTMLHeadingElement> => {
+        const title = document.createElement("h2");
+        switch (taskType) {
+            case TaskType.DAILY_PLAN:
+                title.textContent = "今日の予定";
+                break;
+            case TaskType.TODO:
+                title.textContent = "TODO リスト";
+                break;
+            case TaskType.HABIT:
+                title.textContent = "習慣リスト";
+        }
+        return Effect.succeed(title);
+    };
+
+    private readonly buildTaskGroup = <T extends TaskType>(
+        taskType: T,
         tasks: TaskSchemaMap[T]["ChunkType"]
     ): Effect.Effect<HTMLDivElement> => {
         const self = this;
         return Effect.gen(function* () {
             const taskListGroup = document.createElement("div");
+            taskListGroup.id = "task-list";
+
             const taskList = yield* self.buildTaskList(tasks);
             const addTaskForm = yield* self.buildAddTaskForm(taskType);
-
             taskListGroup.append(
                 ...taskList,
                 addTaskForm

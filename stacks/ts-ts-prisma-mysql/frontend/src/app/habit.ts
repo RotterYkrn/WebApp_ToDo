@@ -1,13 +1,10 @@
-import { authenticated, AuthLive } from "@/features/auths";
+import { authenticated } from "@/features/auths";
 import { initializePageContent } from "@/features/tasks";
-import { ApiLive } from "@/shared/http";
-import { ApiHabitPath } from "@app/shared";
-import { Effect, Layer } from "effect";
-
-const AppLive = Layer.merge(ApiLive, AuthLive);
+import { TaskType } from "@app/shared";
+import { appManager } from "./app";
 
 window.addEventListener("DOMContentLoaded", async () =>
-	await Effect.runPromise(
-		Effect.provide(authenticated(initializePageContent(ApiHabitPath.GET_ALL)), AppLive)
+	await appManager.runPromise(
+		authenticated(initializePageContent(TaskType.HABIT))
 	).catch((e) => console.error(e))
 );

@@ -1,14 +1,10 @@
-import { authenticated, AuthLive } from "@/features/auths";
+import { authenticated } from "@/features/auths";
 import { initializePageContent } from "@/features/tasks";
-import { ApiLive } from "@/shared/http";
-import { ApiDailyPlanPath } from "@app/shared";
-import { Layer } from "effect";
+import { TaskType } from "@app/shared";
 import { appManager } from "./app";
-
-const AppLive = Layer.merge(ApiLive, AuthLive);
 
 window.addEventListener("DOMContentLoaded", async () =>
 	await appManager.runPromise(
-		authenticated(initializePageContent(ApiDailyPlanPath.GET_ALL))
+		authenticated(initializePageContent(TaskType.DAILY_PLAN))
 	).catch((e) => console.error(e))
 );

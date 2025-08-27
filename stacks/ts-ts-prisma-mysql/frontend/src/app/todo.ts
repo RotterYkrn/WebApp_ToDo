@@ -1,13 +1,10 @@
-import { Effect, Layer } from "effect";
-import { authenticated, AuthLive } from "@/features/auths";
-import { ApiLive } from "@/shared/http";
+import { authenticated } from "@/features/auths";
 import { initializePageContent } from "@/features/tasks";
-import { ApiTodoPath } from "@app/shared";
-
-const AppLive = Layer.merge(ApiLive, AuthLive);
+import { TaskType } from "@app/shared";
+import { appManager } from "./app";
 
 window.addEventListener("DOMContentLoaded", async () =>
-	await Effect.runPromise(
-		Effect.provide(authenticated(initializePageContent(ApiTodoPath.GET_ALL)), AppLive)
+	await appManager.runPromise(
+		authenticated(initializePageContent(TaskType.TODO))
 	).catch((e) => console.error(e))
 );
