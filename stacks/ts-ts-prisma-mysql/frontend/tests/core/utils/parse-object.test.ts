@@ -81,17 +81,12 @@ describe("parseResponseJson", () => {
 });
 
 describe("parseObjectToSchema", () => {
-    interface ParseType {
-        data: string
-        option?: string
-    }
-
     const ParseSchema = Schema.Struct({
         data: Schema.String,
-        option: Schema.optional(Schema.String), // Schema.Optional を Schema.optional に修正
+        option: Schema.optional(Schema.String),
     });
 
-    const testParseSucceed = (data: ParseType) =>
+    const testParseSucceed = (data: unknown) =>
         Effect.gen(function* () {
             const objEffect = Effect.succeed(data);
 
@@ -144,7 +139,7 @@ describe("parseObjectToSchema", () => {
     it.effect("失敗、受け取った Effect が既に失敗している", () =>
         Effect.gen(function* () {
             const error = new Error("Validation Error");
-            // parseObjectToSchema expects AppError, so we wrap the error in ParseSchemaError
+            
             const objEffect = Effect.fail(new UnknownAppError({
                 message: error.message,
                 originalError: error
