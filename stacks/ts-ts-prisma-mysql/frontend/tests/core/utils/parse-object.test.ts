@@ -1,5 +1,5 @@
 import { UnknownAppError } from "@/errors/types/OtherError"; // ParseSchemaErrorをOtherErrorからインポート
-import { parseObjectToSchema, parseResponseJson } from "@/shared/utils";
+import { parseResponseJson, parseToSchema } from "@/shared/utils";
 import { describe, expect, it } from "@effect/vitest";
 import { Cause, Effect, Exit, Schema } from "effect";
 import { validateAppError } from "tests/test-utils";
@@ -80,7 +80,7 @@ describe("parseResponseJson", () => {
     );
 });
 
-describe("parseObjectToSchema", () => {
+describe("parseToSchema", () => {
     const ParseSchema = Schema.Struct({
         data: Schema.String,
         option: Schema.optional(Schema.String),
@@ -91,7 +91,7 @@ describe("parseObjectToSchema", () => {
             const objEffect = Effect.succeed(data);
 
             const result = yield* objEffect.pipe(
-                parseObjectToSchema(ParseSchema)
+                parseToSchema(ParseSchema)
             );
 
             expect(result).toStrictEqual(data);
@@ -102,7 +102,7 @@ describe("parseObjectToSchema", () => {
             const objEffect = Effect.succeed(data);
 
             const result = yield* objEffect.pipe(
-                parseObjectToSchema(ParseSchema),
+                parseToSchema(ParseSchema),
                 Effect.exit,
             );
 
@@ -146,7 +146,7 @@ describe("parseObjectToSchema", () => {
             }));
 
             const result = yield* objEffect.pipe(
-                parseObjectToSchema(ParseSchema),
+                parseToSchema(ParseSchema),
                 Effect.exit,
             );
 

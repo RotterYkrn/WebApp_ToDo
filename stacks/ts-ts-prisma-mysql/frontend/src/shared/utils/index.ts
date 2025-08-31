@@ -1,3 +1,3 @@
-export { parseObjectToSchema, parseResponseJson } from "./parse-object";
+export { parseResponseJson, parseToSchema } from "./parse-object";
 export { runPromiseWithLayer } from "./runner";
 

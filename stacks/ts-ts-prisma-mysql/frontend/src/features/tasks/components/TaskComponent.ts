@@ -20,7 +20,7 @@ export class TaskComponent {
             taskSection.id = taskType;
 
             const title = yield* self.buildSectionTitle(taskType);
-            const taskGroup = yield* self.buildTaskGroup(taskType, tasks);
+            const taskGroup = yield* self.buildTaskListGroup(taskType, tasks);
             taskSection.append(
                 title,
                 taskGroup
@@ -45,7 +45,7 @@ export class TaskComponent {
         return Effect.succeed(title);
     };
 
-    private readonly buildTaskGroup = <T extends TaskType>(
+    private readonly buildTaskListGroup = <T extends TaskType>(
         taskType: T,
         tasks: TaskSchemaMap[T]["ChunkType"]
     ): Effect.Effect<HTMLDivElement> => {
@@ -147,7 +147,7 @@ export class TaskComponent {
                                 taskListElement.innerHTML = ""; // 既存のリストをクリア
                                 // Effect.runPromise(
                                 //     pipe(
-                                //         buildTaskGroup(taskType),
+                                //         buildTaskListGroup(taskType),
                                 //         Effect.provide(AppLive),
                                 //         Effect.mapError((e): AppError => e as AppError)
                                 //     )

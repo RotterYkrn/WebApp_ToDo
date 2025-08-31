@@ -1,19 +1,23 @@
-import { NetworkError } from "@/errors";
+import { AppError, NetworkError, UnknownHttpError } from "@/errors";
 import { Effect, Layer } from "effect";
 import { classifyHttpError } from "../helpers/classifyHttpError";
 import { PostOptionType } from "../types/api-types";
+import { HttpStatus } from "../types/HttpStatus";
 import { ApiService } from "./ApiService";
 
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
-    get: (path: string, options?: RequestInit) => Effect.tryPromise({
+    get: (path: string, expectedStatus: HttpStatus, options?: RequestInit) => Effect.tryPromise({
         try: () => fetch(path, { ...options, method: "GET" }),
         catch: (e) => new NetworkError({
             path,
             message: "Network error during GET",
             originalError: e
         })
-    }).pipe(handleResponse(path, "HTTP error during GET")),
-    post: (path: string, options?: PostOptionType) => Effect.tryPromise({
+    }).pipe(
+        handleHttpError(path, "HTTP error during GET"),
+        ensureHttpStatus(expectedStatus, path)
+    ),
+    post: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => Effect.tryPromise({
         try: () => fetch(path, {
             ...options?.options,
             method: "POST",
@@ -27,10 +31,18 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
             message: "Network error during POST",
             originalError: e
         })
-    }).pipe(handleResponse(path, "HTTP error during POST")),
+    }).pipe(
+        handleHttpError(path, "HTTP error during POST"),
+        ensureHttpStatus(expectedStatus, path)
+    ),
 }));
 
-export const handleResponse = (path: string, message: string) =>
+export const handleHttpError = (
+    path: string,
+    message: string
+): <R>(
+    self: Effect.Effect<Response, AppError, R>
+) => Effect.Effect<Response, AppError, R> =>
     Effect.flatMap((res: Response) =>
         res.ok
             ? Effect.succeed(res)
@@ -38,5 +50,18 @@ export const handleResponse = (path: string, message: string) =>
                 path,
                 message,
                 responseBody: res.body,
+            }))
+    );
+
+export const ensureHttpStatus = (expectedStatus: HttpStatus, path: string): <R>(
+    self: Effect.Effect<Response, AppError, R>
+) => Effect.Effect<Response, AppError, R> =>
+    Effect.flatMap((res) =>
+        res.status === expectedStatus
+            ? Effect.succeed(res)
+            : Effect.fail(new UnknownHttpError({
+                message: `Unexpected status (expected ${expectedStatus})`,
+                path,
+                status: res.status,
             }))
     );

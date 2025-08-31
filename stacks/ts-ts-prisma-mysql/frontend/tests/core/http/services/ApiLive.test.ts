@@ -2,7 +2,7 @@ import {
     HttpError,
 } from "@/errors";
 import { ApiService } from "@/shared/http";
-import { ApiLive, handleResponse } from "@/shared/http/services/ApiLive";
+import { ApiLive, handleHttpError } from "@/shared/http/services/ApiLive";
 import { HttpStatus } from "@/shared/http/types/HttpStatus";
 import { beforeEach, describe, expect, it, vi, type Mock } from "@effect/vitest";
 import { Effect, pipe } from "effect";
@@ -183,14 +183,14 @@ describe("ApiLive", () => {
     });
 });
 
-describe("handleResponse", () => {
+describe("handleHttpError", () => {
     it.effect("成功、レスポンスをそのまま返す", () =>
         Effect.gen(function* () {
             const response = new Response("{}", { status: HttpStatus.OK });
 
             const result = yield* pipe(
                 Effect.succeed(response),
-                handleResponse("/test/handle-response", "Error"),
+                handleHttpError("/test/handle-response", "Error"),
             );
 
             expect(result).toBe(response);
@@ -205,7 +205,7 @@ describe("handleResponse", () => {
 
             const result = yield* Effect.exit(pipe(
                 Effect.succeed(response),
-                handleResponse(path, message),
+                handleHttpError(path, message),
             ));
 
             validateAppError(
@@ -227,7 +227,7 @@ describe("handleResponse", () => {
 
             const result = yield* Effect.exit(pipe(
                 Effect.succeed(response),
-                handleResponse(path, message),
+                handleHttpError(path, message),
             ));
 
             validateAppError(
