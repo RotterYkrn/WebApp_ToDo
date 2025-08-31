@@ -10,7 +10,7 @@ export class TaskComponent {
         private appManager: IAppManager<TaskService | ApiService>
     ) { }
 
-    public readonly buildTaskSection = <T extends TaskType>(
+    public readonly buildTaskListSection = <T extends TaskType>(
         taskType: T,
         tasks: TaskSchemaMap[T]["ChunkType"]
     ): Effect.Effect<HTMLElement> => {
@@ -19,7 +19,7 @@ export class TaskComponent {
             const taskSection = document.createElement("section");
             taskSection.id = taskType;
 
-            const title = yield* self.buildSectionTitle(taskType);
+            const title = yield* self.buildTaskListTitle(taskType);
             const taskGroup = yield* self.buildTaskListGroup(taskType, tasks);
             taskSection.append(
                 title,
@@ -30,7 +30,7 @@ export class TaskComponent {
         });
     }
 
-    private readonly buildSectionTitle = (taskType: TaskType): Effect.Effect<HTMLHeadingElement> => {
+    private readonly buildTaskListTitle = (taskType: TaskType): Effect.Effect<HTMLHeadingElement> => {
         const title = document.createElement("h2");
         switch (taskType) {
             case TaskType.DAILY_PLAN:

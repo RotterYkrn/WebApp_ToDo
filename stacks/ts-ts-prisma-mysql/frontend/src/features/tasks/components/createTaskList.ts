@@ -29,7 +29,7 @@ export const initializePageContent = (_: TaskType) => Effect.gen(function* () {
 	pageContent.id = "page-content";
 	pageContent.append(
 		yield* buildHeader(),
-		yield* taskComponent.buildTaskSection(
+		yield* taskComponent.buildTaskListSection(
 			TaskType.DAILY_PLAN,
 			yield* getAllTasks(TaskType.DAILY_PLAN)
 		),
