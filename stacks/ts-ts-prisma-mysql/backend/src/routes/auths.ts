@@ -1,5 +1,5 @@
-import { Router } from "express";
 import { ApiAuthPathLocal } from "@app/shared";
+import { Router } from "express";
 import { constants } from "http2";
 
 const router = Router();
@@ -19,14 +19,17 @@ router.post(ApiAuthPathLocal.SIGN_IN, (req, res) => {
     const password = req.body.password;
 
     if (email === "a@a" && password === "a") {
-        res.cookie("sessionToken", "true", {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60,
-        });
-        res.json({ success: true });
+        res
+            .cookie("sessionToken", "true", {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60,
+            })
+            .json(1)
+            .status(constants.HTTP_STATUS_OK)
+            .end();
         console.log(`signed in as ${email} (${password})`);
     } else {
-        res.json({ success: false });
+        res.status(constants.HTTP_STATUS_UNAUTHORIZED).end();
         console.log(`no signed in as ${email} (${password})`);
     }
 });

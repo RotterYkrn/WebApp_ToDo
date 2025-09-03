@@ -7,7 +7,7 @@ export const parseResponseJson = <T>(): <R>(
     Effect.flatMap((res) => Effect.tryPromise({
         try: () => res.json() as Promise<T>,
         catch: (e) => new ParseSchemaError({
-            message: "Response JSON parsing failed",
+            message: "Response JSON parsing failed.",
             failedObject: res.json(),
             originalError: e,
         })
@@ -17,7 +17,7 @@ export const parseToSchema = <A, I>(schema: Schema.Schema<A, I>) =>
     (obj: unknown): Effect.Effect<A, AppError> => Effect.try({
         try: () => Schema.decodeUnknownSync(schema)(obj),
         catch: (e) => new ParseSchemaError({
-            message: 'Response JSON did not match the schema.',
+            message: 'Value did not match the schema.',
             failedObject: obj,
             originalError: e,
         }),

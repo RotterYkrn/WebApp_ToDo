@@ -14,4 +14,7 @@ export class AppManager<R> implements IAppManager<R> {
 
     public readonly runPromise = <A, E>(effect: Effect.Effect<A, E, R>): Promise<A> =>
         Runtime.runPromise(this.appRuntime)(effect);
+
+    public readonly runSync = <A, E>(effect: Effect.Effect<A, E, R>): A =>
+        Runtime.runSync(this.appRuntime)(effect);
 }

@@ -15,7 +15,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         })
     }).pipe(
         handleHttpError(path, "HTTP error during GET"),
-        ensureHttpStatus(expectedStatus, path)
+        ensureHttpStatus(expectedStatus, "GET", path)
     ),
     post: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => Effect.tryPromise({
         try: () => fetch(path, {
@@ -33,7 +33,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         })
     }).pipe(
         handleHttpError(path, "HTTP error during POST"),
-        ensureHttpStatus(expectedStatus, path)
+        ensureHttpStatus(expectedStatus, "POST", path)
     ),
 }));
 
@@ -53,14 +53,14 @@ export const handleHttpError = (
             }))
     );
 
-export const ensureHttpStatus = (expectedStatus: HttpStatus, path: string): <R>(
+export const ensureHttpStatus = (expectedStatus: HttpStatus, method: "GET" | "POST", path: string): <R>(
     self: Effect.Effect<Response, AppError, R>
 ) => Effect.Effect<Response, AppError, R> =>
     Effect.flatMap((res) =>
         res.status === expectedStatus
             ? Effect.succeed(res)
             : Effect.fail(new UnknownHttpError({
-                message: `Unexpected status (expected ${expectedStatus})`,
+                message: `${method}: Unexpected status (expected ${expectedStatus})`,
                 path,
                 status: res.status,
             }))

@@ -56,7 +56,7 @@ export class UnknownHttpError extends Data.TaggedError("UnknownHttpError")<{
     readonly status: number;
     readonly path: string;
     readonly message: string;
-    readonly responseBody: unknown;
+    readonly responseBody?: unknown;
 }> { }
 
 /**

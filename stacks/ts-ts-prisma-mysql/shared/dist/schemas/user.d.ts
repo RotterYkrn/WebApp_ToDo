@@ -1,0 +1,8 @@
+import { Schema } from "effect";
+import type { SchemaType } from "./utils.js";
+export declare const UserId: Schema.brand<typeof Schema.Number, "UserId">;
+export type UserId = SchemaType<typeof UserId>;
+export declare const EmailAddress: Schema.brand<typeof Schema.String, "EmailAddress">;
+export type EmailAddress = SchemaType<typeof EmailAddress>;
+export declare const Password: Schema.brand<Schema.filter<typeof Schema.String>, "Password">;
+export type Password = SchemaType<typeof Password>;

@@ -4,9 +4,17 @@ export class Unauthorized extends Data.TaggedError("Unauthorized")<{
     readonly message: string;
 }> { }
 
-export class SignoutError extends Data.TaggedError("SignoutError")<{
+export class SignInError extends Data.TaggedError("SignInError")<{
     readonly message: string;
-    readonly status: number;
+    readonly originalError?: unknown;
 }> { }
 
-export type AuthError = Unauthorized | SignoutError;
+export class SignOutError extends Data.TaggedError("SignOutError")<{
+    readonly message: string;
+    readonly originalError?: unknown;
+}> { }
+
+export type AuthError =
+    | Unauthorized
+    | SignInError
+    | SignOutError;
