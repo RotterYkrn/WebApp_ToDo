@@ -1,6 +1,4 @@
 export * from "./types/AppError"
-export * from "./types/AuthError"
-export * from "./types/HttpError"
-export * from "./types/OtherError"
-export * from "./types/TaskError"
+export * from "./types/features"
+export * from "./types/shared"
 

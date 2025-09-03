@@ -1,6 +1,6 @@
 import { Data } from "effect";
 
-export class TaskTypeError extends Data.TaggedError("Unauthorized")<{
+export class TaskTypeError extends Data.TaggedError("TaskTypeError")<{
     readonly message: string;
     readonly taskType: number;
 }> { }

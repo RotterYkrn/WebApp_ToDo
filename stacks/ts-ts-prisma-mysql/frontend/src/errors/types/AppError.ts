@@ -1,10 +1,8 @@
-import { AuthError } from "./AuthError";
-import { HttpError } from "./HttpError";
-import { OtherError } from "./OtherError";
-import { TaskError } from "./TaskError";
+
+import { AuthError, TaskError } from "./features";
+import { SharedError } from "./shared";
 
 export type AppError =
-    | HttpError
+    | SharedError
     | AuthError
-    | TaskError
-    | OtherError;
+    | TaskError;

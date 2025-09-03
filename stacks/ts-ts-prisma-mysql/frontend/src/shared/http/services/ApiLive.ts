@@ -1,9 +1,9 @@
-import { AppError, NetworkError, UnknownHttpError } from "@/errors";
+import { NetworkError } from "@/errors";
 import { Effect, Layer } from "effect";
-import { classifyHttpError } from "../helpers/classifyHttpError";
 import { PostOptionType } from "../types/api-types";
 import { HttpStatus } from "../types/HttpStatus";
 import { ApiService } from "./ApiService";
+import { ensureHttpStatus, handleHttpError } from "./helper";
 
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
     get: (path: string, expectedStatus: HttpStatus, options?: RequestInit) => Effect.tryPromise({
@@ -14,8 +14,8 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
             originalError: e
         })
     }).pipe(
-        handleHttpError(path, "HTTP error during GET"),
-        ensureHttpStatus(expectedStatus, "GET", path)
+        Effect.flatMap(handleHttpError(path, "HTTP error during GET")),
+        Effect.flatMap(ensureHttpStatus(expectedStatus, "GET", path))
     ),
     post: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => Effect.tryPromise({
         try: () => fetch(path, {
@@ -32,36 +32,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
             originalError: e
         })
     }).pipe(
-        handleHttpError(path, "HTTP error during POST"),
-        ensureHttpStatus(expectedStatus, "POST", path)
+        Effect.flatMap(handleHttpError(path, "HTTP error during POST")),
+        Effect.flatMap(ensureHttpStatus(expectedStatus, "POST", path))
     ),
 }));
-
-export const handleHttpError = (
-    path: string,
-    message: string
-): <R>(
-    self: Effect.Effect<Response, AppError, R>
-) => Effect.Effect<Response, AppError, R> =>
-    Effect.flatMap((res: Response) =>
-        res.ok
-            ? Effect.succeed(res)
-            : Effect.fail(classifyHttpError(res, {
-                path,
-                message,
-                responseBody: res.body,
-            }))
-    );
-
-export const ensureHttpStatus = (expectedStatus: HttpStatus, method: "GET" | "POST", path: string): <R>(
-    self: Effect.Effect<Response, AppError, R>
-) => Effect.Effect<Response, AppError, R> =>
-    Effect.flatMap((res) =>
-        res.status === expectedStatus
-            ? Effect.succeed(res)
-            : Effect.fail(new UnknownHttpError({
-                message: `${method}: Unexpected status (expected ${expectedStatus})`,
-                path,
-                status: res.status,
-            }))
-    );

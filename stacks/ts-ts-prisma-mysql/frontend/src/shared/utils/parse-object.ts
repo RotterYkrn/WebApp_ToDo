@@ -13,8 +13,10 @@ export const parseResponseJson = <T>(): <R>(
         })
     }));
 
-export const parseToSchema = <A, I>(schema: Schema.Schema<A, I>) =>
-    (obj: unknown): Effect.Effect<A, AppError> => Effect.try({
+export const parseToSchema = <A, I>(
+    schema: Schema.Schema<A, I>
+): (obj: unknown) => Effect.Effect<A, ParseSchemaError> =>
+    (obj) => Effect.try({
         try: () => Schema.decodeUnknownSync(schema)(obj),
         catch: (e) => new ParseSchemaError({
             message: 'Value did not match the schema.',

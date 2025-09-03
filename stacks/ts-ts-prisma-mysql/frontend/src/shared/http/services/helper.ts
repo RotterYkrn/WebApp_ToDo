@@ -9,6 +9,7 @@ import {
     UnauthorizedError,
     UnknownHttpError,
 } from "@/errors";
+import { Effect } from "effect";
 import { HttpStatus } from "../types/HttpStatus";
 
 interface ErrorInfo {
@@ -16,6 +17,33 @@ interface ErrorInfo {
     readonly message: string;
     readonly responseBody: unknown;
 }
+
+export const handleHttpError = (
+    path: string,
+    message: string
+): (res: Response) => Effect.Effect<Response, HttpError> =>
+    (res) =>
+        res.ok
+            ? Effect.succeed(res)
+            : Effect.fail(classifyHttpError(res, {
+                path,
+                message,
+                responseBody: res.body,
+            }))
+
+export const ensureHttpStatus = (
+    expectedStatus: HttpStatus,
+    method: "GET" | "POST",
+    path: string
+): (res: Response) => Effect.Effect<Response, UnknownHttpError> =>
+    (res) =>
+        res.status === expectedStatus
+            ? Effect.succeed(res)
+            : Effect.fail(new UnknownHttpError({
+                message: `${method}: Unexpected status (expected ${expectedStatus})`,
+                path,
+                status: res.status,
+            }));
 
 export const classifyHttpError = (res: Response, errorInfo: ErrorInfo): HttpError => {
     switch (res.status) {

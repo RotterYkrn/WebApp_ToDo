@@ -2,10 +2,10 @@ import {
     HttpError
 } from "@/errors";
 import { ApiService } from "@/shared/http";
-import { ApiLive, ensureHttpStatus, handleHttpError } from "@/shared/http/services/ApiLive";
+import { ApiLive } from "@/shared/http/services/ApiLive";
 import { HttpStatus } from "@/shared/http/types/HttpStatus";
 import { beforeEach, describe, expect, it, vi, type Mock } from "@effect/vitest";
-import { Effect, pipe } from "effect";
+import { Effect } from "effect";
 import { validateAppError } from "tests/test-utils";
 
 // global.fetch のモック
@@ -87,7 +87,7 @@ const testApiFailed_HttpError = (
  * そのため、代表的なエラーステータスのみをテストする。
  *
  * classifyHttpError 自体の網羅的なテストは、
- * `tests/core/http/helpers/classifyHttpError.test.ts` で行う。
+ * `tests/core/http/services/api-helper.test.ts` で行う。
  */
 describe("ApiLive", () => {
     beforeEach(() => {
@@ -238,106 +238,4 @@ describe("ApiLive", () => {
                 );
             }));
     });
-});
-
-describe("handleHttpError", () => {
-    it.effect("成功ならば、レスポンスをそのまま返す", () =>
-        Effect.gen(function* () {
-            const response = new Response("{}", { status: HttpStatus.OK });
-
-            const result = yield* pipe(
-                Effect.succeed(response),
-                handleHttpError("/test/handle-response-success", "Error"),
-            );
-
-            expect(result).toEqual(response);
-        }),
-    );
-
-    it.effect("レスポンスステータスが 400 の場合、BadRequestError を返す", () =>
-        Effect.gen(function* () {
-            const path = "/test/handle-response-400-error";
-            const message = "HTTP Error during TEST";
-            const response = new Response("{}", { status: HttpStatus.BAD_REQUEST });
-
-            const result = yield* Effect.exit(pipe(
-                Effect.succeed(response),
-                handleHttpError(path, message),
-            ));
-
-            validateAppError(
-                result,
-                "BadRequestError",
-                (httpError) => {
-                    expect(httpError.path).toBe(path);
-                    expect(httpError.message).toBe(message);
-                }
-            );
-        })
-    );
-
-    it.effect("レスポンスステータスが 500 の場合、InternalServerError を返す", () =>
-        Effect.gen(function* () {
-            const path = "/test/handle-response-500-error";
-            const message = "HTTP Error during TEST";
-            const response = new Response("{}", { status: HttpStatus.INTERNAL_SERVER_ERROR });
-
-            const result = yield* Effect.exit(pipe(
-                Effect.succeed(response),
-                handleHttpError(path, message),
-            ));
-
-            validateAppError(
-                result,
-                "InternalServerError",
-                (httpError) => {
-                    expect(httpError.path).toBe(path);
-                    expect(httpError.message).toBe(message);
-                }
-            );
-        })
-    );
-});
-
-describe("ensureHttpStatus", () => {
-    it.effect("期待するステータスと一致する場合、レスポンスをそのまま返す", () =>
-        Effect.gen(function* () {
-            const status = HttpStatus.OK;
-            const response = new Response("{}", { status });
-
-            const result = yield* pipe(
-                Effect.succeed(response),
-                ensureHttpStatus(status, "GET", "/test/ensure-http-status-success"),
-            );
-
-            expect(result).toEqual(response);
-        })
-    );
-
-    it.effect("期待するステータスと異なる場合、UnknownHttpError を返す", () =>
-        Effect.gen(function* () {
-            const resStatus = HttpStatus.OK;
-            const response = new Response("{}", { status: resStatus });
-            
-            const expectedStatus = HttpStatus.CREATED;
-            const method = "GET";
-            const path = "/test/ensure-http-different-status";
-
-            const result = yield* Effect.exit(pipe(
-                Effect.succeed(response),
-                ensureHttpStatus(expectedStatus, method, path),
-            ));
-
-            validateAppError(
-                result,
-                "UnknownHttpError",
-                (unknownHttpError) => {
-                    expect(unknownHttpError.path).toBe(path);
-                    expect(unknownHttpError.message).toContain(expectedStatus.toString());
-                    expect(unknownHttpError.message).toContain(method);
-                    expect(unknownHttpError.status).toBe(resStatus);
-                }
-            );
-        })
-    );
 });

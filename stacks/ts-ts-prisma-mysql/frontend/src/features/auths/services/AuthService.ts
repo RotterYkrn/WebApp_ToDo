@@ -1,12 +1,15 @@
-import { AppError } from "@/errors";
+import { AppError, SharedError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { EmailAddress, Password, UserId } from "@app/shared";
 import { Effect } from "effect";
 
 export interface IAuthService {
   readonly checkSession: () => Effect.Effect<boolean, AppError, ApiService>;
-  readonly signInApi: (email: EmailAddress, password: Password) => Effect.Effect<UserId, AppError, ApiService>;
-  readonly signOutApi: () => Effect.Effect<void, AppError, ApiService>;
+  readonly signInApi: (
+    email: EmailAddress,
+    password: Password
+  ) => Effect.Effect<UserId, SharedError, ApiService>;
+  readonly signOutApi: () => Effect.Effect<void, SharedError, ApiService>;
   readonly redirectToSignIn: () => Effect.Effect<void>;
 }
 

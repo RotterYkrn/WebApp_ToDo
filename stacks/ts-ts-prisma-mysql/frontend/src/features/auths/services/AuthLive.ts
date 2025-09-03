@@ -1,4 +1,3 @@
-import { SignInError, SignOutError } from "@/errors";
 import { ApiService, extractJsonBody, HttpStatus } from "@/shared/http";
 import { parseResponseJson, parseToSchema } from "@/shared/utils";
 import { ApiAuthPathFull, EmailAddress, PagePath, Password, UserId } from "@app/shared";
@@ -30,10 +29,6 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
         ),
         Effect.flatMap(extractJsonBody()),
         Effect.flatMap(parseToSchema(UserId)),
-        Effect.mapError((e) => new SignInError({
-            message: "Sign in failed",
-            originalError: e,
-        })),
     ),
 
     signOutApi: () => pipe(
@@ -47,10 +42,6 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
                 }
             );
         }),
-        Effect.mapError((e) => new SignOutError({
-            message: "Sign out failed",
-            originalError: e,
-        })),
     ),
 
     redirectToSignIn: () => Effect.sync(() => {

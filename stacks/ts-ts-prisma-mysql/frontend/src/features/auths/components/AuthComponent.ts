@@ -4,6 +4,7 @@ import { createButton } from "@/shared/ui";
 import { Effect } from "effect";
 import { AuthService } from "../services/AuthService";
 import { performSignIn, performSignOut } from "../services/use-cases";
+import { handleSignInError } from "./helper";
 
 export class AuthComponent {
     constructor(
@@ -60,13 +61,7 @@ export class AuthComponent {
 
             this.appManager.runPromise(
                 performSignIn(email, password).pipe(
-                    Effect.mapError((e) => {
-                        Effect.sync(() => {
-                            errorMessage.textContent = "メールアドレスもしくはパスワードが違います";
-                            errorMessage.style.display = "block";
-                        });
-                        return e;
-                    })
+                    Effect.tapError(handleSignInError(errorMessage))
                 )
             )
         });

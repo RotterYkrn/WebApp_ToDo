@@ -1,4 +1,4 @@
-import { AppError, TaskTypeError } from "@/errors";
+import { ParseSchemaError, TaskTypeError } from "@/errors";
 import { ApiService, extractJsonBody, HttpStatus } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
 import { TaskApiPathMap, TaskSchemaMap, TaskType } from "@app/shared";
@@ -33,7 +33,7 @@ export const TaskLive = Layer.succeed(TaskService, TaskService.of({
 
 export const parseToTaskSchemaData = <T extends TaskType>(
     taskType: T
-): (obj: unknown) => Effect.Effect<TaskSchemaMap[T]["Type"], AppError> => {
+): (obj: unknown) => Effect.Effect<TaskSchemaMap[T]["Type"], ParseSchemaError | TaskTypeError> => {
         switch (taskType) {
             case TaskType.DAILY_PLAN:
                 return parseToSchema(TaskSchemaMap[TaskType.DAILY_PLAN]["Schema"]);
@@ -51,7 +51,7 @@ export const parseToTaskSchemaData = <T extends TaskType>(
 
 export const parseToTaskSchemaChunk = <T extends TaskType>(
     taskType: T
-): (obj: unknown) => Effect.Effect<TaskSchemaMap[T]["ChunkType"], AppError> => {
+): (obj: unknown) => Effect.Effect<TaskSchemaMap[T]["ChunkType"], ParseSchemaError | TaskTypeError> => {
         switch (taskType) {
             case TaskType.DAILY_PLAN:
                 return parseToSchema(TaskSchemaMap[TaskType.DAILY_PLAN]["ChunkSchema"]);
