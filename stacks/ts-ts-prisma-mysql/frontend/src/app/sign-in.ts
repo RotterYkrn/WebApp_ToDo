@@ -1,4 +1,5 @@
 import { AuthComponent } from "@/features/auths";
+import { PagePath } from "@app/shared";
 import { Effect } from "effect";
 import { appManager } from "./app";
 
@@ -16,7 +17,8 @@ export const buildSignInFormSection = (): Effect.Effect<HTMLElement> =>
 
 		section.append(
 			yield* buildSignInFormSectionTitle(),
-			yield* authComponent.buildSignInForm()
+			yield* authComponent.buildSignInForm(),
+			yield* buildToSignUpLinkParagraph()
 		);
 
 		return section;
@@ -27,4 +29,15 @@ export const buildSignInFormSectionTitle = (): Effect.Effect<HTMLHeadingElement>
 	title.id = "sign-in-form-title";
 	title.textContent = "サインイン";
 	return Effect.succeed(title);
+};
+
+export const buildToSignUpLinkParagraph = (): Effect.Effect<HTMLParagraphElement> => {
+	const link = document.createElement("a");
+	link.href = PagePath.SIGN_UP;
+	link.textContent = "アカウントをお持ちでない方はこちら";
+
+	const linkParagraph = document.createElement("p");
+	linkParagraph.appendChild(link);
+
+	return Effect.succeed(linkParagraph);
 };
