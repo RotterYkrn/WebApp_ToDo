@@ -1,2 +1,3 @@
+export * from "./auth.js";
 export { Task } from "./task.js";
-export { EmailAddress, Password, UserId } from "./user.js";
+export * from "./user.js";

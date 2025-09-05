@@ -1,5 +1,13 @@
-import { SignInError } from "@/errors";
+import { SignInError, SignUpError } from "@/errors";
 import { Effect } from "effect";
+
+export const handleSignUpError = (
+    errorMessageDiv: HTMLDivElement
+): (e: SignUpError) => Effect.Effect<void> =>
+    (_: SignUpError) => displayErrorMessage(
+        errorMessageDiv,
+        "予期せぬエラーが発生しました。"
+    );
 
 export const handleSignInError = (
     errorMessageDiv: HTMLDivElement

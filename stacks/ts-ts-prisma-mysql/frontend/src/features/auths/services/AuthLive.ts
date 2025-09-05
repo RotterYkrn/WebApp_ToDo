@@ -1,6 +1,6 @@
 import { ApiService, extractJsonBody, HttpStatus } from "@/shared/http";
 import { parseResponseJson, parseToSchema } from "@/shared/utils";
-import { ApiAuthPathFull, EmailAddress, PagePath, Password, UserId } from "@app/shared";
+import { ApiAuthPathFull, PagePath, SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
 import { SessionData } from "../types/SessionData";
 import { AuthService } from "./AuthService";
@@ -18,12 +18,23 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
         Effect.mapError((e) => e),
     ),
 
-    signInApi: (email: EmailAddress, password: Password) => pipe(
+    signUpApi: (input: SignUpInput) => pipe(
+        ApiService.post(
+            ApiAuthPathFull.SIGN_UP,
+            HttpStatus.CREATED,
+            {
+                body: input,
+                options: { credentials: "include" }
+            }
+        ),
+    ),
+
+    signInApi: (input: SignInInput) => pipe(
         ApiService.post(
             ApiAuthPathFull.SIGN_IN,
             HttpStatus.OK,
             {
-                body: { email, password },
+                body: input,
                 options: { credentials: "include" }
             }
         ),
