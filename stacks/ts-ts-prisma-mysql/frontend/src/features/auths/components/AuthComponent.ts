@@ -37,20 +37,20 @@ export class AuthComponent {
         passwordInput.required = true;
         passwordDiv.append(passwordLabel, passwordInput);
 
+        const errorMessageDiv = document.createElement("div");
+        errorMessageDiv.id = "error-message";
+        errorMessageDiv.textContent = "サインインに失敗しました";
+        errorMessageDiv.style.display = "none";
+
         const submitButton = document.createElement("button");
         submitButton.id = "sign-in-button";
         submitButton.type = "submit";
         submitButton.textContent = "サインイン";
-
-        const errorMessage = document.createElement("div");
-        errorMessage.id = "error-message";
-        errorMessage.textContent = "サインインに失敗しました";
-        errorMessage.style.display = "none";
         
         form.append(
             emailDiv,
             passwordDiv,
-            errorMessage,
+            errorMessageDiv,
             submitButton
         );
 
@@ -61,7 +61,7 @@ export class AuthComponent {
 
             this.appManager.runPromise(
                 performSignIn(email, password).pipe(
-                    Effect.tapError(handleSignInError(errorMessage))
+                    Effect.tapError(handleSignInError(errorMessageDiv))
                 )
             )
         });
