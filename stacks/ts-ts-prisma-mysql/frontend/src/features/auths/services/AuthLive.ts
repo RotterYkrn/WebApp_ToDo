@@ -22,10 +22,7 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
         ApiService.post(
             ApiAuthPathFull.SIGN_UP,
             HttpStatus.CREATED,
-            {
-                body: input,
-                options: { credentials: "include" }
-            }
+            { body: input, }
         ),
     ),
 
