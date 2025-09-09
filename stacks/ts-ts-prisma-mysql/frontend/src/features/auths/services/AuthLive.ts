@@ -1,6 +1,6 @@
 import { ApiService, extractJsonBody, HttpStatus } from "@/shared/http";
 import { parseResponseJson, parseToSchema } from "@/shared/utils";
-import { ApiAuthPathFull, PagePath, SignInInput, SignUpInput, UserId } from "@app/shared";
+import { ApiAuthPathFull, SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
 import { SessionData } from "../types/SessionData";
 import { AuthService } from "./AuthService";
@@ -51,9 +51,4 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
             );
         }),
     ),
-
-    redirectToSignIn: () => Effect.sync(() => {
-        window.location.href = PagePath.SIGN_IN;
-        return Effect.void;
-    }),
 }));

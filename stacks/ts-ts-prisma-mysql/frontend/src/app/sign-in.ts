@@ -1,12 +1,17 @@
 import { AuthComponent } from "@/features/auths";
+import { appendElementByIdWrapper } from "@/shared/ui/services/use-case";
 import { PagePath } from "@app/shared";
 import { Effect } from "effect";
 import { appManager } from "./app";
 
 window.addEventListener("DOMContentLoaded", async () => {
 	const signinForm = appManager.runSync(buildSignInFormSection());
-	const appRoot = document.getElementById("app-root");
-	appRoot?.append(signinForm);
+	appManager.runSync(
+		appendElementByIdWrapper(
+			"app-root",
+			signinForm
+		)
+	);
 });
 
 export const buildSignInFormSection = (): Effect.Effect<HTMLElement> =>

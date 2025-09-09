@@ -8,3 +8,4 @@ export const PagePath = {
     TODO: "/todos",
     HABIT: "/habits",
 } as const;
+export type PagePath = (typeof PagePath)[keyof typeof PagePath];

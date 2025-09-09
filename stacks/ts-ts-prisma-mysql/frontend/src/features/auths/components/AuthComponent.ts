@@ -1,6 +1,6 @@
 import { IAppManager } from "@/shared/app";
 import { ApiService } from "@/shared/http";
-import { createButton } from "@/shared/ui";
+import { createButton, UIService } from "@/shared/ui";
 import { Effect } from "effect";
 import { AuthService } from "../services/AuthService";
 import { performSignIn, performSignOut, performSignUp } from "../services/use-cases";
@@ -8,7 +8,7 @@ import { handleSignInError, handleSignUpError } from "./helper";
 
 export class AuthComponent {
     constructor(
-        private appManager: IAppManager<AuthService | ApiService>
+        private appManager: IAppManager<AuthService | ApiService | UIService>
     ) { }
 
     public readonly buildSignUpForm = (): Effect.Effect<HTMLFormElement> => {
@@ -133,6 +133,12 @@ export class AuthComponent {
                 id: "sign-out-button",
                 textContent: "サインアウト",
             },
-            () => this.appManager.runPromise(performSignOut())
+            () => this.appManager.runPromise(
+                performSignOut().pipe(
+                    Effect.tapError((e) => Effect.sync(() => {
+                        console.error("Sign out failed:", e);
+                    }))
+                )
+            )
         );
 }

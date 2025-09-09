@@ -1,23 +1,13 @@
-import { AppManager } from "@/app/AppManager";
-import { AuthComponent, AuthLive } from "@/features/auths";
-import { ApiLive } from "@/shared/http";
-import { ConsoleLoggerLive } from "@/shared/logger";
+import { appManager } from "@/app/app";
+import { AuthComponent } from "@/features/auths";
 import { buildFooter, buildHeader } from "@/shared/ui";
+import { appendElementByIdWrapper } from "@/shared/ui/services/use-case";
 import { TaskType } from "@app/shared";
-import { Effect, Layer } from "effect"; // "effect/index" から "effect" に変更
-import { TaskLive } from "../services/TaskLive";
+import { Effect } from "effect"; // "effect/index" から "effect" に変更
 import { getAllTasks } from "../services/use-cases";
 import { TaskComponent } from "./TaskComponent";
 
-const AppLive = Layer.mergeAll(
-	ApiLive,
-	AuthLive,
-	TaskLive,
-	ConsoleLoggerLive
-);
-
 export const initializePageContent = (_: TaskType) => Effect.gen(function* () {
-	const appManager = new AppManager(AppLive);
 	const authComponent = new AuthComponent(appManager);
 	const taskComponent = new TaskComponent(appManager);
 
@@ -37,10 +27,5 @@ export const initializePageContent = (_: TaskType) => Effect.gen(function* () {
 		yield* buildFooter()
 	);
 
-	yield* Effect.sync(() => {
-		const appRoot = document.getElementById("app-root");
-		if (appRoot) {
-			appRoot.append(pageContent);
-		}
-	});
+	yield* appendElementByIdWrapper("app-root", pageContent);
 });

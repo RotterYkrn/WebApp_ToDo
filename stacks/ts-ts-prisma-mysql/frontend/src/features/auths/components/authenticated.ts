@@ -1,3 +1,5 @@
+import { UIService } from "@/shared/ui";
+import { PagePath } from "@app/shared";
 import { Effect } from "effect";
 import { AuthService } from "../services/AuthService";
 
@@ -9,6 +11,6 @@ export const authenticated = <A, E, R>(callback: Effect.Effect<A, E, R>) =>
 		if (isAuth) {
 			return yield* callback;
 		} else {
-			return yield* authService.redirectToSignIn();
+			return yield* UIService.redirectTo(PagePath.SIGN_IN);
 		}
 	});

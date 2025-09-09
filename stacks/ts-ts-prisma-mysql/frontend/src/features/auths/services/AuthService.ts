@@ -12,7 +12,6 @@ export interface IAuthService {
     input: SignInInput
   ) => Effect.Effect<UserId, SharedError, ApiService>;
   readonly signOutApi: () => Effect.Effect<void, SharedError, ApiService>;
-  readonly redirectToSignIn: () => Effect.Effect<void>;
 }
 
 export class AuthService extends Effect.Tag("AuthService")<

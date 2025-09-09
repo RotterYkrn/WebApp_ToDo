@@ -8,3 +8,4 @@ export declare const PagePath: {
     readonly TODO: "/todos";
     readonly HABIT: "/habits";
 };
+export type PagePath = (typeof PagePath)[keyof typeof PagePath];
