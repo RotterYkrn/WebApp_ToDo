@@ -4,7 +4,7 @@ import { buildFooter, buildHeader, UIService } from "@/shared/ui";
 import { appendElementsWrapper } from "@/shared/ui/services/use-case";
 import { TaskType } from "@app/shared";
 import { Effect } from "effect"; // "effect/index" から "effect" に変更
-import { getAllTasks } from "../services/use-cases";
+import { TaskService } from "../services/TaskService";
 import { TaskComponent } from "./TaskComponent";
 
 export const initializePageContent = (_: TaskType) => Effect.gen(function* () {
@@ -19,7 +19,7 @@ export const initializePageContent = (_: TaskType) => Effect.gen(function* () {
 		buildHeader(),
 		taskComponent.buildTaskListSection(
 			TaskType.DAILY_PLAN,
-			yield* getAllTasks(TaskType.DAILY_PLAN)
+			yield* TaskService.getAllTasksApi(TaskType.DAILY_PLAN)
 		),
 		authComponent.buildSignOutButton(),
 		buildFooter()
