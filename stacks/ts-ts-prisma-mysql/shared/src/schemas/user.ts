@@ -6,7 +6,19 @@ export const UserId = Schema.Number.pipe(
 );
 export type UserId = SchemaType<typeof UserId>;
 
-
+export const UserName = Schema.String.pipe(
+    Schema.minLength(3, {
+        message: () => "Username must be at least 3 characters long.",
+    }),
+    Schema.maxLength(30, {
+        message: () => "Username must not exceed 30 characters.",
+    }),
+    Schema.pattern(/^[a-zA-Z0-9_]+$/, {
+        message: () => "Username can only contain alphanumeric characters and underscores.",
+    }),
+    Schema.brand('UserName') // 型を区別するためのブランド
+);
+export type UserName = SchemaType<typeof UserName>;
 
 // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export const EmailAddress = Schema.String.pipe(
