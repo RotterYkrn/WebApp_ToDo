@@ -7,9 +7,10 @@ import {
     OtherClientError,
     OtherServerError,
     UnauthorizedError,
+    UnexpectedStatusError,
     UnknownHttpError,
 } from "@/errors";
-import { Effect } from "effect";
+import { Either } from "effect";
 import { HttpStatus } from "../types/HttpStatus";
 
 interface ErrorInfo {
@@ -21,11 +22,11 @@ interface ErrorInfo {
 export const handleHttpError = (
     path: string,
     message: string
-): (res: Response) => Effect.Effect<Response, HttpError> =>
+): (res: Response) => Either.Either<Response, HttpError> =>
     (res) =>
         res.ok
-            ? Effect.succeed(res)
-            : Effect.fail(classifyHttpError(res, {
+            ? Either.right(res)
+            : Either.left(classifyHttpError(res, {
                 path,
                 message,
                 responseBody: res.body,
@@ -35,14 +36,15 @@ export const ensureHttpStatus = (
     expectedStatus: HttpStatus,
     method: "GET" | "POST",
     path: string
-): (res: Response) => Effect.Effect<Response, UnknownHttpError> =>
+): (res: Response) => Either.Either<Response, UnexpectedStatusError> =>
     (res) =>
         res.status === expectedStatus
-            ? Effect.succeed(res)
-            : Effect.fail(new UnknownHttpError({
+            ? Either.right(res)
+            : Either.left(new UnexpectedStatusError({
                 message: `${method}: Unexpected status (expected ${expectedStatus})`,
                 path,
-                status: res.status,
+                expectedStatus,
+                responseStatus: res.status,
             }));
 
 export const classifyHttpError = (res: Response, errorInfo: ErrorInfo): HttpError => {

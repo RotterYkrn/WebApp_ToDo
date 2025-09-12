@@ -1,6 +1,4 @@
-import { Effect } from "effect";
-
-export const buildHeader = (): Effect.Effect<HTMLElement> => {
+export const buildHeader = (): HTMLElement => {
     const header = document.createElement("header");
     header.className = "app-header";
 
@@ -8,5 +6,5 @@ export const buildHeader = (): Effect.Effect<HTMLElement> => {
     title.textContent = "1Day ToDo";
     header.appendChild(title);
 
-    return Effect.succeed(header);
+    return header;
 };

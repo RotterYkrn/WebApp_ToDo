@@ -1,17 +1,18 @@
 import { AppendElementsError, UIUnknownError } from "@/errors";
-import { Chunk, Effect, Layer, pipe } from "effect";
+import { Chunk, Effect, Either, Layer, Option, pipe } from "effect";
 import { UIService } from "./UIService";
 
 export const UILive = Layer.succeed(UIService, UIService.of({
     getElementById: (id: string) => pipe(
-        Effect.sync(() => document.getElementById(id)),
-        Effect.filterOrFail(
-            (el): el is HTMLElement => el !== null,
-            () => new UIUnknownError({
-                message: `Element with id "${id}" not found`,
-                originalError: null
-            }),
-        ),
+        Effect.sync(() => Option.fromNullable(document.getElementById(id))),
+        Effect.flatMap(
+            Option.match({
+                onNone: () => Either.left(new UIUnknownError({
+                    message: `Element with ID "${id}" not found.`,
+                })),
+                onSome: (el) => Either.right(el),
+            })
+        )
     ),
 
     appendElements: (

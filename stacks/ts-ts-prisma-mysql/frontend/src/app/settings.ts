@@ -40,7 +40,7 @@ const viewSettings = () => pipe(
 window.addEventListener("DOMContentLoaded", async () => {
     await runPromiseWithLayer(viewSettings(), ApiLive);
 
-	document.body.appendChild(Effect.runSync(buildFooter()));
+	document.body.appendChild(buildFooter());
 
     const form = document.getElementById("form");
 

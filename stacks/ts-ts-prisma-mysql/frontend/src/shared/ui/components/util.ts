@@ -1,5 +1,3 @@
-import { Effect } from "effect";
-
 /**
  * HTML要素を生成し、オプションのプロパティを設定する共通関数
  * @param tagName 作成する要素のタグ名
@@ -9,8 +7,8 @@ import { Effect } from "effect";
 export const createElement = <T extends keyof HTMLElementTagNameMap>(
   tagName: T,
   options: Partial<HTMLElementTagNameMap[T]>
-): Effect.Effect<HTMLElementTagNameMap[T]> => {
+): HTMLElementTagNameMap[T] => {
   const element = document.createElement(tagName);
   Object.assign(element, options);
-  return Effect.succeed(element);
+  return element;
 };

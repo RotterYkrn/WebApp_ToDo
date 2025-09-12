@@ -13,24 +13,21 @@ export class TaskComponent {
     public readonly buildTaskListSection = <T extends TaskType>(
         taskType: T,
         tasks: TaskSchemaMap[T]["ChunkType"]
-    ): Effect.Effect<HTMLElement> => {
-        const self = this;
-        return Effect.gen(function* () {
-            const taskSection = document.createElement("section");
-            taskSection.id = taskType;
+    ): HTMLElement => {
+        const taskSection = document.createElement("section");
+        taskSection.id = taskType;
 
-            const title = yield* self.buildTaskListTitle(taskType);
-            const taskGroup = yield* self.buildTaskListGroup(taskType, tasks);
-            taskSection.append(
-                title,
-                taskGroup
-            );
+        const title = this.buildTaskListTitle(taskType);
+        const taskGroup = this.buildTaskListGroup(taskType, tasks);
+        taskSection.append(
+            title,
+            taskGroup
+        );
 
-            return taskSection;
-        });
-    }
+        return taskSection;
+    };
 
-    private readonly buildTaskListTitle = (taskType: TaskType): Effect.Effect<HTMLHeadingElement> => {
+    private readonly buildTaskListTitle = (taskType: TaskType): HTMLHeadingElement => {
         const title = document.createElement("h2");
         switch (taskType) {
             case TaskType.DAILY_PLAN:
@@ -42,31 +39,28 @@ export class TaskComponent {
             case TaskType.HABIT:
                 title.textContent = "習慣リスト";
         }
-        return Effect.succeed(title);
+        return title;
     };
 
     private readonly buildTaskListGroup = <T extends TaskType>(
         taskType: T,
         tasks: TaskSchemaMap[T]["ChunkType"]
-    ): Effect.Effect<HTMLDivElement> => {
-        const self = this;
-        return Effect.gen(function* () {
-            const taskListGroup = document.createElement("div");
-            taskListGroup.id = "task-list";
+    ): HTMLDivElement => {
+        const taskListGroup = document.createElement("div");
+        taskListGroup.id = "task-list";
 
-            const taskList = yield* self.buildTaskList(tasks);
-            const addTaskForm = yield* self.buildAddTaskForm(taskType);
-            taskListGroup.append(
-                ...taskList,
-                addTaskForm
-            );
+        const taskList = this.buildTaskList(tasks);
+        const addTaskForm = this.buildAddTaskForm(taskType);
+        taskListGroup.append(
+            ...taskList,
+            addTaskForm
+        );
 
-            return taskListGroup;
-        });
-    }
+        return taskListGroup;
+    };
 
-    private readonly buildTaskList = (tasks: TaskSchemaMap[TaskType]["ChunkType"]): Effect.Effect<Chunk.Chunk<HTMLElement>> =>
-        Effect.succeed(Chunk.map(tasks, task => {
+    private readonly buildTaskList = (tasks: TaskSchemaMap[TaskType]["ChunkType"]): Chunk.Chunk<HTMLElement> =>
+        Chunk.map(tasks, task => {
             const taskElem = document.createElement("article");
             taskElem.className = "task";
 
@@ -87,9 +81,9 @@ export class TaskComponent {
             taskElem.appendChild(titleElem);
             taskElem.appendChild(detailElem);
             return taskElem;
-        }));
+        });
 
-    private readonly buildAddTaskForm = (taskType: TaskType): Effect.Effect<HTMLElement> => {
+    private readonly buildAddTaskForm = (taskType: TaskType): HTMLElement => {
         const taskElem = document.createElement("article");
         taskElem.className = "task"; // 既存のタスクと同じクラス名
 
@@ -174,6 +168,6 @@ export class TaskComponent {
             });
         }
 
-        return Effect.succeed(taskElem);
+        return taskElem;
     };
 };

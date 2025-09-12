@@ -16,12 +16,12 @@ export const initializePageContent = (_: TaskType) => Effect.gen(function* () {
 	const taskComponent = new TaskComponent(appManager);
 	yield* appendElementsWrapper(
 		yield* UIService.getElementById("app-root"), 
-		yield* buildHeader(),
-		yield* taskComponent.buildTaskListSection(
+		buildHeader(),
+		taskComponent.buildTaskListSection(
 			TaskType.DAILY_PLAN,
 			yield* getAllTasks(TaskType.DAILY_PLAN)
 		),
-		yield* authComponent.buildSignOutButton(),
-		yield* buildFooter()
+		authComponent.buildSignOutButton(),
+		buildFooter()
 	);
 });

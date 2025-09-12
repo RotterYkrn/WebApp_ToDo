@@ -51,6 +51,13 @@ export class OtherServerError extends Data.TaggedError("OtherServerError")<{
     readonly responseBody: unknown;
 }> { }
 
+export class UnexpectedStatusError extends Data.TaggedError("UnexpectedStatusError")<{
+    readonly message: string;
+    readonly path: string;
+    readonly expectedStatus: number;
+    readonly responseStatus: number;
+}> { }
+
 // Other
 export class UnknownHttpError extends Data.TaggedError("UnknownHttpError")<{
     readonly status: number;
@@ -70,4 +77,5 @@ export type HttpError =
     | InternalServerError
     | OtherClientError
     | OtherServerError
+    | UnexpectedStatusError
     | UnknownHttpError;

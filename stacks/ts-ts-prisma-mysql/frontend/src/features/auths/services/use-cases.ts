@@ -3,7 +3,7 @@ import { ApiService } from "@/shared/http";
 import { UIService } from "@/shared/ui";
 import { parseToSchema } from "@/shared/utils";
 import { PagePath, SignInInput, SignUpInput, UserId } from "@app/shared";
-import { Effect, pipe } from "effect/index";
+import { Effect, Either, pipe } from "effect";
 import { AuthService } from "./AuthService";
 
 export const performSignUp = (input: {
@@ -11,8 +11,8 @@ export const performSignUp = (input: {
     password: string
 }): Effect.Effect<void, SignUpError, AuthService | ApiService> =>
     pipe(
-        Effect.succeed(input),
-        Effect.flatMap(parseToSchema(SignUpInput)),
+        Either.right(input),
+        Either.flatMap(parseToSchema(SignUpInput)),
         Effect.flatMap(AuthService.signUpApi),
         Effect.tap(() => {
             UIService.redirectTo(PagePath.SIGN_IN);
@@ -28,8 +28,8 @@ export const performSignIn = (input: {
     password: string
 }): Effect.Effect<UserId, SignInError, AuthService | ApiService | UIService> =>
     pipe(
-        Effect.succeed(input),
-        Effect.flatMap(parseToSchema(SignInInput)),
+        Either.right(input),
+        Either.flatMap(parseToSchema(SignInInput)),
         Effect.flatMap(AuthService.signInApi),
         Effect.tap(() => UIService.redirectTo(PagePath.INDEX)),
         Effect.mapError((e) => new SignInError({

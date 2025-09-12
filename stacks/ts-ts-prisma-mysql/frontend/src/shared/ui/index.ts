@@ -3,5 +3,5 @@ export { buildFooter } from "./components/footer";
 export { buildHeader } from "./components/header";
 export { UILive } from "./services/UILive";
 export { UIService } from "./services/UIService";
-export { appendElementsWrapper as appendElementWrap } from "./services/use-case";
+export { appendElementsWrapper } from "./services/use-case";
 

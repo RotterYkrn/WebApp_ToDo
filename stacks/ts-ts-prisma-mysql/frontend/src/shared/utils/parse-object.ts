@@ -1,5 +1,5 @@
 import { AppError, ParseSchemaError } from "@/errors";
-import { Effect, Schema } from "effect";
+import { Effect, Either, Schema } from "effect";
 
 export const parseResponseJson = <T>(): <R>(
     self: Effect.Effect<Response, AppError, R>
@@ -15,8 +15,8 @@ export const parseResponseJson = <T>(): <R>(
 
 export const parseToSchema = <A, I>(
     schema: Schema.Schema<A, I>
-): (obj: unknown) => Effect.Effect<A, ParseSchemaError> =>
-    (obj) => Effect.try({
+): (obj: unknown) => Either.Either<A, ParseSchemaError> =>
+    (obj) => Either.try({
         try: () => Schema.decodeUnknownSync(schema)(obj),
         catch: (e) => new ParseSchemaError({
             message: 'Value did not match the schema.',

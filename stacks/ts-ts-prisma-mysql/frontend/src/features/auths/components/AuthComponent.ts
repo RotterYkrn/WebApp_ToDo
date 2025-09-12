@@ -11,7 +11,7 @@ export class AuthComponent {
         private appManager: IAppManager<AuthService | ApiService | UIService>
     ) { }
 
-    public readonly buildSignUpForm = (): Effect.Effect<HTMLFormElement> => {
+    public readonly buildSignUpForm = (): HTMLFormElement => {
         const form = document.createElement("form");
         form.id = "sign-up-form";
 
@@ -69,10 +69,10 @@ export class AuthComponent {
             ))
         });
 
-        return Effect.succeed(form);
+        return form;
     }
 
-    public readonly buildSignInForm = (): Effect.Effect<HTMLFormElement> => {
+    public readonly buildSignInForm = (): HTMLFormElement => {
         const form = document.createElement("form");
         form.id = "sign-in-form";
 
@@ -130,10 +130,10 @@ export class AuthComponent {
             ))
         });
 
-        return Effect.succeed(form);
+        return form;
     };
 
-    public readonly buildSignOutButton = (): Effect.Effect<HTMLButtonElement> =>
+    public readonly buildSignOutButton = (): HTMLButtonElement =>
         createButton(
             {
                 id: "sign-out-button",

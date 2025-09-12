@@ -23,7 +23,10 @@ export const handleSignInError = (
                 "予期せぬエラーが発生しました。"
             );
 
-export const displayErrorMessage = (errorMessageDiv: HTMLDivElement, message: string): Effect.Effect<void> =>
+export const displayErrorMessage = (
+    errorMessageDiv: HTMLDivElement,
+    message: string
+): Effect.Effect<void> =>
     Effect.sync(() => {
         errorMessageDiv.textContent = message;
         errorMessageDiv.style.display = "block";
