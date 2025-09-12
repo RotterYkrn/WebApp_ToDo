@@ -18,13 +18,12 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
         Effect.mapError((e) => e),
     ),
 
-    signUpApi: (input: SignUpInput) => pipe(
+    signUpApi: (input: SignUpInput) => 
         ApiService.post(
             ApiAuthPathFull.SIGN_UP,
             HttpStatus.CREATED,
             { body: input, }
         ),
-    ),
 
     signInApi: (input: SignInInput) => pipe(
         ApiService.post(

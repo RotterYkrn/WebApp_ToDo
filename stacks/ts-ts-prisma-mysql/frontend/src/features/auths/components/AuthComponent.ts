@@ -1,7 +1,7 @@
 import { IAppManager } from "@/shared/app";
 import { ApiService } from "@/shared/http";
 import { createButton, UIService } from "@/shared/ui";
-import { Effect } from "effect";
+import { Effect, pipe } from "effect";
 import { AuthService } from "../services/AuthService";
 import { performSignIn, performSignOut, performSignUp } from "../services/use-cases";
 import { handleSignInError, handleSignUpError } from "./helper";
@@ -22,6 +22,7 @@ export class AuthComponent {
         emailLabel.textContent = "メールアドレス:";
         const emailInput = document.createElement("input");
         emailInput.id = "email-input";
+        emailInput.name = "email";
         emailInput.type = "email";
         emailInput.required = true;
         emailDiv.append(emailLabel, emailInput);
@@ -33,6 +34,7 @@ export class AuthComponent {
         passwordLabel.textContent = "パスワード:";
         const passwordInput = document.createElement("input");
         passwordInput.id = "password-input";
+        passwordInput.name = "password";
         passwordInput.type = "password";
         passwordInput.required = true;
         passwordDiv.append(passwordLabel, passwordInput);
@@ -56,14 +58,15 @@ export class AuthComponent {
 
         form.addEventListener("submit", (e) => {
             e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
 
-            this.appManager.runPromise(
-                performSignUp(email, password).pipe(
-                    Effect.tapError(handleSignUpError(errorMessageDiv))
-                )
-            )
+            this.appManager.runPromise(pipe(
+                Effect.sync(() => new FormData(form)),
+                Effect.map(Object.fromEntries),
+                Effect.flatMap(performSignUp),
+                Effect.tapError(
+                    handleSignUpError(errorMessageDiv)
+                ),
+            ))
         });
 
         return Effect.succeed(form);
@@ -80,6 +83,7 @@ export class AuthComponent {
         emailLabel.textContent = "メールアドレス:";
         const emailInput = document.createElement("input");
         emailInput.id = "email-input";
+        emailInput.name = "email";
         emailInput.type = "email";
         emailInput.required = true;
         emailDiv.append(emailLabel, emailInput);
@@ -91,6 +95,7 @@ export class AuthComponent {
         passwordLabel.textContent = "パスワード:";
         const passwordInput = document.createElement("input");
         passwordInput.id = "password-input";
+        passwordInput.name = "password";
         passwordInput.type = "password";
         passwordInput.required = true;
         passwordDiv.append(passwordLabel, passwordInput);
@@ -114,14 +119,15 @@ export class AuthComponent {
 
         form.addEventListener("submit", (e) => {
             e.preventDefault();
-            const email = emailInput.value;
-            const password = passwordInput.value;
 
-            this.appManager.runPromise(
-                performSignIn(email, password).pipe(
-                    Effect.tapError(handleSignInError(errorMessageDiv))
-                )
-            )
+            this.appManager.runPromise(pipe(
+                Effect.sync(() => new FormData(form)),
+                Effect.map(Object.fromEntries),
+                Effect.flatMap(performSignIn),
+                Effect.tapError(
+                    handleSignInError(errorMessageDiv)
+                ),
+            ))
         });
 
         return Effect.succeed(form);

@@ -6,12 +6,12 @@ import { PagePath, SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, pipe } from "effect/index";
 import { AuthService } from "./AuthService";
 
-export const performSignUp = (
+export const performSignUp = (input: {
     email: string,
     password: string
-): Effect.Effect<void, SignUpError, AuthService | ApiService> =>
+}): Effect.Effect<void, SignUpError, AuthService | ApiService> =>
     pipe(
-        Effect.succeed({ email, password }),
+        Effect.succeed(input),
         Effect.flatMap(parseToSchema(SignUpInput)),
         Effect.flatMap(AuthService.signUpApi),
         Effect.tap(() => {
@@ -23,15 +23,15 @@ export const performSignUp = (
         })),
     );
 
-export const performSignIn = (
+export const performSignIn = (input: {
     email: string,
     password: string
-): Effect.Effect<UserId, SignInError, AuthService | ApiService | UIService> =>
+}): Effect.Effect<UserId, SignInError, AuthService | ApiService | UIService> =>
     pipe(
-        Effect.succeed({ email, password }),
+        Effect.succeed(input),
         Effect.flatMap(parseToSchema(SignInInput)),
         Effect.flatMap(AuthService.signInApi),
-        Effect.tap(() => UIService.redirectTo(PagePath.TODO)),
+        Effect.tap(() => UIService.redirectTo(PagePath.INDEX)),
         Effect.mapError((e) => new SignInError({
             message: "Sign in failed",
             originalError: e,

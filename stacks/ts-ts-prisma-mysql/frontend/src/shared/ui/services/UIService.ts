@@ -1,9 +1,13 @@
-import { UIError } from "@/errors";
+import { AppendElementsError, UIUnknownError } from "@/errors";
 import { PagePath } from "@app/shared";
-import { Effect } from "effect";
+import { Chunk, Effect } from "effect";
 
 interface IUIService {
-    readonly getElementById: (id: string) => Effect.Effect<HTMLElement, UIError>;
+    readonly getElementById: (id: string) => Effect.Effect<HTMLElement, UIUnknownError>;
+    readonly appendElements: (
+        parent: HTMLElement,
+        children: Chunk.Chunk<HTMLElement>
+    ) => Effect.Effect<void, AppendElementsError>;
     readonly redirectTo: (path: PagePath) => Effect.Effect<void>;
 }
 
