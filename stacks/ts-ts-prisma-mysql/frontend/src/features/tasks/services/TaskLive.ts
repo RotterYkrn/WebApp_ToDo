@@ -1,5 +1,5 @@
 import { ParseSchemaError, TaskTypeError } from "@/errors";
-import { ApiService, extractJsonBody, HttpStatus } from "@/shared/http";
+import { ApiService, HttpStatus } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
 import { TaskApiPathMap, TaskSchemaMap, TaskType } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
@@ -12,7 +12,7 @@ export const TaskLive = Layer.succeed(TaskService, TaskService.of({
             HttpStatus.OK,
             { credentials: "include" }
         ),
-        Effect.flatMap(extractJsonBody()),
+        Effect.flatMap(ApiService.extractBody),
         Effect.flatMap(parseToTaskSchemaChunk(taskType)),
     ),
     createTaskApi: <T extends TaskType>(taskType: T, taskItem: TaskSchemaMap[T]["Type"]) => pipe(
@@ -26,7 +26,7 @@ export const TaskLive = Layer.succeed(TaskService, TaskService.of({
                 }
             }
         ),
-        Effect.flatMap(extractJsonBody()),
+        Effect.flatMap(ApiService.extractBody),
         Effect.flatMap(parseToTaskSchemaData(taskType)),
     ),
 }));
