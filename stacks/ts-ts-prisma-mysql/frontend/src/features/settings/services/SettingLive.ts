@@ -1,5 +1,4 @@
-import { ApiService, HttpStatus } from "@/shared/http";
-import { parseToSchema } from "@/shared/utils";
+import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
 import { ApiUserSettingPath, SettingsInput, SettingsOutput } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
 import { SettingService } from "./SettingService";
@@ -11,8 +10,7 @@ export const SettingLive = Layer.succeed(SettingService, SettingService.of({
             HttpStatus.OK,
             { credentials: "include" }
         ),
-        Effect.flatMap(ApiService.extractBody),
-        Effect.flatMap(parseToSchema(SettingsOutput)),
+        Effect.flatMap(extractBodyWithSchema(SettingsOutput)),
     ),
 
     updateSettingsApi: (input: SettingsInput) => pipe(
@@ -24,7 +22,6 @@ export const SettingLive = Layer.succeed(SettingService, SettingService.of({
                 options: { credentials: "include" }
             }
         ),
-        Effect.flatMap(ApiService.extractBody),
-        Effect.flatMap(parseToSchema(SettingsOutput)),
+        Effect.flatMap(extractBodyWithSchema(SettingsOutput)),
     ),
 }));

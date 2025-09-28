@@ -38,6 +38,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         Effect.flatMap(handleHttpError(path, "HTTP error during POST")),
         Effect.flatMap(ensureHttpStatus(expectedStatus, "POST", path))
     ),
+
     extractBody: (res) => Effect.tryPromise({
         try: () => res.json() as Promise<unknown>,
         catch: (e) => new ResponseJsonError({

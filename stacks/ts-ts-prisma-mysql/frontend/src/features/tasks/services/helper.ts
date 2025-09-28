@@ -1,40 +1,48 @@
-import { ParseSchemaError, TaskTypeError } from "@/errors";
-import { parseToSchema } from "@/shared/utils";
+import { ParseSchemaError, ResponseJsonError, TaskTypeError } from "@/errors";
+import { ApiService, extractBodyWithSchema } from "@/shared/http";
 import { TaskSchemaMap, TaskType } from "@app/shared";
 import { Effect } from "effect";
 
-export const parseToTaskSchemaData = <T extends TaskType>(
+export const extractTaskSchemaData = <T extends TaskType>(
     taskType: T
-): (obj: unknown) => Effect.Effect<TaskSchemaMap[T]["Type"], ParseSchemaError | TaskTypeError> => {
-        switch (taskType) {
-            case TaskType.DAILY_PLAN:
-                return parseToSchema(TaskSchemaMap[TaskType.DAILY_PLAN]["Schema"]);
-            case TaskType.TODO:
-                return parseToSchema(TaskSchemaMap[TaskType.TODO]["Schema"]);
-            case TaskType.HABIT:
-                return parseToSchema(TaskSchemaMap[TaskType.HABIT]["Schema"]);
-            default:
-                return () => Effect.fail(new TaskTypeError({
-                    message: "Unknown task type",
-                    taskType: taskType
-                }));
-        }
-    };
+): (res: Response) => Effect.Effect<
+    TaskSchemaMap[T]["Type"],
+    ResponseJsonError | ParseSchemaError | TaskTypeError,
+    ApiService
+> => {
+    switch (taskType) {
+        case TaskType.DAILY_PLAN:
+            return extractBodyWithSchema(TaskSchemaMap[TaskType.DAILY_PLAN]["Schema"]);
+        case TaskType.TODO:
+            return extractBodyWithSchema(TaskSchemaMap[TaskType.TODO]["Schema"]);
+        case TaskType.HABIT:
+            return extractBodyWithSchema(TaskSchemaMap[TaskType.HABIT]["Schema"]);
+        default:
+            return () => Effect.fail(new TaskTypeError({
+                message: "Unknown task type",
+                taskType: taskType
+            }));
+    }
+};
 
-export const parseToTaskSchemaChunk = <T extends TaskType>(
+export const extractTaskSchemaDataChunk = <T extends TaskType>(
     taskType: T
-): (obj: unknown) => Effect.Effect<TaskSchemaMap[T]["ChunkType"], ParseSchemaError | TaskTypeError> => {
-        switch (taskType) {
-            case TaskType.DAILY_PLAN:
-                return parseToSchema(TaskSchemaMap[TaskType.DAILY_PLAN]["ChunkSchema"]);
-            case TaskType.TODO:
-                return parseToSchema(TaskSchemaMap[TaskType.TODO]["ChunkSchema"]);
-            case TaskType.HABIT:
-                return parseToSchema(TaskSchemaMap[TaskType.HABIT]["ChunkSchema"]);
-            default:
-                return () => Effect.fail(new TaskTypeError({
-                    message: "Unknown task type",
-                    taskType: taskType
-                }));
-        }
-    };
+): (res: Response) => Effect.Effect<
+    TaskSchemaMap[T]["ChunkType"],
+    ResponseJsonError | ParseSchemaError | TaskTypeError,
+    ApiService
+> => {
+    switch (taskType) {
+        case TaskType.DAILY_PLAN:
+            return extractBodyWithSchema(TaskSchemaMap[TaskType.DAILY_PLAN]["ChunkSchema"]);
+        case TaskType.TODO:
+            return extractBodyWithSchema(TaskSchemaMap[TaskType.TODO]["ChunkSchema"]);
+        case TaskType.HABIT:
+            return extractBodyWithSchema(TaskSchemaMap[TaskType.HABIT]["ChunkSchema"]);
+        default:
+            return () => Effect.fail(new TaskTypeError({
+                message: "Unknown task type",
+                taskType: taskType
+            }));
+    }
+};

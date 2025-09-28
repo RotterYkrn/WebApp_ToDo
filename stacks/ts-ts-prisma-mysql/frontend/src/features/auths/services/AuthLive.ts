@@ -1,5 +1,5 @@
-import { ApiService, HttpStatus } from "@/shared/http";
-import { parseResponseJson, parseToSchema } from "@/shared/utils";
+import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
+import { parseResponseJson } from "@/shared/utils";
 import { ApiAuthPathFull, SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
 import { SessionData } from "../types/SessionData";
@@ -34,8 +34,7 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
                 options: { credentials: "include" }
             }
         ),
-        Effect.flatMap(ApiService.extractBody),
-        Effect.flatMap(parseToSchema(UserId)),
+        Effect.flatMap(extractBodyWithSchema(UserId)),
     ),
 
     signOutApi: () => pipe(
