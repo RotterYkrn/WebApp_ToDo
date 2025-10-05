@@ -1,14 +1,16 @@
+import react from "@vitejs/plugin-react-swc";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-	base: "./",
-	root: "./src",
+	// base: "./",
+	// root: "./src",
 	build: {
 		outDir: resolve(__dirname, "dist"),
+		emptyOutDir: true,
 	},
-	plugins: [tsconfigPaths()],
+	plugins: [tsconfigPaths(), react()],
 
 	server: {
 		host: true,
