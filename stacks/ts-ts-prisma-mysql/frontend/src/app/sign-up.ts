@@ -5,12 +5,14 @@ import { Effect } from "effect";
 import { appManager } from "./app";
 
 window.addEventListener("DOMContentLoaded", async () => {
-	appManager.runSync(Effect.gen(function* () {
-		yield* appendElementsWrapper(
-			yield* UIService.getElementById("app-root"),
-			buildSignUpFormSection()
-		);
-	}));
+	appManager.runSync(
+		Effect.gen(function* () {
+			yield* appendElementsWrapper(
+				yield* UIService.getElementById("app-root"),
+				buildSignUpFormSection(),
+			);
+		}),
+	);
 });
 
 export const buildSignUpFormSection = (): HTMLElement => {
@@ -21,7 +23,7 @@ export const buildSignUpFormSection = (): HTMLElement => {
 	section.append(
 		buildSignUpFormSectionTitle(),
 		authComponent.buildSignUpForm(),
-		buildToSignUpLinkParagraph()
+		buildToSignUpLinkParagraph(),
 	);
 
 	return section;

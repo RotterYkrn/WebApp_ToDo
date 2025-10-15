@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { ApiTodoPath } from "@app/shared";
 
 const router = Router();
 
@@ -18,7 +17,7 @@ const tasks = [
     },
 ];
 
-router.get(ApiTodoPath.GET_ALL, (req, res) => {
+router.get("/", (req, res) => {
     res.json(tasks);
 });
 

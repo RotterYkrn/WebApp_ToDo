@@ -1,6 +1,7 @@
 import { IAppManager } from "@/shared/app";
 import { ApiService } from "@/shared/http";
 import { createButton, UIService } from "@/shared/ui";
+import { PagePath } from "@app/shared";
 import { Effect, pipe } from "effect";
 import { AuthService } from "../services/AuthService";
 import { performSignIn, performSignOut, performSignUp } from "../services/use-cases";
@@ -63,6 +64,7 @@ export class AuthComponent {
                 Effect.sync(() => new FormData(form)),
                 Effect.map(Object.fromEntries),
                 Effect.flatMap(performSignUp),
+                Effect.tap(() => UIService.redirectTo(PagePath.SIGN_IN)),
                 Effect.tapError(
                     handleSignUpError(errorMessageDiv)
                 ),
@@ -124,6 +126,7 @@ export class AuthComponent {
                 Effect.sync(() => new FormData(form)),
                 Effect.map(Object.fromEntries),
                 Effect.flatMap(performSignIn),
+                Effect.tap(() => UIService.redirectTo(PagePath.INDEX)),
                 Effect.tapError(
                     handleSignInError(errorMessageDiv)
                 ),
@@ -140,7 +143,9 @@ export class AuthComponent {
                 textContent: "サインアウト",
             },
             () => this.appManager.runPromise(
-                performSignOut().pipe(
+                pipe(
+                    performSignOut(),
+                    Effect.tap(() => UIService.redirectTo(PagePath.SIGN_IN)),
                     Effect.tapError((e) => Effect.sync(() => {
                         console.error("Sign out failed:", e);
                     }))

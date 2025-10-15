@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { ApiHabitPath } from "@app/shared";
 
 const router = Router();
 

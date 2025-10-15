@@ -7,9 +7,9 @@ export const ApiUserPath = {
     UPDATE: (userId) => `${API_USER_ROOT}/${userId}`,
     DELETE: (userId) => `${API_USER_ROOT}/${userId}`,
 };
-const API_USER_SETTING_ROOT = "/api/settings";
-export const ApiUserSettingPath = {
-    ROOT: API_USER_SETTING_ROOT,
-    GET: API_USER_SETTING_ROOT,
-    UPDATE: API_USER_SETTING_ROOT,
+const API_USER_SETTINGS_ROOT = "/api/settings";
+export const ApiUserSettingsPath = {
+    ROOT: API_USER_SETTINGS_ROOT,
+    GET: API_USER_SETTINGS_ROOT,
+    UPDATE: API_USER_SETTINGS_ROOT,
 };

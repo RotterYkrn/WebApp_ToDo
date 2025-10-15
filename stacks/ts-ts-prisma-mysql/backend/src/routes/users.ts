@@ -1,4 +1,4 @@
-import { ApiUserSettingPath, SettingsInput, SettingsOutput } from "@app/shared";
+import { ApiUserSettingsPath, SettingsInput, SettingsOutput } from "@app/shared";
 import { Effect, Schema } from "effect";
 import { Router } from "express";
 import { constants } from "http2";
@@ -12,14 +12,14 @@ let settings = Effect.runSync(Schema.decode(SettingsOutput)({
     theme: "dark"
 }));
 
-router.get(ApiUserSettingPath.GET, (req, res) => {
+router.get(ApiUserSettingsPath.GET, (req, res) => {
     res
         .status(constants.HTTP_STATUS_OK)
         .json(settings)
         .end();
 });
 
-router.post(ApiUserSettingPath.UPDATE, (req, res) => {
+router.post(ApiUserSettingsPath.UPDATE, (req, res) => {
     const input = Effect.runSync(Schema.decode(SettingsInput)(req.body));
     Object.assign(settings, input);
     res

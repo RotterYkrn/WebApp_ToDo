@@ -8,7 +8,7 @@ export declare const ApiUserPath: {
     readonly UPDATE: (userId: Id) => `${typeof API_USER_ROOT}/${Id}`;
     readonly DELETE: (userId: Id) => `${typeof API_USER_ROOT}/${Id}`;
 };
-export declare const ApiUserSettingPath: {
+export declare const ApiUserSettingsPath: {
     readonly ROOT: "/api/settings";
     readonly GET: "/api/settings";
     readonly UPDATE: "/api/settings";

@@ -6,13 +6,12 @@ import { UILive } from "@/shared/ui";
 import { Layer } from "effect";
 import { AppManager } from "./AppManager";
 
-
 const AppLive = Layer.mergeAll(
-    ApiLive,
-    UILive,
-    AuthLive,
-    TaskLive,
-    ConsoleLoggerLive
+	ApiLive,
+	UILive,
+	AuthLive,
+	TaskLive,
+	ConsoleLoggerLive,
 );
 
 export const appManager = new AppManager(AppLive);
