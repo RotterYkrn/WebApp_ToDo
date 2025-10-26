@@ -1,7 +1,7 @@
 import { ApiLive, ApiService, HttpStatus } from "@/shared/http";
 import { buildFooter } from "@/shared/ui";
 import { parseResponseJson, runPromiseWithLayer } from "@/shared/utils";
-import { ApiUserSettingPath } from "@app/shared";
+import { ApiUserSettingsPath } from "@app/shared";
 import { Effect, pipe } from "effect";
 
 interface Settings {
@@ -13,11 +13,11 @@ interface Settings {
 
 const viewSettings = () => pipe(
     ApiService.get(
-        ApiUserSettingPath.GET,
+        ApiUserSettingsPath.GET,
         HttpStatus.OK,
         { credentials: "include" }
     ),
-    parseResponseJson<Settings>(),
+    Effect.flatMap(parseResponseJson<Settings>()),
     Effect.flatMap((data) => Effect.gen(function* () {
         yield* Effect.sync(() => {
             const curUsername = document.getElementById("display-username") as HTMLInputElement;

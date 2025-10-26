@@ -124,8 +124,6 @@
         "src/**/*.tsx",
         "tests/**/*.ts",
         "tests/**/*.tsx",
-        "../shared/**/*.ts",
-        "../shared/**/*.tsx",
         "vite.config.ts"
     ],
     "exclude": ["**/node_modules", "dist", "dist-tsc"]

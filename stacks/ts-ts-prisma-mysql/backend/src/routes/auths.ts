@@ -8,9 +8,14 @@ router.get(ApiAuthPathLocal.CHECK_SESSION, (req, res) => {
     const sessionToken = req.cookies?.sessionToken;
 
     if (sessionToken === "true") {
-        res.json({ loggedIn: true });
+        res
+            .json(1)
+            .status(constants.HTTP_STATUS_OK)
+            .end();
     } else {
-        res.json({ loggedIn: false });
+        res
+            .status(constants.HTTP_STATUS_UNAUTHORIZED)
+            .end();
     }
 });
 
@@ -24,8 +29,7 @@ router.post(ApiAuthPathLocal.SIGN_IN, (req, res) => {
                 httpOnly: true,
                 maxAge: 1000 * 60 * 60,
             })
-            .json(1)
-            .status(constants.HTTP_STATUS_OK)
+            .status(constants.HTTP_STATUS_NO_CONTENT)
             .end();
         console.log(`signed in as ${email} (${password})`);
     } else {
@@ -46,7 +50,7 @@ router.post(ApiAuthPathLocal.SIGN_UP, (req, res) => {
     const password = req.body.password;
 
     console.log(`signed up as ${username} (${email}): ${password}`);
-    res.json({ success: true });
+    res.status(constants.HTTP_STATUS_CREATED).end();
 });
 
 export default router;

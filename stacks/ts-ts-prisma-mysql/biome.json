@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
     "vcs": {
         "enabled": false,
         "clientKind": "git",
@@ -11,10 +11,12 @@
     },
     "formatter": {
         "enabled": true,
+        "formatWithErrors": true,
         "indentStyle": "space",
         "indentWidth": 4,
         "lineEnding": "lf",
-        "lineWidth": 120
+        "lineWidth": 120,
+        "attributePosition": "multiline"
     },
     "linter": {
         "enabled": true,
@@ -24,6 +26,7 @@
     },
     "javascript": {
         "formatter": {
+            "enabled": true,
             "quoteStyle": "double"
         }
     },

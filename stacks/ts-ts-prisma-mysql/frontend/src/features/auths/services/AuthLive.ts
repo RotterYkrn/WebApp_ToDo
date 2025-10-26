@@ -1,20 +1,19 @@
 import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
-import { parseResponseJson } from "@/shared/utils";
 import { ApiAuthPathFull, SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
 import { SessionData } from "../types/SessionData";
 import { AuthService } from "./AuthService";
 
-export const processSessionData = (data: SessionData) => Effect.succeed(data.loggedIn);
+export const processSessionData = (data: SessionData) => data.loggedIn;
 
 export const AuthLive = Layer.succeed(AuthService, AuthService.of({
     checkSession: () => pipe(
-        Effect.gen(function* () {
-            const apiService = yield* ApiService;
-            return yield* apiService.get(ApiAuthPathFull.CHECK_SESSION, HttpStatus.OK, { credentials: "include" });
-        }),
-        parseResponseJson<SessionData>(),
-        Effect.flatMap(processSessionData),
+        ApiService.get(
+            ApiAuthPathFull.CHECK_SESSION,
+            HttpStatus.OK,
+            { credentials: "include" }
+        ),
+        Effect.flatMap(extractBodyWithSchema(UserId)),
         Effect.mapError((e) => e),
     ),
 
@@ -28,25 +27,23 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
     signInApi: (input: SignInInput) => pipe(
         ApiService.post(
             ApiAuthPathFull.SIGN_IN,
-            HttpStatus.OK,
+            HttpStatus.NO_CONTENT,
             {
                 body: input,
                 options: { credentials: "include" }
             }
         ),
-        Effect.flatMap(extractBodyWithSchema(UserId)),
+        Effect.map(() => void 0),
     ),
 
     signOutApi: () => pipe(
-        Effect.gen(function* () {
-            const apiService = yield* ApiService;
-            return yield* apiService.post(
-                ApiAuthPathFull.SIGN_OUT,
-                HttpStatus.NO_CONTENT,
-                {
-                    options: { credentials: "include" }
-                }
-            );
-        }),
+        ApiService.post(
+            ApiAuthPathFull.SIGN_OUT,
+            HttpStatus.NO_CONTENT,
+            {
+                options: { credentials: "include" }
+            }
+        ),
+        Effect.map(() => void 0),
     ),
 }));

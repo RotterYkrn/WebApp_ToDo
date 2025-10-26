@@ -1,17 +1,29 @@
-import { appManager } from "@/app/app";
 import { PagePath } from "@app/shared";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { AuthService } from "../services/AuthService";
+import { useAuth } from "../hooks/useAuth";
 
 const AuthRoute: React.FC = () => {
-    const isAuthenticated = appManager.runPromise(AuthService.checkSession());
+    const { isAuthenticated, isLoading } = useAuth();
     const location = useLocation();
 
-    if (!isAuthenticated) {
-        return <Navigate to={PagePath.SIGN_IN} state={{ from: location }} replace />;
+    if (isLoading) {
+        // 💡 認証チェック中は何も表示しない or ローディングUIを表示
+        return <div>Loading...</div>;
     }
 
-    return <Outlet />;
+    return (
+        <>
+            {isAuthenticated ? (
+                <Outlet />
+            ) : (
+                <Navigate
+                    to={PagePath.SIGN_IN}
+                    state={{ from: location }}
+                    replace
+                />
+            )}
+        </>
+    );
 };
 
 export default AuthRoute;

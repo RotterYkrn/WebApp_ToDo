@@ -1,33 +1,34 @@
-import { appManager } from "@/app/app";
-import { UIService } from "@/shared/ui";
 import { PagePath } from "@app/shared";
-import { Effect, pipe } from "effect";
-import { useRef, useState } from "react";
-import { performSignIn } from "../services/use-cases";
-import { handleSignInError } from "./helper";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const SignInForm: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const formRef = useRef<HTMLFormElement>(null);
-    const errorMessageDivRef = useRef<HTMLDivElement>(null);
 
-    const signIn = (e: React.FormEvent<HTMLFormElement>) => {
+    const { isLoading, isError, errorMessage, signIn } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Navigateで渡された元の場所を取得
+    const from = (location.state as { from?: Location })?.from?.pathname ?? PagePath.INDEX;
+
+    const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        appManager.runPromise(
-            pipe(
-                Effect.sync(() => new FormData(formRef.current!)),
-                Effect.map(Object.fromEntries),
-                Effect.flatMap(performSignIn),
-                Effect.tap(() => UIService.redirectTo(PagePath.INDEX)),
-                Effect.tapError(handleSignInError(errorMessageDivRef.current!))
-            )
+        
+        await signIn(
+            { email, password },
+            {
+                onSuccess: () => {
+                    navigate(from, { replace: true });
+                }
+            }
         );
     };
 
     return (
-        <form ref={formRef} onSubmit={signIn}>
+        <form onSubmit={handleSignIn}>
             <label>
                 メールアドレス:
                 <input type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -36,8 +37,8 @@ const SignInForm: React.FC = () => {
                 パスワード:
                 <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </label>
-            <div id="error-message" ref={errorMessageDivRef} style={{ display: "none" }}></div>
-            <button type="submit">サインイン</button>
+            {isError && <div id="error-message">{errorMessage}</div>}
+            <button type="submit" disabled={isLoading}>サインイン</button>
         </form>
     );
 };

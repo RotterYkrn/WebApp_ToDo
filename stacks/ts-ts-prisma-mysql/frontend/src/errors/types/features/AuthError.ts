@@ -10,6 +10,20 @@ export class SignUpError extends Data.TaggedError("SignUpError")<{
     readonly originalError: SharedError;
 }> { }
 
+export class ValidationError extends Data.TaggedError("ValidationError")<{
+    readonly message: string;
+    readonly originalError: SharedError;
+}> { }
+
+export class InvalidCredentialsError extends Data.TaggedError("InvalidCredentialsError")<{
+    readonly message: string;
+}> { }
+
+export class UnknownAuthError extends Data.TaggedError("UnknownAuthError")<{
+    readonly message: string;
+    readonly originalError: SharedError;
+}> { }
+
 export class SignInError extends Data.TaggedError("SignInError")<{
     readonly message: string;
     readonly originalError: SharedError;
