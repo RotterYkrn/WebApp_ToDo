@@ -25,7 +25,8 @@ export class UnknownAuthError extends Data.TaggedError("UnknownAuthError")<{
 }> { }
 
 export class SignInError extends Data.TaggedError("SignInError")<{
-    readonly message: string;
+    readonly type: "invalid_credentials" | "validation_error" | "unknown_error";
+    readonly inputObject: unknown;
     readonly originalError: SharedError;
 }> { }
 

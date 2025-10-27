@@ -1,3 +1,4 @@
+import { SignInError } from "@/errors";
 import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
 import { ApiAuthPathFull, SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
@@ -34,6 +35,28 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
             }
         ),
         Effect.map(() => void 0),
+        Effect.mapError((e) => {
+            switch (e._tag) {
+                case "UnauthorizedError":
+                    return new SignInError({
+                        type: "invalid_credentials",
+                        inputObject: input,
+                        originalError: e,
+                    });
+                case "BadRequestError":
+                    return new SignInError({
+                        type: "validation_error",
+                        inputObject: input,
+                        originalError: e,
+                    });
+                default:
+                    return new SignInError({
+                        type: "unknown_error",
+                        inputObject: input,
+                        originalError: e,
+                    });
+            }
+        }),
     ),
 
     signOutApi: () => pipe(

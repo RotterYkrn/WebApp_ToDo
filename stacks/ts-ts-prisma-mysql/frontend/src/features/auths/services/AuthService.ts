@@ -1,4 +1,4 @@
-import { SharedError } from "@/errors";
+import { SharedError, SignInError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect } from "effect";
@@ -10,7 +10,7 @@ export interface IAuthService {
   ) => Effect.Effect<void, SharedError, ApiService>;
   readonly signInApi: (
     input: SignInInput
-  ) => Effect.Effect<void, SharedError, ApiService>;
+  ) => Effect.Effect<void, SignInError, ApiService>;
   readonly signOutApi: () => Effect.Effect<void, SharedError, ApiService>;
 }
 

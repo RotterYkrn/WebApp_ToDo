@@ -19,30 +19,16 @@ export const performSignUp = (input: {
         })),
     );
 
-export const performSignIn = (input: {
-    email: string,
-    password: string
-}): Effect.Effect<void, SignInError, AuthService | ApiService> =>
-    pipe(
-        input,
-        parseToSchema(SignInInput),
-        Effect.flatMap(AuthService.signInApi),
-        Effect.mapError((e) => new SignInError({
-            message: "Sign in failed",
-            originalError: e,
-        })),
-    );
-
-export const signInUseCase = (input: {
+export const signUpUseCase = (input: {
     email: string,
     password: string
 }): Effect.Effect<void, string, AuthService | ApiService> =>
     pipe(
         input,
-        parseToSchema(SignInInput),
-        Effect.flatMap(AuthService.signInApi),
+        parseToSchema(SignUpInput),
+        Effect.flatMap(AuthService.signUpApi),
         Effect.mapError((e) => {
-            // TODO: AuthErrorへのマッピングをsignInApi側で行う
+            // TODO: AuthErrorへのマッピングをsignUpApi側で行う
             switch (e._tag) {
                 case "UnauthorizedError":
                     return new InvalidCredentialsError({
@@ -65,6 +51,44 @@ export const signInUseCase = (input: {
                 case "InvalidCredentialsError":
                     return "メールアドレスまたはパスワードが正しくありません。";
                 case "ValidationError":
+                    return "メールアドレスとパスワードを正しく入力してください。";
+                default:
+                    return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
+            }
+        }),
+    );
+
+export const signInUseCase = (input: {
+    email: string,
+    password: string
+}): Effect.Effect<void, string, AuthService | ApiService> =>
+    pipe(
+        input,
+        parseToSchema(SignInInput),
+        Effect.flatMap(AuthService.signInApi),
+        Effect.mapError((e) => {
+            switch (e._tag) {
+                case "SignInError":
+                    return e;
+                case "ParseSchemaError":
+                    return new SignInError({
+                        type: "validation_error",
+                        inputObject: input,
+                        originalError: e,
+                    });
+                default:
+                    return new SignInError({
+                        type: "unknown_error",
+                        inputObject: input,
+                        originalError: e,
+                    });
+            }
+        }),
+        Effect.mapError((e) => {
+            switch (e.type) {
+                case "invalid_credentials":
+                    return "メールアドレスまたはパスワードが正しくありません。";
+                case "validation_error":
                     return "メールアドレスとパスワードを正しく入力してください。";
                 default:
                     return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";

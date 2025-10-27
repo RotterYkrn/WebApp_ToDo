@@ -7,7 +7,6 @@ const AuthRoute: React.FC = () => {
     const location = useLocation();
 
     if (isLoading) {
-        // 💡 認証チェック中は何も表示しない or ローディングUIを表示
         return <div>Loading...</div>;
     }
 
