@@ -1,13 +1,13 @@
 import { PagePath } from "@app/shared";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { AuthState, useAuth } from "../hooks/useAuth";
 
 const SignInForm: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
-    const { isLoading, isError, errorMessage, signIn } = useAuth();
+    const { signInState, signIn } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -25,6 +25,8 @@ const SignInForm: React.FC = () => {
             }
         );
     };
+
+    const errorMessage = mapErrorMessage(signInState);
 
     return (
         <form onSubmit={handleSignIn}>
@@ -47,16 +49,30 @@ const SignInForm: React.FC = () => {
                 />
             </label>
 
-            {isError && <div id="error-message">{errorMessage}</div>}
+            {errorMessage && <div id="error-message">{errorMessage}</div>}
             
             <button
                 type="submit"
-                disabled={isLoading}
+                disabled={signInState === "loading"}
             >
                 サインイン
             </button>
         </form>
     );
 };
+
+const mapErrorMessage = (failedType: AuthState): string => {
+    switch (failedType) {
+        case "succeed":
+        case "loading":
+            return "";
+        case "unauthenticated":
+            return "メールアドレスまたはパスワードが正しくありません。";
+        case "invalid_credential":
+            return "メールアドレスとパスワードを正しく入力してください。";
+        default:
+            return "処理中にエラーが発生しました。時間をおいて再度お試しください。";
+    }
+}
 
 export default SignInForm;

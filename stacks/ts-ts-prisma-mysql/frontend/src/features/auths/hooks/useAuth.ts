@@ -1,4 +1,4 @@
-import { Unauthorized, UnknownAuthError } from "@/errors";
+import { InvalidCredentialsError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app/useAppManager";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Cause, Exit, Option } from "effect";
@@ -7,12 +7,13 @@ import { checkSessionUseCase, performSignOut, signInUseCase } from "../services/
 
 const AUTH_SESSION_QUERY_KEY = ["authSession"];
 
-type AuthFailureType = 
-    | 'unauthenticated'   // トークンなしの未ログイン状態
-    | 'expired'           // トークン期限切れ (セッション切れ)
+export type AuthState = 
+    | 'succeed'            // エラーなし
+    | "loading"            // 認証状態確認中
+    | 'unauthenticated'    // トークンなしの未ログイン状態
+    | 'expired'            // トークン期限切れ (セッション切れ)
     | 'invalid_credential' // ログイン情報不正
-    | 'system_error'      // サーバーやネットワークの予期せぬエラー
-    | 'none';             // エラーなし
+    | 'system_error';      // サーバーやネットワークの予期せぬエラー
 
 export function useAuth() {
     const queryClient = useQueryClient();
@@ -45,13 +46,16 @@ export function useAuth() {
         retry: false,
     });
 
-    const failedType: AuthFailureType = sessionQuery.isError
-        ? mapErrorToAuthFailureType(sessionQuery.error)
-        : "none";
+    const checkSessionState: AuthState = 
+        sessionQuery.isLoading
+            ? "loading"
+            : sessionQuery.isError
+                ? mapCheckSessionErrorState(sessionQuery.error)
+                : "succeed";
 
     const signInMutation = useMutation<
         void,
-        string,
+        InvalidCredentialsError | ValidationError | UnknownAuthError,
         { email: string; password: string; }
     >({
         mutationFn: async (input: {
@@ -63,19 +67,14 @@ export function useAuth() {
                 const cause = result.cause;
                 const error = Cause.failureOption(cause);
                 if (Option.isSome(error)) {
-                    switch (error.value._tag) {
-                        case "InvalidCredentialsError":
-                            throw "メールアドレスまたはパスワードが正しくありません。";
-                        case "ValidationError":
-                            throw "メールアドレスとパスワードを正しく入力してください。";
-                        case "UnknownAuthError":
-                        default:
-                            console.error(error.value);
-                            throw "処理中にエラーが発生しました。時間をおいて再度お試しください。";
-                    }
+                    console.error("Sign in failed:", error.value);
+                    throw error.value;
                 } else {
                     console.error(cause);
-                    throw "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
+                    throw new UnknownAuthError({
+                        message: "Sign in failed due to an unknown error.",
+                        originalError: cause,
+                    });
                 }
             }
         },
@@ -83,6 +82,13 @@ export function useAuth() {
             queryClient.invalidateQueries({ queryKey: AUTH_SESSION_QUERY_KEY });
         },
     });
+
+    const signInState: AuthState = 
+        signInMutation.isPending
+            ? "loading"
+            : signInMutation.isError
+                ? mapSignInErrorState(signInMutation.error)
+                : "succeed";
 
     // 3️⃣ サインアウトのミューテーション
     const signOutMutation = useMutation({
@@ -96,19 +102,35 @@ export function useAuth() {
         user: sessionQuery.data,
         isAuthenticated: !!sessionQuery.data,
         isLoading: sessionQuery.isLoading || signInMutation.isPending || signOutMutation.isPending,
-        isError: sessionQuery.isError || signInMutation.isError || signOutMutation.isError,
-        failedType,
-        errorMessage: signInMutation.error,
+        isError: signOutMutation.isError,
+        checkSessionState,
+        signInState,
 
         signIn: signInMutation.mutate,
         signOut: signOutMutation.mutate,
     };
 }
 
-const mapErrorToAuthFailureType = (error: Unauthorized | UnknownAuthError): AuthFailureType => {
+const mapCheckSessionErrorState = (
+    error: Unauthorized | UnknownAuthError
+): AuthState => {
     switch (error._tag) {
         case "Unauthorized":
             return "unauthenticated";
+        case "UnknownAuthError":
+        default:
+            return "system_error";
+    }
+};
+
+const mapSignInErrorState = (
+    error: InvalidCredentialsError | Unauthorized | ValidationError | UnknownAuthError
+): AuthState => {
+    switch (error._tag) {
+        case "InvalidCredentialsError":
+            return "unauthenticated";
+        case "ValidationError":
+            return "invalid_credential";
         case "UnknownAuthError":
         default:
             return "system_error";

@@ -1,3 +1,24 @@
+/* App.css または メインレイアウトのスタイル */
+#app-root, .app-container {
+    min-height: 100vh; /* 画面の最低高さを確保 */
+    display: flex;
+    flex-direction: column;
+    /* 必要に応じてアイテムを中央揃えにする設定 */
+}
+
+label {
+    display: block;
+}
+
+/* AuthRouteのローディング状態のスタイル */
+.auth-loading {
+    /* ローディング中もメインコンテンツと同じ高さを占めるようにする */
+    min-height: 500px; /* SignInPageのコンテンツの想定される高さ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #error-message {
 	color: red;
 	margin-bottom: 10px;

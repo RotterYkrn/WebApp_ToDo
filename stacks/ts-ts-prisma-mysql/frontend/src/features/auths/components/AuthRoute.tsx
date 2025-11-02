@@ -3,11 +3,11 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const AuthRoute: React.FC = () => {
-    const { isAuthenticated, isLoading } = useAuth();
+    const { isAuthenticated, checkSessionState } = useAuth();
     const location = useLocation();
 
-    if (isLoading) {
-        return <div>認証を確認中...</div>;
+    if (checkSessionState === "loading") {
+        return <div className="auth-loading">認証を確認中...</div>;
     }
 
     if (!isAuthenticated) {
