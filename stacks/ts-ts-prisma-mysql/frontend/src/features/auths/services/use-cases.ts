@@ -1,9 +1,30 @@
-import { InvalidCredentialsError, SignInError, SignOutError, SignUpError, UnknownAuthError, ValidationError } from "@/errors";
+import { InvalidCredentialsError, SignOutError, SignUpError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
-import { SignInInput, SignUpInput } from "@app/shared";
+import { SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, pipe } from "effect";
 import { AuthService } from "./AuthService";
+
+export const checkSessionUseCase = (): Effect.Effect<
+    UserId,
+    Unauthorized | UnknownAuthError,
+    AuthService | ApiService
+> =>
+    pipe(
+        AuthService.checkSession(),
+        Effect.mapError((e) => {
+            if (e._tag === "UnauthorizedError") {
+                return new Unauthorized({
+                    message: "User is not authenticated.",
+                });
+            } else {
+                return new UnknownAuthError({
+                    message: "An unexpected error occurred.",
+                    originalError: e,
+                });
+            }
+        }),
+    );
 
 export const performSignUp = (input: {
     email: string,
@@ -13,87 +34,93 @@ export const performSignUp = (input: {
         input,
         parseToSchema(SignUpInput),
         Effect.flatMap(AuthService.signUpApi),
-        Effect.mapError((e) => new SignUpError({
-            message: "Sign up failed",
-            originalError: e,
-        })),
+        Effect.mapError((e) => {
+            return new SignUpError({
+                type: "unknown_error",
+                inputObject: input,
+                originalError: e,
+            });
+        }),
     );
 
 export const signUpUseCase = (input: {
     email: string,
     password: string
-}): Effect.Effect<void, string, AuthService | ApiService> =>
+}): Effect.Effect<
+    void,
+    ValidationError | UnknownAuthError,
+    AuthService | ApiService
+> =>
     pipe(
         input,
         parseToSchema(SignUpInput),
         Effect.flatMap(AuthService.signUpApi),
         Effect.mapError((e) => {
-            // TODO: AuthErrorへのマッピングをsignUpApi側で行う
             switch (e._tag) {
-                case "UnauthorizedError":
-                    return new InvalidCredentialsError({
-                        message: "Invalid email or password",
-                    })
+                case "BadRequestError":
                 case "ParseSchemaError":
                     return new ValidationError({
-                        message: "Validation error",
+                        message: "Bad email or password format.",
                         originalError: e,
                     });
                 default:
                     return new UnknownAuthError({
-                        message: "Unknown authentication error",
+                        message: "An unexpected error occurred.",
                         originalError: e,
                     });
             }
         }),
-        Effect.mapError((e) => {
-            switch (e._tag) {
-                case "InvalidCredentialsError":
-                    return "メールアドレスまたはパスワードが正しくありません。";
-                case "ValidationError":
-                    return "メールアドレスとパスワードを正しく入力してください。";
-                default:
-                    return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
-            }
-        }),
+        // Effect.mapError((e) => {
+        //     switch (e.type) {
+        //         case "validation_error":
+        //             return "メールアドレスとパスワードを正しく入力してください。";
+        //         default:
+        //             return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
+        //     }
+        // }),
     );
 
 export const signInUseCase = (input: {
     email: string,
     password: string
-}): Effect.Effect<void, string, AuthService | ApiService> =>
+}): Effect.Effect<
+    void,
+    InvalidCredentialsError | ValidationError | UnknownAuthError,
+    AuthService | ApiService
+> =>
     pipe(
         input,
         parseToSchema(SignInInput),
         Effect.flatMap(AuthService.signInApi),
         Effect.mapError((e) => {
             switch (e._tag) {
-                case "SignInError":
-                    return e;
+                case "UnauthorizedError":
+                    return new InvalidCredentialsError({
+                        message: "Invalid email or password.",
+                    });
+                case "BadRequestError":
                 case "ParseSchemaError":
-                    return new SignInError({
-                        type: "validation_error",
-                        inputObject: input,
+                    return new ValidationError({
+                        message: "Bad email or password format.",
                         originalError: e,
                     });
                 default:
-                    return new SignInError({
-                        type: "unknown_error",
-                        inputObject: input,
+                    return new UnknownAuthError({
+                        message: "An unexpected error occurred.",
                         originalError: e,
                     });
             }
         }),
-        Effect.mapError((e) => {
-            switch (e.type) {
-                case "invalid_credentials":
-                    return "メールアドレスまたはパスワードが正しくありません。";
-                case "validation_error":
-                    return "メールアドレスとパスワードを正しく入力してください。";
-                default:
-                    return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
-            }
-        }),
+        // Effect.mapError((e) => {
+        //     switch (e.type) {
+        //         case "invalid_credentials":
+        //             return "メールアドレスまたはパスワードが正しくありません。";
+        //         case "validation_error":
+        //             return "メールアドレスとパスワードを正しく入力してください。";
+        //         default:
+        //             return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
+        //     }
+        // }),
     );
 
 export const performSignOut = (): Effect.Effect<void, SignOutError, AuthService | ApiService> =>

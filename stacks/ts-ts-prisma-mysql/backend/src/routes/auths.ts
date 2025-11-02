@@ -8,11 +8,13 @@ router.get(ApiAuthPathLocal.CHECK_SESSION, (req, res) => {
     const sessionToken = req.cookies?.sessionToken;
 
     if (sessionToken === "true") {
+        // TODO: ユーザー情報を返す
         res
             .json(1)
             .status(constants.HTTP_STATUS_OK)
             .end();
     } else {
+        // TODO: reasonとして、なぜ認証されなかったのかを返す
         res
             .status(constants.HTTP_STATUS_UNAUTHORIZED)
             .end();

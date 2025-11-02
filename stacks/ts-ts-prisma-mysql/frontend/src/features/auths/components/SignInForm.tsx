@@ -11,13 +11,12 @@ const SignInForm: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Navigateで渡された元の場所を取得
     const from = (location.state as { from?: Location })?.from?.pathname ?? PagePath.INDEX;
 
-    const handleSignIn = async (e: React.FormEvent) => {
+    const handleSignIn = (e: React.FormEvent) => {
         e.preventDefault();
         
-        await signIn(
+        signIn(
             { email, password },
             {
                 onSuccess: () => {
@@ -31,14 +30,31 @@ const SignInForm: React.FC = () => {
         <form onSubmit={handleSignIn}>
             <label>
                 メールアドレス:
-                <input type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input
+                    type="email"
+                    name="email"
+                    value={email} onChange={(e) => setEmail(e.target.value)}
+                />
             </label>
+
             <label>
                 パスワード:
-                <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
             </label>
+
             {isError && <div id="error-message">{errorMessage}</div>}
-            <button type="submit" disabled={isLoading}>サインイン</button>
+            
+            <button
+                type="submit"
+                disabled={isLoading}
+            >
+                サインイン
+            </button>
         </form>
     );
 };

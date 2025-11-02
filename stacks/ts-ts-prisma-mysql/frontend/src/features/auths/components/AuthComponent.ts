@@ -4,7 +4,7 @@ import { createButton, UIService } from "@/shared/ui";
 import { PagePath } from "@app/shared";
 import { Effect, pipe } from "effect";
 import { AuthService } from "../services/AuthService";
-import { performSignIn, performSignOut, performSignUp } from "../services/use-cases";
+import { performSignOut, performSignUp } from "../services/use-cases";
 import { handleSignInError, handleSignUpError } from "./helper";
 
 export class AuthComponent {
@@ -125,7 +125,7 @@ export class AuthComponent {
             this.appManager.runPromise(pipe(
                 Effect.sync(() => new FormData(form)),
                 Effect.map(Object.fromEntries),
-                Effect.flatMap(performSignIn),
+                // Effect.flatMap(performSignIn),
                 Effect.tap(() => UIService.redirectTo(PagePath.INDEX)),
                 Effect.tapError(
                     handleSignInError(errorMessageDiv)

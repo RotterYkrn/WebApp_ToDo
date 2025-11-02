@@ -7,22 +7,18 @@ const AuthRoute: React.FC = () => {
     const location = useLocation();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div>認証を確認中...</div>;
     }
 
-    return (
-        <>
-            {isAuthenticated ? (
-                <Outlet />
-            ) : (
-                <Navigate
-                    to={PagePath.SIGN_IN}
-                    state={{ from: location }}
-                    replace
-                />
-            )}
-        </>
-    );
+    if (!isAuthenticated) {
+        return <Navigate
+            to={PagePath.SIGN_IN}
+            state={{ from: location }}
+            replace
+        />;
+    }
+
+    return <Outlet />;
 };
 
 export default AuthRoute;

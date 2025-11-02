@@ -6,7 +6,8 @@ export class Unauthorized extends Data.TaggedError("Unauthorized")<{
 }> { }
 
 export class SignUpError extends Data.TaggedError("SignUpError")<{
-    readonly message: string;
+    readonly type: "validation_error" | "unknown_error";
+    readonly inputObject: unknown;
     readonly originalError: SharedError;
 }> { }
 
@@ -21,7 +22,7 @@ export class InvalidCredentialsError extends Data.TaggedError("InvalidCredential
 
 export class UnknownAuthError extends Data.TaggedError("UnknownAuthError")<{
     readonly message: string;
-    readonly originalError: SharedError;
+    readonly originalError: unknown;
 }> { }
 
 export class SignInError extends Data.TaggedError("SignInError")<{
@@ -37,6 +38,9 @@ export class SignOutError extends Data.TaggedError("SignOutError")<{
 
 export type AuthError =
     | Unauthorized
+    | ValidationError
+    | InvalidCredentialsError
+    | UnknownAuthError
     | SignUpError
     | SignInError
     | SignOutError;
