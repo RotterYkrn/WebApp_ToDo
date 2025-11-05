@@ -1,13 +1,15 @@
+import { InvalidCredentialsError, UnknownAuthError, ValidationError } from "@/errors";
 import { PagePath } from "@app/shared";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AuthState, useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 
 const SignInForm: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
-    const { signInState, signIn } = useAuth();
+    const { signInMutation } = useAuth();
+    const { isPending, isError, error, mutate: signIn } = signInMutation;
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -26,7 +28,10 @@ const SignInForm: React.FC = () => {
         );
     };
 
-    const errorMessage = mapErrorMessage(signInState);
+    const errorMessage = 
+        isError
+            ? mapErrorMessage(error!)
+            : "";
 
     return (
         <form onSubmit={handleSignIn}>
@@ -53,7 +58,7 @@ const SignInForm: React.FC = () => {
             
             <button
                 type="submit"
-                disabled={signInState === "loading"}
+                disabled={isPending}
             >
                 サインイン
             </button>
@@ -61,15 +66,15 @@ const SignInForm: React.FC = () => {
     );
 };
 
-const mapErrorMessage = (failedType: AuthState): string => {
-    switch (failedType) {
-        case "succeed":
-        case "loading":
-            return "";
-        case "unauthenticated":
+const mapErrorMessage = (
+    error: InvalidCredentialsError | ValidationError | UnknownAuthError
+): string => {
+    switch (error._tag) {
+        case "InvalidCredentialsError":
             return "メールアドレスまたはパスワードが正しくありません。";
-        case "invalid_credential":
+        case "ValidationError":
             return "メールアドレスとパスワードを正しく入力してください。";
+        case "UnknownAuthError":
         default:
             return "処理中にエラーが発生しました。時間をおいて再度お試しください。";
     }

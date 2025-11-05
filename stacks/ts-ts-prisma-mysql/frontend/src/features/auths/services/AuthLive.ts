@@ -1,10 +1,7 @@
 import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
 import { ApiAuthPathFull, SignInInput, SignUpInput, UserId } from "@app/shared";
 import { Effect, Layer, pipe } from "effect";
-import { SessionData } from "../types/SessionData";
 import { AuthService } from "./AuthService";
-
-export const processSessionData = (data: SessionData) => data.loggedIn;
 
 export const AuthLive = Layer.succeed(AuthService, AuthService.of({
     checkSession: () => pipe(
