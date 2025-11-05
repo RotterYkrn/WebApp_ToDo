@@ -5,12 +5,14 @@ import { PagePath } from "@app/shared";
 import { Route, Routes } from "react-router-dom";
 import AuthenticatedLayout from "./AuthenticatedLayout";
 import SignInPage from "./pages/SignInPage";
+import SignUpPage from "./pages/SignUpPage";
 
 const App: React.FC = () => {
     return (
         <AppManagerProvider>
             <Routes>
                 <Route path={PagePath.SIGN_IN} element={<SignInPage />} />
+                <Route path={PagePath.SIGN_UP} element={<SignUpPage />} />
 
                 <Route element={<AuthRoute />}>
                     <Route element={<AuthenticatedLayout />}>
