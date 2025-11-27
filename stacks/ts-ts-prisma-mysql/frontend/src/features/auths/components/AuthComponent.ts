@@ -1,7 +1,7 @@
 import { IAppManager } from "@/shared/app";
 import { ApiService } from "@/shared/http";
 import { createButton, UIService } from "@/shared/ui";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { Effect, pipe } from "effect";
 import { AuthService } from "../services/AuthService";
 import { performSignOut, performSignUp } from "../services/use-cases";

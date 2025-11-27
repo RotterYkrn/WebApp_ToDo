@@ -1,5 +1,5 @@
 import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
-import { ApiAuthPathFull, SignInInput, SignUpInput, UserId } from "@app/shared";
+import { ApiAuthPathFull, SignInInput, SignUpInput, UserId } from "@1day-todo/shared";
 import { Effect, Layer, pipe } from "effect";
 import { AuthService } from "./AuthService";
 

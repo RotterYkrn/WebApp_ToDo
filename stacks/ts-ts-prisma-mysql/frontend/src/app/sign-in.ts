@@ -1,6 +1,6 @@
 import { AuthComponent } from "@/features/auths";
 import { appendElementsWrapper, UIService } from "@/shared/ui";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { Effect } from "effect";
 import { appManager } from "./app";
 

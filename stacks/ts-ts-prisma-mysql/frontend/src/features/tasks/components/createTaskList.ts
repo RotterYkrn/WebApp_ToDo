@@ -2,7 +2,7 @@ import { appManager } from "@/app/app";
 import { AuthComponent } from "@/features/auths";
 import { buildFooter, buildHeader, UIService } from "@/shared/ui";
 import { appendElementsWrapper } from "@/shared/ui/services/use-case";
-import { TaskType } from "@app/shared";
+import { TaskType } from "@1day-todo/shared";
 import { Effect } from "effect"; // "effect/index" から "effect" に変更
 import { TaskService } from "../services/TaskService";
 import { TaskComponent } from "./TaskComponent";

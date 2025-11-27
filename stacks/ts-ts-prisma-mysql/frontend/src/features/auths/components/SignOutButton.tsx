@@ -1,6 +1,6 @@
 import { appManager } from "@/app/app";
 import { UIService } from "@/shared/ui";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { Effect, pipe } from "effect";
 import { performSignOut } from "../services/use-cases";
 

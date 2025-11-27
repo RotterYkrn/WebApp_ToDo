@@ -1,5 +1,5 @@
 import { InvalidCredentialsError, UnknownAuthError, ValidationError } from "@/errors";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";

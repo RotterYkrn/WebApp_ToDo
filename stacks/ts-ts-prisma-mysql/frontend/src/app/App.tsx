@@ -1,7 +1,7 @@
 import { AppManagerProvider } from "@/contexts/AppManager/AppManagerProvider";
 import AuthRoute from "@/features/auths/components/AuthRoute";
 import SignOutButton from "@/features/auths/components/SignOutButton";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { Route, Routes } from "react-router-dom";
 import AuthenticatedLayout from "./AuthenticatedLayout";
 import SignInPage from "./pages/SignInPage";

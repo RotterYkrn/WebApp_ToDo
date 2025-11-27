@@ -1,7 +1,7 @@
 import { AppError } from "@/errors";
 import { IAppManager } from "@/shared/app";
 import { ApiService } from "@/shared/http";
-import { TaskSchemaMap, TaskType } from "@app/shared";
+import { TaskSchemaMap, TaskType } from "@1day-todo/shared";
 import { Chunk, Effect, pipe } from "effect";
 import { TaskService } from "../services/TaskService";
 

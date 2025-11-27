@@ -1,7 +1,7 @@
 import { ApiLive, ApiService, HttpStatus } from "@/shared/http";
 import { buildFooter } from "@/shared/ui";
 import { parseResponseJson, runPromiseWithLayer } from "@/shared/utils";
-import { ApiUserSettingsPath } from "@app/shared";
+import { ApiUserSettingsPath } from "@1day-todo/shared";
 import { Effect, pipe } from "effect";
 
 interface Settings {

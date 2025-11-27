@@ -1,5 +1,5 @@
 import { ApiService, HttpStatus } from "@/shared/http";
-import { TaskApiPathMap, TaskSchemaMap, TaskType } from "@app/shared";
+import { TaskApiPathMap, TaskSchemaMap, TaskType } from "@1day-todo/shared";
 import { Effect, Layer, pipe } from "effect";
 import { TaskService } from "./TaskService";
 import { extractTaskSchemaData, extractTaskSchemaDataChunk } from "./helper";

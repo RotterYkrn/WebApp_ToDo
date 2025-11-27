@@ -1,6 +1,6 @@
 import { ParseSchemaError, ResponseJsonError, TaskTypeError } from "@/errors";
 import { ApiService, extractBodyWithSchema } from "@/shared/http";
-import { TaskSchemaMap, TaskType } from "@app/shared";
+import { TaskSchemaMap, TaskType } from "@1day-todo/shared";
 import { Effect } from "effect";
 
 export const extractTaskSchemaData = <T extends TaskType>(

@@ -1,5 +1,5 @@
 import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
-import { ApiUserSettingsPath, SettingsInput, SettingsOutput } from "@app/shared";
+import { ApiUserSettingsPath, SettingsInput, SettingsOutput } from "@1day-todo/shared";
 import { Effect, Layer, pipe } from "effect";
 import { SettingService } from "./SettingService";
 

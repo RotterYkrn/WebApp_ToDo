@@ -1,5 +1,5 @@
 import { AppendElementsError, UIUnknownError } from "@/errors";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { Chunk, Effect } from "effect";
 
 interface IUIService {

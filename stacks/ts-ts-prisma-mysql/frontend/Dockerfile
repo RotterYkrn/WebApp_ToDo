@@ -3,12 +3,11 @@ FROM node:25-alpine AS base
 WORKDIR /app
 
 COPY package*.json .
+COPY ./shared /app/shared
 COPY frontend/package.json frontend/
-COPY shared/package.json shared/
 
 RUN npm install
 
-COPY ./shared /app/shared
 WORKDIR /app/shared
 RUN npm link
 

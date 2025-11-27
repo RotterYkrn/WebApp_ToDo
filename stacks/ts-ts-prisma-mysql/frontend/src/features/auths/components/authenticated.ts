@@ -1,5 +1,5 @@
 import { UIService } from "@/shared/ui";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { Effect } from "effect";
 import { AuthService } from "../services/AuthService";
 

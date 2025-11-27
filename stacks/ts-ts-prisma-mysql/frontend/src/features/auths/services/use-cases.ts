@@ -1,7 +1,7 @@
 import { InvalidCredentialsError, SignOutError, SignUpError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
-import { SignInInput, SignUpInput, UserId } from "@app/shared";
+import { SignInInput, SignUpInput, UserId } from "@1day-todo/shared";
 import { Effect, pipe } from "effect";
 import { AuthService } from "./AuthService";
 

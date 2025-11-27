@@ -1,10 +1,10 @@
 {
-    "name": "webapp-todo",
+    "name": "1day-todo",
     "private": true,
     "workspaces": [
         "frontend",
         "backend",
-        "shared/*"
+        "shared"
     ],
     "license": "UNLICENSED"
 }

@@ -1,10 +1,10 @@
+import { ApiAuthPathLocal, ApiDailyPlanPath, ApiHabitPath, ApiTodoPath, ApiUserPath } from "@1day-todo/shared";
 import { Router } from "express";
-import { ApiAuthPathLocal, ApiDailyPlanPath, ApiHabitPath, ApiTodoPath, ApiUserPath } from "@app/shared";
 import authRouter from "./auths.js";
-import userRouter from "./users.js";
 import dailyPlanRouter from "./daily-plans.js";
-import todoRouter from "./todos.js";
 import habitRouter from "./habits.js";
+import todoRouter from "./todos.js";
+import userRouter from "./users.js";
 
 const router = Router();
 

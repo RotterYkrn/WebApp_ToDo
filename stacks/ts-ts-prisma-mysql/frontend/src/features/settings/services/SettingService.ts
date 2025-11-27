@@ -1,6 +1,6 @@
 import { SharedError } from "@/errors";
 import { ApiService } from "@/shared/http";
-import { SettingsInput, SettingsOutput } from "@app/shared";
+import { SettingsInput, SettingsOutput } from "@1day-todo/shared";
 import { Effect } from "effect";
 
 interface ISettingService {

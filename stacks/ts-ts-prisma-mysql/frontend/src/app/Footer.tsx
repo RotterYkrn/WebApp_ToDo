@@ -1,4 +1,4 @@
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 

@@ -1,5 +1,5 @@
 import SignInForm from "@/features/auths/components/SignInForm";
-import { PagePath } from "@app/shared";
+import { PagePath } from "@1day-todo/shared";
 import { Link } from "react-router-dom";
 
 const SignInPage: React.FC = () => {

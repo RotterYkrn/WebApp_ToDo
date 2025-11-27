@@ -1,4 +1,4 @@
-import { ApiAuthPathLocal } from "@app/shared";
+import { ApiAuthPathLocal } from "@1day-todo/shared";
 import { Router } from "express";
 import { constants } from "http2";
 

@@ -1,14 +1,15 @@
 {
-    "name": "webapp-todo-backend",
+    "name": "@1day-todo/backend",
     "version": "1.0.0",
     "main": "dist/app.js",
     "type": "module",
     "private": true,
     "scripts": {
         "start": "tsx src/app.ts",
-        "dev": "npm link @app/shared && npx prisma generate && npx tsx watch src/app.ts"
+        "dev": "npm link @1day-todo/shared && npx prisma generate && npx tsx watch src/app.ts"
     },
     "dependencies": {
+        "@1day-todo/shared": "^1.0.0",
         "@prisma/client": "^6.18.0",
         "bcrypt": "^6.0.0",
         "cookie-parser": "^1.4.7",

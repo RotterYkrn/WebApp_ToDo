@@ -1,4 +1,4 @@
-import { ApiUserSettingsPath, SettingsInput, SettingsOutput } from "@app/shared";
+import { ApiUserSettingsPath, SettingsInput, SettingsOutput } from "@1day-todo/shared";
 import { Effect, Schema } from "effect";
 import { Router } from "express";
 import { constants } from "http2";

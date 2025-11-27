@@ -1,6 +1,6 @@
 import { SharedError, TaskTypeError } from "@/errors";
 import { ApiService } from "@/shared/http";
-import { TaskSchemaMap, TaskType } from "@app/shared";
+import { TaskSchemaMap, TaskType } from "@1day-todo/shared";
 import { Effect } from "effect";
 
 export interface ITaskService {
