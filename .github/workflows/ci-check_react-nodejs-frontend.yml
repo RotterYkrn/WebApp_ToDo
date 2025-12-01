@@ -1,0 +1,45 @@
+# .github/workflows/ci-checks.yml
+
+name: Auto CI Checks (Test & TSC)
+
+on:
+    push:
+        branches:
+            - main-react-nodejs
+        paths:
+            - "stacks/react-nodejs/frontend/**"
+
+jobs:
+    ci-checks:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: コードをチェックアウト
+              uses: actions/checkout@v4
+
+            - name: 依存関係のインストール (react-nodejs)
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "24"
+                  cache: "npm"
+                  cache-dependency-path: stacks/react-nodejs/package-lock.json
+            - run: npm install
+              working-directory: ./stacks/react-nodejs
+
+            # フロントエンド部分のCIチェック
+            - name: Run Frontend Unit/Integration Tests
+              run: npm run test
+              working-directory: ./stacks/react-nodejs/frontend
+
+            - name: Run Frontend TypeScript Type Check
+              run: npx tsc --noEmit
+              working-directory: ./stacks/react-nodejs/frontend
+
+            # デバックエンド部分のCIチェック
+            # - name: Run Backend Unit/Integration Tests
+            #   run: npm run test
+            #   working-directory: ./stacks/react-nodejs/backend
+
+            - name: Run Backend TypeScript Type Check
+              run: npx tsc --noEmit
+              working-directory: ./stacks/react-nodejs/backend

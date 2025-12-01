@@ -1,0 +1,84 @@
+name: Manual Build & Deploy to Render
+
+on:
+    # 重要な変更点: workflow_dispatchトリガーを追加
+    workflow_dispatch:
+        inputs:
+            branch_name:
+                description: "Target branch to build and deploy from"
+                required: true
+                default: "main-react-nodejs"
+                type: choice
+                options:
+                    - main-react-nodejs
+                    - main-react-nodejs-frontend
+                    - main-react-nodejs-backend
+            # 必要に応じて環境（ステージング、本番など）を選択できるようにすることもできます
+            # environment:
+            #   description: 'Deployment Environment'
+            #   required: true
+            #   default: 'production'
+            #   type: environment
+
+# ワークフロー内で使う変数をinputsから取得
+env:
+    REGISTRY: ghcr.io
+    TARGET_BRANCH: ${{ github.event.inputs.branch_name }}
+    TARGET_FOLDER: ${{ github.event.inputs.branch_name == 'main-react-nodejs' && 'react-nodejs' || 'default-folder' }} # フォルダ名とブランチ名の対応をここで定義
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+
+        steps:
+            # 1. 指定されたブランチのコードをチェックアウト
+            - name: Checkout code from ${{ env.TARGET_BRANCH }}
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ env.TARGET_BRANCH }} # 手動入力されたブランチを参照
+
+            # 2. Dockerイメージのビルドとプッシュ
+            - name: Log in to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            # バックエンドイメージのビルドとプッシュ
+            - name: Build and Push Backend Image
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./${{ env.TARGET_FOLDER }}/backend # 対象フォルダを指定
+                  push: true
+                  tags: ${{ env.REGISTRY }}/${{ github.repository }}/backend:latest
+
+            # フロントエンドイメージのビルドとプッシュ
+            - name: Build and Push Frontend Image
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./${{ env.TARGET_FOLDER }}/frontend # 対象フォルダ
+                  push: true
+                  tags: ${{ env.REGISTRY }}/${{ github.repository }}/frontend:latest
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: build-and-push # ビルドとプッシュが完了してから実行
+
+        steps:
+            # --- バックエンド Web Service のデプロイをトリガー ---
+            - name: Render Web Service (Backend) の再デプロイをトリガー
+              uses: ttskch/render-deploy@v1.0.0
+              with:
+                  # Render API Key (Secretsから取得)
+                  api-key: ${{ secrets.RENDER_API_KEY }}
+                  # デプロイ対象の Render Web Service の ID
+                  service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
+
+            # --- フロントエンド Static Site のデプロイをトリガー ---
+            - name: Render Static Site (Frontend) の再デプロイをトリガー
+              uses: ttskch/render-deploy@v1.0.0
+              with:
+                  api-key: ${{ secrets.RENDER_API_KEY }}
+                  # デプロイ対象の Render Static Site の ID
+                  service-id: ${{ secrets.RENDER_FRONTEND_SERVICE_ID }}
