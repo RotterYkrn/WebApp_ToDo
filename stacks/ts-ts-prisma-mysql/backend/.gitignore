@@ -55,3 +55,6 @@ dist/
 build/
 
 .vscode/
+/generated/prisma
+
+/generated/prisma

@@ -6,26 +6,29 @@
     "private": true,
     "scripts": {
         "start": "tsx src/app.ts",
-        "dev": "npm link @1day-todo/shared && npx prisma generate && npx tsx watch src/app.ts"
+        "dev": "npx prisma generate && npx tsx watch src/app.ts"
     },
     "dependencies": {
         "@1day-todo/shared": "^1.0.0",
-        "@prisma/client": "^6.18.0",
+        "@prisma/adapter-pg": "^7.0.1",
+        "@prisma/client": "^7.0.1",
         "bcrypt": "^6.0.0",
         "cookie-parser": "^1.4.7",
         "dotenv": "^17.2.3",
-        "effect": "^3.18.4",
+        "effect": "^3.19.8",
         "express": "^5.1.0",
-        "express-session": "^1.18.2"
+        "express-session": "^1.18.2",
+        "pg": "^8.16.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.3.0",
+        "@biomejs/biome": "2.3.8",
         "@types/cookie-parser": "^1.4.10",
-        "@types/express": "^5.0.4",
+        "@types/express": "^5.0.5",
         "@types/express-session": "^1.18.2",
-        "@types/node": "^24.9.1",
-        "prisma": "^6.18.0",
-        "tsx": "^4.20.6",
+        "@types/node": "^24.10.1",
+        "@types/pg": "^8.15.6",
+        "prisma": "^7.0.1",
+        "tsx": "^4.21.0",
         "typescript": "^5.9.3"
     },
     "license": "UNLICENSED"
