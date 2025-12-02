@@ -18,7 +18,7 @@ let tasks = [
     },
 ];
 
-router.get("/", (req, res) => {
+router.get("/", (_req, res) => {
     res.json(tasks);
 });
 

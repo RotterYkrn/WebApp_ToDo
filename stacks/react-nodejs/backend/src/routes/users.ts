@@ -12,7 +12,7 @@ let settings = Effect.runSync(Schema.decode(SettingsOutput)({
     theme: "dark"
 }));
 
-router.get(ApiUserSettingsPath.GET, (req, res) => {
+router.get(ApiUserSettingsPath.GET, (_req, res) => {
     res
         .status(constants.HTTP_STATUS_OK)
         .json(settings)

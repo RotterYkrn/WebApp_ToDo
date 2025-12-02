@@ -40,7 +40,7 @@ router.post(ApiAuthPathLocal.SIGN_IN, (req, res) => {
     }
 });
 
-router.post(ApiAuthPathLocal.SIGN_OUT, (req, res) => {
+router.post(ApiAuthPathLocal.SIGN_OUT, (_req, res) => {
     console.log("signed out");
     res.clearCookie("sessionToken");
     res.status(constants.HTTP_STATUS_NO_CONTENT).end();
