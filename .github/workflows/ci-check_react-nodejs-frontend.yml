@@ -7,7 +7,7 @@ on:
         branches:
             - main-react-nodejs
         paths:
-            - "stacks/react-nodejs/frontend/**"
+            - "stacks/react-nodejs/**"
 
 jobs:
     ci-checks:
