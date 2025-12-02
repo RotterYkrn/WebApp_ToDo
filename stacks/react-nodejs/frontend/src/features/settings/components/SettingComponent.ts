@@ -1,10 +1,7 @@
-import { IAppManager } from "@/shared/app";
-import { ApiService } from "@/shared/http";
-import { SettingService } from "../services/SettingService";
 
 export class SettingComponent {
     constructor(
-        private readonly appManager: IAppManager<SettingService | ApiService>
+        // private readonly appManager: IAppManager<SettingService | ApiService>
     ) { }
 
     public readonly buildUserNameInputGroup = (value: string): HTMLDivElement => {
