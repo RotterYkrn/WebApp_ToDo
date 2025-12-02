@@ -41,7 +41,7 @@ export const ensureHttpStatus = (
         res.status === expectedStatus
             ? Either.right(res)
             : Either.left(new UnexpectedStatusError({
-                message: `${method}: Unexpected status (expected ${expectedStatus})`,
+                message: `${method}: Received unexpected status.`,
                 path,
                 expectedStatus,
                 responseStatus: res.status,

@@ -141,7 +141,7 @@ describe("ApiLive", () => {
             )
         );
 
-        it.effect("レスポンスは成功だが、期待したステータスと異なる場合、UnknownHttpError を返す",
+        it.effect("レスポンスは成功だが、期待したステータスと異なる場合、UnexpectedStatusError を返す",
             () => Effect.gen(function* () {
                 const resStatus = HttpStatus.OK;
                 mockFetch({}, { status: resStatus });
@@ -155,12 +155,12 @@ describe("ApiLive", () => {
 
                 validateAppError(
                     result,
-                    "UnknownHttpError",
-                    (unknownHttpError) => {
-                        expect(unknownHttpError.path).toBe(path);
-                        expect(unknownHttpError.message).toContain(expectedStatus.toString());
-                        expect(unknownHttpError.message).toContain("GET");
-                        expect(unknownHttpError.status).toBe(resStatus);
+                    "UnexpectedStatusError",
+                    (unexpectedStatusError) => {
+                        expect(unexpectedStatusError.path).toBe(path);
+                        expect(unexpectedStatusError.message).toContain("GET");
+                        expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
+                        expect(unexpectedStatusError.responseStatus).toBe(resStatus);
                     }
                 );
             }));
@@ -228,12 +228,12 @@ describe("ApiLive", () => {
 
                 validateAppError(
                     result,
-                    "UnknownHttpError",
-                    (unknownHttpError) => {
-                        expect(unknownHttpError.path).toBe(path);
-                        expect(unknownHttpError.message).toContain(expectedStatus.toString());
-                        expect(unknownHttpError.message).toContain("POST");
-                        expect(unknownHttpError.status).toBe(resStatus);
+                    "UnexpectedStatusError",
+                    (unexpectedStatusError) => {
+                        expect(unexpectedStatusError.path).toBe(path);
+                        expect(unexpectedStatusError.message).toContain("POST");
+                        expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
+                        expect(unexpectedStatusError.responseStatus).toBe(resStatus);
                     }
                 );
             }));

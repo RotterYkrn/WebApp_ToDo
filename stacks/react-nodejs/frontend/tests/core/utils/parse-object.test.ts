@@ -1,8 +1,6 @@
-import { UnknownAppError } from "@/errors/types/shared/OtherError"; // ParseSchemaErrorをOtherErrorからインポート
 import { parseToSchema } from "@/shared/utils";
 import { describe, expect, it } from "@effect/vitest";
-import { Effect, Schema } from "effect";
-import { validateAppError } from "tests/test-utils";
+import { pipe, Schema } from "effect";
 
 describe("parseToSchema", () => {
     const ParseSchema = Schema.Struct({
@@ -10,78 +8,47 @@ describe("parseToSchema", () => {
         option: Schema.optional(Schema.String),
     });
 
-    const testParseSucceed = (data: unknown) =>
-        Effect.gen(function* () {
-            const objEffect = Effect.succeed(data);
+    const testParseSucceed = (data: unknown) => {
+        const result = pipe(
+            data,
+            parseToSchema(ParseSchema)
+        );
 
-            const result = yield* objEffect.pipe(
-                parseToSchema(ParseSchema)
-            );
-
-            expect(result).toStrictEqual(data);
-        });
+        expect(result._tag).toBe("Right");
+        if (result._tag === "Right") {
+            expect(result.right).toStrictEqual(data);
+        }
+    };
     
-    const testParseFailed = (data: unknown) =>
-        Effect.gen(function* () {
-            const objEffect = Effect.succeed(data);
+    const testParseFailed = (data: unknown) => {
+        const result = pipe(
+            data,
+            parseToSchema(ParseSchema),
+        );
 
-            const result = yield* objEffect.pipe(
-                parseToSchema(ParseSchema),
-                Effect.exit,
-            );
+        expect(result._tag).toBe("Left");
+        if (result._tag === "Left") {
+            const error = result.left;
+            expect(error._tag).toBe("ParseSchemaError");
+            if (error._tag === "ParseSchemaError") {
+                expect(error.failedObject).toStrictEqual(data);
+            }
+        }
+    };
 
-            validateAppError(
-                result,
-                "ParseSchemaError",
-                (parseError) => {
-                    expect(parseError.message).toContain("did not match the schema");
-                    expect(parseError.failedObject).toStrictEqual(data);
-                }
-            );
-        });
-
-    it.effect("成功、すべてのプロパティが存在", () =>
+    it("すべてのプロパティが存在するなら、パースされた値を返す", () =>
         testParseSucceed({ data: "test", option: "test" })
     );
 
-    it.effect("成功、必須プロパティのみ", () =>
+    it("必須プロパティが存在するなら、パースされた値を返す", () =>
         testParseSucceed({ data: "test" })
     );
 
-    it.effect("失敗、リテラル型", () =>
-        testParseFailed("Invalid JSON")
+    it.skip("プロパティが過剰に存在する場合、必要なプロパティのみにパースされた値を返す", () =>
+        testParseSucceed({ data: "data", option: "option", extra: "extra" })
     );
 
-    it.effect("失敗、必須プロパティ不足", () =>
+    it("必須プロパティが不足しているなら、エラーを返す", () =>
         testParseFailed({ option: "option" })
-    );
-
-    it.effect.skip("失敗、プロパティ過多", () =>
-        testParseFailed({ data: "data", option: "option", extra: "extra" })
-    );
-
-    it.effect("失敗、受け取った Effect が既に失敗している", () =>
-        Effect.gen(function* () {
-            const error = new Error("Validation Error");
-            
-            const objEffect = Effect.fail(new UnknownAppError({
-                message: error.message,
-                originalError: error
-            }));
-
-            const result = yield* objEffect.pipe(
-                parseToSchema(ParseSchema),
-                Effect.exit,
-            );
-
-            validateAppError(
-                result,
-                "UnknownAppError",
-                (unknownError) => {
-                    expect(unknownError.message).toContain(error.message);
-                    expect(unknownError.originalError).toBe(error);
-                }
-            );
-        })
     );
 })

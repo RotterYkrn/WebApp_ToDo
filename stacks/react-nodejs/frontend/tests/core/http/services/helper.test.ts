@@ -88,7 +88,7 @@ describe("ensureHttpStatus", () => {
         })
     );
 
-    it.effect("期待するステータスと異なる場合、UnknownHttpError を返す", () =>
+    it.effect("期待するステータスと異なる場合、UnexpectedStatusError を返す", () =>
         Effect.gen(function* () {
             const resStatus = HttpStatus.OK;
             const response = new Response("{}", { status: resStatus });
@@ -104,12 +104,12 @@ describe("ensureHttpStatus", () => {
 
             validateAppError(
                 result,
-                "UnknownHttpError",
-                (unknownHttpError) => {
-                    expect(unknownHttpError.path).toBe(path);
-                    expect(unknownHttpError.message).toContain(expectedStatus.toString());
-                    expect(unknownHttpError.message).toContain(method);
-                    expect(unknownHttpError.status).toBe(resStatus);
+                "UnexpectedStatusError",
+                (unexpectedStatusError) => {
+                    expect(unexpectedStatusError.path).toBe(path);
+                    expect(unexpectedStatusError.message).toContain(method);
+                    expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
+                    expect(unexpectedStatusError.responseStatus).toBe(resStatus);
                 }
             );
         })
@@ -129,7 +129,9 @@ describe("classifyHttpError", () => {
         expect(error).toBeInstanceOf(expected);
         expect(error.path).toBe(errorInfo.path);
         expect(error.message).toBe(errorInfo.message);
-        expect(error.responseBody).toBe(errorInfo.responseBody);
+        if (error._tag !== "UnexpectedStatusError") {
+            expect(error.responseBody).toBe(errorInfo.responseBody);
+        }
         if (
             error instanceof OtherClientError ||
             error instanceof OtherServerError ||
