@@ -6,7 +6,7 @@ services:
 
         build:
             context: .
-            dockerfile: ./frontend/Dockerfile
+            dockerfile: ./Dockerfile.frontend
             target: development
 
         ports:
@@ -14,9 +14,10 @@ services:
 
         volumes:
             - ./frontend:/app/frontend
-            # - ./packages/shared-schema:/app/packages/shared-schema
             - ./shared:/app/shared
+            - /app/node_modules
             - /app/frontend/node_modules
+            - /app/shared/node_modules
 
         environment:
             NODE_ENV: development
@@ -31,7 +32,7 @@ services:
 
         build:
             context: .
-            dockerfile: ./backend/Dockerfile
+            dockerfile: ./Dockerfile.backend
             target: development
 
         ports:
@@ -40,9 +41,10 @@ services:
 
         volumes:
             - ./backend:/app/backend
-            # - ./packages/shared-schema:/app/packages/shared-schema
             - ./shared:/app/shared
+            - /app/node_modules
             - /app/backend/node_modules
+            - /app/shared/node_modules
 
         environment:
             NODE_ENV: development

@@ -11,8 +11,6 @@ on:
                 type: choice
                 options:
                     - main-react-nodejs
-                    - main-react-nodejs-frontend
-                    - main-react-nodejs-backend
             # 必要に応じて環境（ステージング、本番など）を選択できるようにすることもできます
             # environment:
             #   description: 'Deployment Environment'
@@ -25,6 +23,7 @@ env:
     REGISTRY: ghcr.io
     TARGET_BRANCH: ${{ github.event.inputs.branch_name }}
     TARGET_FOLDER: ${{ github.event.inputs.branch_name == 'main-react-nodejs' && 'react-nodejs' || 'default-folder' }} # フォルダ名とブランチ名の対応をここで定義
+    # REPOSITORY: ${{ github.repository }}
 
 jobs:
     build-and-push:
@@ -51,7 +50,8 @@ jobs:
               with:
                   context: ./${{ env.TARGET_FOLDER }}/backend # 対象フォルダを指定
                   push: true
-                  tags: ${{ env.REGISTRY }}/${{ github.repository }}/backend:latest
+                  target: deployment
+                  tags: ${{ env.REGISTRY }}/rotterykrn/1day-todo/backend:latest
 
             # フロントエンドイメージのビルドとプッシュ
             - name: Build and Push Frontend Image
@@ -59,9 +59,10 @@ jobs:
               with:
                   context: ./${{ env.TARGET_FOLDER }}/frontend # 対象フォルダ
                   push: true
-                  tags: ${{ env.REGISTRY }}/${{ github.repository }}/frontend:latest
+                  target: deployment
+                  tags: ${{ env.REGISTRY }}/rotterykrn/1day-todo/frontend:latest
 
-    deploy:
+    deployment:
         runs-on: ubuntu-latest
         needs: build-and-push # ビルドとプッシュが完了してから実行
 
