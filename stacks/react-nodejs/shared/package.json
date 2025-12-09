@@ -3,10 +3,10 @@
     "version": "1.0.0",
     "type": "module",
     "exports": {
-        ".": "./dist/index.js",
-        "./paths": "./dist/paths/index.js",
-        "./schemas": "./dist/schemas/index.js",
-        "./types": "./dist/types/index.js"
+        ".": "./src/index.js",
+        "./paths": "./src/paths/index.js",
+        "./schemas": "./src/schemas/index.js",
+        "./types": "./src/types/index.js"
     },
     "scripts": {
         "build": "tsc"
