@@ -51,6 +51,8 @@ jobs:
                   context: ./${{ env.TARGET_FOLDER }}/backend # 対象フォルダを指定
                   push: true
                   target: deployment
+                  build-args: |
+                      VITE_API_URL=${{ secrets.VITE_API_PROD_URL }}
                   tags: ${{ env.REGISTRY }}/rotterykrn/1day-todo/backend:latest
 
             # フロントエンドイメージのビルドとプッシュ
