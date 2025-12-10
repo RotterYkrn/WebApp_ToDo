@@ -21,7 +21,10 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
             })
         }),
         Effect.flatMap(handleHttpError(path, "HTTP error during GET")),
-        Effect.flatMap(ensureHttpStatus(expectedStatus, "GET", path))
+        Effect.flatMap(ensureHttpStatus(expectedStatus, "GET", path)),
+        Effect.tapError((error) => Effect.sync(() => {
+            console.error(`Error during GET ${path}:`, error);
+        }))
     ),
 
     post: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => pipe(
@@ -44,7 +47,10 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
             })
         }),
         Effect.flatMap(handleHttpError(path, "HTTP error during POST")),
-        Effect.flatMap(ensureHttpStatus(expectedStatus, "POST", path))
+        Effect.flatMap(ensureHttpStatus(expectedStatus, "POST", path)),
+        Effect.tapError((error) => Effect.sync(() => {
+            console.error(`Error during POST ${path}:`, error);
+        }))
     ),
 
     extractBody: (res) => Effect.tryPromise({
