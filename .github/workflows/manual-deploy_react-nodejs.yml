@@ -28,6 +28,8 @@ env:
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
+        permissions:
+            packages: write
 
         steps:
             # 1. 指定されたブランチのコードをチェックアウト
