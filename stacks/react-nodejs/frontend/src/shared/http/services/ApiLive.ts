@@ -23,7 +23,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         Effect.flatMap(handleHttpError(path, "HTTP error during GET")),
         Effect.flatMap(ensureHttpStatus(expectedStatus, "GET", path)),
         Effect.tapError((error) => Effect.sync(() => {
-            console.error(`Error during GET ${path}:`, error);
+            console.error(`Error during GET ${getApiUrl(path)}:`, error);
         }))
     ),
 
@@ -49,7 +49,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         Effect.flatMap(handleHttpError(path, "HTTP error during POST")),
         Effect.flatMap(ensureHttpStatus(expectedStatus, "POST", path)),
         Effect.tapError((error) => Effect.sync(() => {
-            console.error(`Error during POST ${path}:`, error);
+            console.error(`Error during POST ${getApiUrl(path)}:`, error);
         }))
     ),
 
