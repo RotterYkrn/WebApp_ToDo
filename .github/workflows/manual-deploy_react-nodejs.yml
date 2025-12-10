@@ -48,7 +48,8 @@ jobs:
             - name: Build and Push Backend Image
               uses: docker/build-push-action@v5
               with:
-                  context: ./${{ env.TARGET_FOLDER }}/backend # 対象フォルダを指定
+                  context: ./${{ env.TARGET_FOLDER }}
+                  file: ./${{ env.TARGET_FOLDER }}/Dockerfile.backend
                   push: true
                   target: deployment
                   build-args: |
@@ -59,7 +60,8 @@ jobs:
             - name: Build and Push Frontend Image
               uses: docker/build-push-action@v5
               with:
-                  context: ./${{ env.TARGET_FOLDER }}/frontend # 対象フォルダ
+                  context: ./${{ env.TARGET_FOLDER }}
+                  file: ./${{ env.TARGET_FOLDER }}/Dockerfile.frontend
                   push: true
                   target: deployment
                   tags: ${{ env.REGISTRY }}/rotterykrn/1day-todo/frontend:latest
@@ -73,9 +75,7 @@ jobs:
             - name: Render Web Service (Backend) の再デプロイをトリガー
               uses: ttskch/render-deploy@v1.0.0
               with:
-                  # Render API Key (Secretsから取得)
                   api-key: ${{ secrets.RENDER_API_KEY }}
-                  # デプロイ対象の Render Web Service の ID
                   service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
 
             # --- フロントエンド Static Site のデプロイをトリガー ---
@@ -83,5 +83,4 @@ jobs:
               uses: ttskch/render-deploy@v1.0.0
               with:
                   api-key: ${{ secrets.RENDER_API_KEY }}
-                  # デプロイ対象の Render Static Site の ID
                   service-id: ${{ secrets.RENDER_FRONTEND_SERVICE_ID }}
