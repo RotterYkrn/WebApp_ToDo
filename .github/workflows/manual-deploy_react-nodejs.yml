@@ -22,7 +22,7 @@ on:
 env:
     REGISTRY: ghcr.io
     TARGET_BRANCH: ${{ github.event.inputs.branch_name }}
-    TARGET_FOLDER: ${{ github.event.inputs.branch_name == 'main-react-nodejs' && 'react-nodejs' || 'default-folder' }} # フォルダ名とブランチ名の対応をここで定義
+    TARGET_FOLDER: "stacks/react-nodejs" # フォルダ名とブランチ名の対応をここで定義
     # REPOSITORY: ${{ github.repository }}
 
 jobs:
