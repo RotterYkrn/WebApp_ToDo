@@ -1,7 +1,7 @@
 import { UnknownAuthError, ValidationError } from "@/errors";
+import { PagePath } from "@1day-todo/shared";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { PagePath } from "../../../../../shared/dist/paths/pages";
 import { useSignUp } from "../hooks/useSignUp";
 import SignUpSuccessMessage from "./SignUpSuccessMessage";
 
