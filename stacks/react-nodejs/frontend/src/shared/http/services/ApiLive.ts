@@ -5,10 +5,15 @@ import { HttpStatus } from "../types/HttpStatus";
 import { ApiService } from "./ApiService";
 import { ensureHttpStatus, handleHttpError } from "./helper";
 
+const getApiUrl = (path: string): string => {
+    const baseUrl = import.meta.env.VITE_API_URL || "";
+    return `${baseUrl}${path}`;
+}
+
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
     get: (path: string, expectedStatus: HttpStatus, options?: RequestInit) => pipe(
         Effect.tryPromise({
-            try: () => fetch(path, { ...options, method: "GET" }),
+            try: () => fetch(getApiUrl(path), { ...options, method: "GET" }),
             catch: (e) => new NetworkError({
                 path,
                 message: "Network error during GET",
@@ -21,14 +26,17 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
 
     post: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => pipe(
         Effect.tryPromise({
-            try: () => fetch(path, {
-                ...options?.options,
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(options?.body)
-            }),
+            try: () => fetch(
+                getApiUrl(path),
+                {
+                    ...options?.options,
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(options?.body)
+                }
+            ),
             catch: (e) => new NetworkError({
                 path,
                 message: "Network error during POST",
