@@ -108,6 +108,7 @@ describe("ApiLive", () => {
 
             expect(fetch).toHaveBeenCalledWith(path, {
                 method: "GET",
+                credentials: "include",
                 body: undefined,
                 ...options
             });
@@ -181,6 +182,7 @@ describe("ApiLive", () => {
 
             expect(fetch).toHaveBeenCalledWith(path, {
                 method: "POST",
+                credentials: "include",
                 body: JSON.stringify(reqBody),
                 ...options
             });

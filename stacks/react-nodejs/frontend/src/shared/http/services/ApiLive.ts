@@ -13,7 +13,14 @@ const getApiUrl = (path: string): string => {
 export const ApiLive = Layer.succeed(ApiService, ApiService.of({
     get: (path: string, expectedStatus: HttpStatus, options?: RequestInit) => pipe(
         Effect.tryPromise({
-            try: () => fetch(getApiUrl(path), { ...options, method: "GET" }),
+            try: () => fetch(
+                getApiUrl(path),
+                {
+                    ...options,
+                    method: "GET",
+                    credentials: "include"
+                }
+            ),
             catch: (e) => new NetworkError({
                 path,
                 message: "Network error during GET",
@@ -34,6 +41,7 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
                 {
                     ...options?.options,
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
