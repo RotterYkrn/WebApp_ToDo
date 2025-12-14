@@ -6,7 +6,6 @@ const router = Router();
 
 router.get(ApiAuthPathLocal.CHECK_SESSION, (req, res) => {
     const sessionToken = req.cookies?.sessionToken;
-    console.log(`check session: ${sessionToken}`);
 
     if (sessionToken === "true") {
         // TODO: ユーザー情報を返す
@@ -45,8 +44,15 @@ router.post(ApiAuthPathLocal.SIGN_IN, (req, res) => {
 
 router.post(ApiAuthPathLocal.SIGN_OUT, (_req, res) => {
     console.log("signed out");
-    res.clearCookie("sessionToken");
-    res.status(constants.HTTP_STATUS_NO_CONTENT).end();
+    res
+        .clearCookie("sessionToken", {
+            secure: true,
+            sameSite: "none",
+            httpOnly: true,
+            path: "/",
+        })
+        .status(constants.HTTP_STATUS_NO_CONTENT)
+        .end();
 });
 
 router.post(ApiAuthPathLocal.SIGN_UP, (req, res) => {
