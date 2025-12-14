@@ -29,6 +29,8 @@ router.post(ApiAuthPathLocal.SIGN_IN, (req, res) => {
     if (email === "a@a" && password === "a") {
         res
             .cookie("sessionToken", "true", {
+                secure: true,
+                sameSite: "none",
                 httpOnly: true,
                 maxAge: 1000 * 60 * 60,
             })
