@@ -6,6 +6,7 @@ const router = Router();
 
 router.get(ApiAuthPathLocal.CHECK_SESSION, (req, res) => {
     const sessionToken = req.cookies?.sessionToken;
+    console.log(`check session: ${sessionToken}`);
 
     if (sessionToken === "true") {
         // TODO: ユーザー情報を返す

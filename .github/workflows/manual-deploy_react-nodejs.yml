@@ -54,8 +54,6 @@ jobs:
                   file: ./${{ env.TARGET_FOLDER }}/Dockerfile.backend
                   push: true
                   target: deployment
-                  build-args: |
-                      VITE_API_URL=${{ secrets.VITE_API_PROD_URL }}
                   tags: ${{ env.REGISTRY }}/rotterykrn/1day-todo/backend:latest
 
     deployment:
