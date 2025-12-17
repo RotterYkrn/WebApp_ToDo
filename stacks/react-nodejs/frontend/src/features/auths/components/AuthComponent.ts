@@ -4,7 +4,7 @@ import { createButton, UIService } from "@/shared/ui";
 import { PagePath } from "@1day-todo/shared";
 import { Effect, pipe } from "effect";
 import { AuthService } from "../services/AuthService";
-import { performSignOut, performSignUp } from "../services/use-cases";
+import { performSignUp, signOutUseCase } from "../services/use-cases";
 import { handleSignInError, handleSignUpError } from "./helper";
 
 export class AuthComponent {
@@ -144,7 +144,7 @@ export class AuthComponent {
             },
             () => this.appManager.runPromise(
                 pipe(
-                    performSignOut(),
+                    signOutUseCase(),
                     Effect.tap(() => UIService.redirectTo(PagePath.SIGN_IN)),
                     Effect.tapError((e) => Effect.sync(() => {
                         console.error("Sign out failed:", e);

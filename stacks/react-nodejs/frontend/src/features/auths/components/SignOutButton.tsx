@@ -2,13 +2,13 @@ import { appManager } from "@/app/app";
 import { UIService } from "@/shared/ui";
 import { PagePath } from "@1day-todo/shared";
 import { Effect, pipe } from "effect";
-import { performSignOut } from "../services/use-cases";
+import { signOutUseCase } from "../services/use-cases";
 
 const SignOutButton: React.FC = () => {
     const signOut = () =>
         appManager.runPromise(
             pipe(
-                performSignOut(),
+                signOutUseCase(),
                 Effect.tap(() => UIService.redirectTo(PagePath.SIGN_IN)),
                 Effect.tapError((e) =>
                     Effect.sync(() => {

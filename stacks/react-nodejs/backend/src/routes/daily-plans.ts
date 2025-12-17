@@ -1,32 +1,39 @@
+import { DailyPlan } from "@1day-todo/shared";
 import { Router } from "express";
 import { constants } from "http2";
 
 const router = Router();
 
-let tasks = [
+let tasks: DailyPlan[] = [
     {
+        id: 1,
         title: "🛒 買い物に行く",
-        detail: "スーパーで牛乳・パン・卵を購入する。ついでに日用品もチェック。",
+        description: "スーパーで牛乳・パン・卵を購入する。ついでに日用品もチェック。",
     },
     {
+        id: 2,
         title: "🧹 部屋の掃除",
-        detail: "リビングとキッチンを中心に掃除機をかけて片付ける。",
+        description: "リビングとキッチンを中心に掃除機をかけて片付ける。",
     },
     {
+        id: 3,
         title: "📧 メール確認",
-        detail: "クライアントからの返信を確認し、返事を書く。",
+        description: "クライアントからの返信を確認し、返事を書く。",
     },
 ];
 
 router.get("/", (_req, res) => {
-    res.json(tasks);
+    res
+        .json(tasks)
+        .status(constants.HTTP_STATUS_OK)
+        .end();
 });
 
 router.post("/", (req, res) => {
-    const { title, detail } = req.body;
-    if (title && detail) {
-        tasks.push({ title, detail });
-        res.status(constants.HTTP_STATUS_CREATED).json({ title, detail });
+    const { title, description } = req.body;
+    if (title && description) {
+        tasks.push({ id: tasks.length + 1, title, description });
+        res.status(constants.HTTP_STATUS_CREATED).json({ id: tasks.length + 1, title, description });
     } else {
         res.status(constants.HTTP_STATUS_BAD_REQUEST).json({ error: "タイトルと詳細は必須です。" });
     }

@@ -6,6 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import AuthenticatedLayout from "./AuthenticatedLayout";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
+import TodayPlanPage from "./pages/TodayPlanPage";
 
 const App: React.FC = () => {
     return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
 
                 <Route element={<AuthRoute />}>
                     <Route element={<AuthenticatedLayout />}>
+                        <Route path={PagePath.INDEX} element={<TodayPlanPage />} />
                         <Route path="*" element={<SignOutButton />} />
                     </Route>
                 </Route>

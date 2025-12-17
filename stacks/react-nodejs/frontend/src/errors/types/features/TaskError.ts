@@ -5,5 +5,11 @@ export class TaskTypeError extends Data.TaggedError("TaskTypeError")<{
     readonly taskType: number;
 }> { }
 
+export class TaskUnknownError extends Data.TaggedError("TaskError")<{
+    readonly message: string;
+    readonly originalError: unknown;
+}> { }
+
 export type TaskError =
-    | TaskTypeError;
+    | TaskTypeError
+    | TaskUnknownError;

@@ -9,7 +9,6 @@ export const TaskLive = Layer.succeed(TaskService, TaskService.of({
         ApiService.get(
             TaskApiPathMap[taskType].GET_ALL,
             HttpStatus.OK,
-            { credentials: "include" }
         ),
         Effect.flatMap(extractTaskSchemaDataChunk(taskType)),
     ),
@@ -18,12 +17,7 @@ export const TaskLive = Layer.succeed(TaskService, TaskService.of({
         ApiService.post(
             TaskApiPathMap[taskType].CREATE,
             HttpStatus.CREATED,
-            {
-                body: taskItem,
-                options: {
-                    credentials: "include",
-                }
-            }
+            { body: taskItem },
         ),
         Effect.flatMap(extractTaskSchemaData(taskType)),
     ),

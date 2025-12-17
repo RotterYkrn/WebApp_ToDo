@@ -123,7 +123,7 @@ export const signInUseCase = (input: {
         // }),
     );
 
-export const performSignOut = (): Effect.Effect<void, SignOutError, AuthService | ApiService> =>
+export const signOutUseCase = (): Effect.Effect<void, SignOutError, AuthService | ApiService> =>
     pipe(
         AuthService.signOutApi(),
         Effect.mapError((e) => new SignOutError({

@@ -8,7 +8,6 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
         ApiService.get(
             ApiAuthPathFull.CHECK_SESSION,
             HttpStatus.OK,
-            { credentials: "include" }
         ),
         Effect.flatMap(extractBodyWithSchema(UserId)),
         Effect.mapError((e) => e),
@@ -27,10 +26,7 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
         ApiService.post(
             ApiAuthPathFull.SIGN_IN,
             HttpStatus.NO_CONTENT,
-            {
-                body: input,
-                options: { credentials: "include" }
-            }
+            { body: input },
         ),
         Effect.map(() => void 0),
     ),
@@ -39,9 +35,6 @@ export const AuthLive = Layer.succeed(AuthService, AuthService.of({
         ApiService.post(
             ApiAuthPathFull.SIGN_OUT,
             HttpStatus.NO_CONTENT,
-            {
-                options: { credentials: "include" }
-            }
         ),
         Effect.map(() => void 0),
     ),

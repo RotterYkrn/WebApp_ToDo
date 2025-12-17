@@ -1,4 +1,5 @@
 import { AuthLive } from "@/features/auths";
+import { DailyPlanLive } from "@/features/daily-plans/services/DailyPlanLive";
 import { TaskLive } from "@/features/tasks/services/TaskLive";
 import { ApiLive } from "@/shared/http";
 import { ConsoleLoggerLive } from "@/shared/logger";
@@ -9,6 +10,7 @@ export const AppLayer = Layer.mergeAll(
     ApiLive,
     UILive,
     AuthLive,
+    DailyPlanLive,
     TaskLive,
     ConsoleLoggerLive,
 );

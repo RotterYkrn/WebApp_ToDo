@@ -3,7 +3,7 @@ import { useAppManager } from "@/shared/app";
 import { UserId } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Cause, Exit, Option } from "effect";
-import { checkSessionUseCase, performSignOut, signInUseCase } from "../services/use-cases";
+import { checkSessionUseCase, signInUseCase, signOutUseCase } from "../services/use-cases";
 
 const AUTH_SESSION_QUERY_KEY = ["authSession"];
 
@@ -69,7 +69,7 @@ export function useAuth() {
     });
 
     const signOutMutation = useMutation({
-        mutationFn: async () => await runPromise(performSignOut()),
+        mutationFn: async () => await runPromise(signOutUseCase()),
         onSuccess: () => {
             queryClient.removeQueries({ queryKey: AUTH_SESSION_QUERY_KEY });
         },
