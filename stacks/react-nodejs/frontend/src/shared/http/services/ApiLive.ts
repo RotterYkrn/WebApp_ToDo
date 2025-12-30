@@ -61,6 +61,60 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         }))
     ),
 
+    patch: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => pipe(
+        Effect.tryPromise({
+            try: () => fetch(
+                getApiUrl(path),
+                {
+                    ...options?.options,
+                    method: "PATCH",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(options?.body)
+                }
+            ),
+            catch: (e) => new NetworkError({
+                path,
+                message: "Network error during PATCH",
+                originalError: e
+            })
+        }),
+        Effect.flatMap(handleHttpError(path, "HTTP error during PATCH")),
+        Effect.flatMap(ensureHttpStatus(expectedStatus, "PATCH", path)),
+        Effect.tapError((error) => Effect.sync(() => {
+            console.error(`Error during PATCH ${getApiUrl(path)}:`, error);
+        }))
+    ),
+
+    delete: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => pipe(
+        Effect.tryPromise({
+            try: () => fetch(
+                getApiUrl(path),
+                {
+                    ...options?.options,
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(options?.body)
+                }
+            ),
+            catch: (e) => new NetworkError({
+                path,
+                message: "Network error during DELETE",
+                originalError: e
+            })
+        }),
+        Effect.flatMap(handleHttpError(path, "HTTP error during DELETE")),
+        Effect.flatMap(ensureHttpStatus(expectedStatus, "DELETE", path)),
+        Effect.tapError((error) => Effect.sync(() => {
+            console.error(`Error during DELETE ${getApiUrl(path)}:`, error);
+        }))
+    ),
+
     extractBody: (res) => Effect.tryPromise({
         try: () => res.json() as Promise<unknown>,
         catch: (e) => new ResponseJsonError({

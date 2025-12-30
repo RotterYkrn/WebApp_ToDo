@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Cause, Chunk, Exit, Option } from "effect";
 import { getAllDailyPlansUseCase } from "../services/use-cases";
 
-export const TodayPlanList = () => {
+export const DailyPlanList = () => {
     const { runPromise } = useAppManager();
 
     const { data, isError, isLoading } = useQuery<
@@ -65,4 +65,4 @@ export const TodayPlanList = () => {
     );
 }
 
-export default TodayPlanList;
+export default DailyPlanList;

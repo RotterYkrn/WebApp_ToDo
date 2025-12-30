@@ -9,11 +9,25 @@ export interface IApiService {
         expectedStatus: HttpStatus,
         options?: RequestInit
     ) => Effect.Effect<Response, NetworkError | HttpError>;
+
     post: (
         path: string,
         expectedStatus: HttpStatus,
         options?: PostOptionType
     ) => Effect.Effect<Response, NetworkError | HttpError>;
+
+    patch: (
+        path: string,
+        expectedStatus: HttpStatus,
+        options?: PostOptionType
+    ) => Effect.Effect<Response, NetworkError | HttpError>;
+
+    delete: (
+        path: string,
+        expectedStatus: HttpStatus,
+        options?: PostOptionType
+    ) => Effect.Effect<Response, NetworkError | HttpError>;
+    
     extractBody: (
         res: Response
     ) => Effect.Effect<unknown, ResponseJsonError>;

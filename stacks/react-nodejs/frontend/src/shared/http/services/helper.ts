@@ -34,7 +34,7 @@ export const handleHttpError = (
 
 export const ensureHttpStatus = (
     expectedStatus: HttpStatus,
-    method: "GET" | "POST",
+    method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
     path: string
 ): (res: Response) => Either.Either<Response, UnexpectedStatusError> =>
     (res) =>

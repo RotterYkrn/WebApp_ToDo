@@ -4,9 +4,10 @@ import SignOutButton from "@/features/auths/components/SignOutButton";
 import { PagePath } from "@1day-todo/shared";
 import { Route, Routes } from "react-router-dom";
 import AuthenticatedLayout from "./AuthenticatedLayout";
+import DailyPlanPage from "./pages/DailyPlanPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
-import TodayPlanPage from "./pages/TodayPlanPage";
+import TodoPage from "./pages/TodoPage";
 
 const App: React.FC = () => {
     return (
@@ -17,7 +18,8 @@ const App: React.FC = () => {
 
                 <Route element={<AuthRoute />}>
                     <Route element={<AuthenticatedLayout />}>
-                        <Route path={PagePath.INDEX} element={<TodayPlanPage />} />
+                        <Route path={PagePath.INDEX} element={<DailyPlanPage />} />
+                        <Route path={PagePath.TODO} element={<TodoPage />} />
                         <Route path="*" element={<SignOutButton />} />
                     </Route>
                 </Route>
