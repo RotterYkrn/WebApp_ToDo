@@ -119,13 +119,13 @@ export const useTodo = () => {
         isError,
         isLoading,
 
-        createTodo: createMutation.mutate,
+        createTodo: createMutation.mutateAsync,
         isCreating: createMutation.isPending,
 
-        updateTodo: updateMutation.mutate,
+        updateTodo: updateMutation.mutateAsync,
         isUpdating: updateMutation.isPending,
 
-        deleteTodo: deleteMutation.mutate,
+        deleteTodo: deleteMutation.mutateAsync,
         isDeleting: deleteMutation.isPending,
     };
 }

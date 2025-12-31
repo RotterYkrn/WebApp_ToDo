@@ -16,4 +16,3 @@ export const TodoInput = Todo.pipe(
     Schema.omit("id"),
 )
 export type TodoInput = SchemaType<typeof TodoInput>;
-type TodoParams = SchemaType<typeof TodoInput>;

@@ -1,6 +1,5 @@
-import { Todo, TodoInput } from "@1day-todo/shared";
 import React, { createContext, ReactNode, useContext, useState } from "react";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { DefaultValues, FieldValues, FormProvider, useForm, useFormContext } from "react-hook-form";
 
 export const Tasks = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -14,49 +13,44 @@ Tasks.List = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-interface TaskItemContextType {
+interface TaskItemContextType<T extends FieldValues = any> {
     isOpen: boolean;
-    handleTitleClick: React.MouseEventHandler<HTMLButtonElement>;
+    handleTitleClick: () => void;
     isEditing: boolean;
     toggleEdit: (value: boolean) => void;
-    onSubmit: 
-        | ((data: { title?: string; description?: string | null }) => void)
-        | ((data: { title: string; description?: string | null }) => void);
-    handleDelete?: () => void;
+    task?: T;
+    onSubmit: (data: T) => Promise<void>;
+    handleDelete?: () => Promise<void>;
 }
 
 const TaskItemContext = createContext<TaskItemContextType | undefined>(undefined);
 
-const useTaskItemContext = () => {
+const useTaskItemContext = <T extends FieldValues>() => {
     const context = useContext(TaskItemContext);
     if (!context) {
         throw new Error("Tasks.Itemの子コンポーネントとして使用してください");
     }
-    return context;
+    return context as TaskItemContextType<T>;
 };
 
-type TasksCreateProps = React.PropsWithChildren<{
-    onCreate: (task: { title: string; description?: string | null }) => void;
+type TasksCreateProps<T extends FieldValues> = React.PropsWithChildren<{
+    onCreate: (data: T) => Promise<void>;
 }>;
 
-Tasks.Create = ({ children, onCreate }: TasksCreateProps) => {
+Tasks.Create = <T extends FieldValues>({ children, onCreate }: TasksCreateProps<T>) => {
     const [isOpen, setIsOpen] = useState(false);
-    
-    const methods = useForm<TodoInput>();
+    const methods = useForm<T>();
 
-    const handleTitleClick = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const onSubmit = async (data: { title: string; description?: string | null }) => {
+    const onSubmit = async (data: T) => {
         await onCreate(data);
         setIsOpen(false);
+        methods.reset();
     };
 
     return (
         <TaskItemContext value={{
             isOpen,
-            handleTitleClick,
+            handleTitleClick: () => setIsOpen(!isOpen),
             isEditing: true,
             toggleEdit: () => setIsOpen(false),
             onSubmit,
@@ -70,25 +64,19 @@ Tasks.Create = ({ children, onCreate }: TasksCreateProps) => {
     );
 }
 
-type TasksItemProps = React.PropsWithChildren<{
+type TasksItemProps<T extends FieldValues> = React.PropsWithChildren<{
     id: number;
-    task: Todo;
-    onSave: (
-        id: number,
-        updatedTask: {
-            title?: string;
-            description?: string | null;
-        }
-    ) => void;
-    onDelete: (id: number) => void;
+    task: T;
+    onSave: (id: number, updatedTask: T) => Promise<void>;
+    onDelete: (id: number) => Promise<void>;
 }>;
 
-Tasks.Item = ({ id, task, onSave, onDelete, children }: TasksItemProps) => {
+Tasks.Item = <T extends FieldValues>({ id, task, onSave, onDelete, children }: TasksItemProps<T>) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    const methods = useForm<TodoInput>({
-        defaultValues: task,
+    const methods = useForm<T>({
+        defaultValues: task as DefaultValues<T>,
     });
 
     const handleTitleClick = () => {
@@ -99,7 +87,7 @@ Tasks.Item = ({ id, task, onSave, onDelete, children }: TasksItemProps) => {
         setIsEditing(value);
     }
 
-    const onSubmit = async (data: { title?: string; description?: string | null }) => {
+    const onSubmit = async (data: T) => {
         await onSave(id, data);
         setIsEditing(false);
     };
@@ -137,7 +125,7 @@ Tasks.View = ({ children }: { children: ReactNode }) => {
 
 // 編集モードの時に表示するもの
 Tasks.Form = ({ children }: { children: ReactNode }) => {
-    const { handleSubmit } = useFormContext<Todo>();
+    const { handleSubmit } = useFormContext();
     const { isEditing, onSubmit } = useTaskItemContext();
 
     if (!isEditing) return null;
@@ -161,20 +149,23 @@ Tasks.EditButton = ({ children }: { children: ReactNode }) => {
 };
 
 Tasks.DeleteButton = ({ children }: { children: React.ReactNode; }) => {
-    const { handleDelete = () => {} } = useTaskItemContext();
+    const { handleDelete } = useTaskItemContext();
+
+    if (!handleDelete) return null;
 
     return (
-        <button className="task-delete-button" onClick={() => handleDelete()}>
+        <button className="task-delete-button" onClick={handleDelete}>
             {children}
         </button>
     );
 };
 
-Tasks.Title = ({ children }: { children: React.ReactNode }) => {
+Tasks.Title = ({ children }: React.ComponentPropsWithoutRef<"button">) => {
     const { isOpen, handleTitleClick } = useTaskItemContext();
 
     return (
         <button
+            type="button"
             className="task-title"
             onClick={handleTitleClick}
             aria-expanded={isOpen}
@@ -184,7 +175,7 @@ Tasks.Title = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-Tasks.Detail = ({ children }: { children: React.ReactNode }) => {
+Tasks.Detail = ({ children }: React.ComponentPropsWithoutRef<"div">) => {
     const { isOpen } = useTaskItemContext();
 
     return (
@@ -198,7 +189,7 @@ Tasks.Detail = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-Tasks.Description = ({ children }: { children: React.ReactNode; }) => {
+Tasks.Description = ({ children }: React.ComponentPropsWithoutRef<"p">) => {
     return (
         <p className="task-description">
             {children}
@@ -206,8 +197,8 @@ Tasks.Description = ({ children }: { children: React.ReactNode; }) => {
     );
 }
 
-Tasks.TitleInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
-    const { register } = useFormContext<Todo>();
+Tasks.TitleInput = (props: React.ComponentPropsWithoutRef<"input">) => {
+    const { register } = useFormContext();
 
     return (
         <label>
@@ -221,8 +212,8 @@ Tasks.TitleInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
     );
 }
 
-Tasks.DescriptionInput = (props: React.InputHTMLAttributes<HTMLInputElement>) => {
-    const { register } = useFormContext<Todo>();
+Tasks.DescriptionInput = (props: React.ComponentPropsWithoutRef<"input">) => {
+    const { register } = useFormContext();
 
     return (
         <label>
@@ -246,7 +237,7 @@ Tasks.SaveButton = ({ children }: { children: React.ReactNode; }) => {
 
 Tasks.CancelButton = ({ children }: { children: React.ReactNode; }) => {
     const { toggleEdit } = useTaskItemContext();
-    const { reset } = useFormContext<Todo>();
+    const { reset } = useFormContext();
 
     return (
         <button

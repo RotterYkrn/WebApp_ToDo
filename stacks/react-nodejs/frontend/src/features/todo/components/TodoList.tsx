@@ -40,27 +40,29 @@ export const TodoList = () => {
 
     const { createTodo, updateTodo, deleteTodo } = useTodo();
 
-    const onCreate = (newTodo: {
+    const onCreate = async (newTodo: {
         title: string;
         description?: string | null;
     }) => {
-        createTodo(newTodo);
+        await createTodo(newTodo);
     };
     
-    const onSave = (
+    const onSave = async (
         id: number,
         updatedTask: {
             title?: string;
             description?: string | null;
         }
     ) => {
-        updateTodo({
+        await updateTodo({
             id,
             input: updatedTask
         });
     };
 
-    
+    const onDelete = async (id: number) => {
+        await deleteTodo(id);
+    }    
     
     if (isLoading) {
         return <div>ToDoリストを読み込み中...</div>;
@@ -92,7 +94,7 @@ export const TodoList = () => {
                 </Tasks.Create>
 
                 {Chunk.map(data, (task) => (
-                    <Tasks.Item key={task.id} id={task.id} task={task} onSave={onSave} onDelete={deleteTodo}>
+                    <Tasks.Item key={task.id} id={task.id} task={task} onSave={onSave} onDelete={onDelete}>
                         <Tasks.Title>{task.title}</Tasks.Title>
                         <Tasks.View>
                             <Tasks.Detail>
