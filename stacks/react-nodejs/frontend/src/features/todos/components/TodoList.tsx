@@ -1,44 +1,9 @@
-import { TaskUnknownError } from "@/errors";
-import { useAppManager } from "@/shared/app";
 import Tasks from "@/shared/components/Tasks";
-import { TodoChunk } from "@1day-todo/shared";
-import { useQuery } from "@tanstack/react-query";
-import { Cause, Chunk, Exit, Option } from "effect";
+import { Chunk } from "effect";
 import { useTodo } from "../hooks/useTodo";
-import { getAllTodosUseCase } from "../services/use-cases";
 
 export const TodoList = () => {
-    const { runPromise } = useAppManager();
-
-    const { data, isError, isLoading } = useQuery<
-        TodoChunk,
-        TaskUnknownError
-    >({
-        queryKey: ["todoChunk"],
-        queryFn: async () => {
-            const result = await runPromise(getAllTodosUseCase());
-            if (Exit.isFailure(result)) {
-                const cause = result.cause;
-                const error = Cause.failureOption(cause);
-                if (Option.isSome(error)) {
-                    console.error(error.value.toJSON());
-                    throw error.value;
-                } else {
-                    console.error(cause);
-                    throw new TaskUnknownError({
-                        message: "Check session failed due to an unknown error.",
-                        originalError: cause,
-                    });
-                }
-            }
-
-            return result.value;
-        },
-        staleTime: 5 * 60 * 1000,
-        retry: false,
-    });
-
-    const { createTodo, updateTodo, deleteTodo } = useTodo();
+    const { data, isError, isLoading, createTodo, updateTodo, deleteTodo } = useTodo();
 
     const onCreate = async (newTodo: {
         title: string;

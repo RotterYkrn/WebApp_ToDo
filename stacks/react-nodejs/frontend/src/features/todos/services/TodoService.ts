@@ -1,11 +1,11 @@
 import { SharedError } from "@/errors";
 import { ApiService } from "@/shared/http";
-import { Todo, TodoInput } from "@1day-todo/shared";
-import { Chunk, Effect } from "effect";
+import { Todo, TodoChunk, TodoInput } from "@1day-todo/shared";
+import { Effect } from "effect";
 
 export interface ITodoService {
     readonly getAllTodosApi: () =>
-        Effect.Effect<Chunk.Chunk<Todo>, SharedError, ApiService>;
+        Effect.Effect<TodoChunk, SharedError, ApiService>;
     readonly createTodoApi: (newTodo: TodoInput) =>
         Effect.Effect<Todo, SharedError, ApiService>;
     readonly updateTodoApi: (id: number, updatedTodo: TodoInput) =>
