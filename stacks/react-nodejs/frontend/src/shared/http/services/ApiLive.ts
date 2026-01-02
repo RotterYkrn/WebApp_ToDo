@@ -29,9 +29,6 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         }),
         Effect.flatMap(handleHttpError(path, "HTTP error during GET")),
         Effect.flatMap(ensureHttpStatus(expectedStatus, "GET", path)),
-        Effect.tapError((error) => Effect.sync(() => {
-            console.error(`Error during GET ${getApiUrl(path)}:`, error);
-        }))
     ),
 
     post: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => pipe(
@@ -56,9 +53,6 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         }),
         Effect.flatMap(handleHttpError(path, "HTTP error during POST")),
         Effect.flatMap(ensureHttpStatus(expectedStatus, "POST", path)),
-        Effect.tapError((error) => Effect.sync(() => {
-            console.error(`Error during POST ${getApiUrl(path)}:`, error);
-        }))
     ),
 
     patch: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => pipe(
@@ -83,9 +77,6 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         }),
         Effect.flatMap(handleHttpError(path, "HTTP error during PATCH")),
         Effect.flatMap(ensureHttpStatus(expectedStatus, "PATCH", path)),
-        Effect.tapError((error) => Effect.sync(() => {
-            console.error(`Error during PATCH ${getApiUrl(path)}:`, error);
-        }))
     ),
 
     delete: (path: string, expectedStatus: HttpStatus, options?: PostOptionType) => pipe(
@@ -110,9 +101,6 @@ export const ApiLive = Layer.succeed(ApiService, ApiService.of({
         }),
         Effect.flatMap(handleHttpError(path, "HTTP error during DELETE")),
         Effect.flatMap(ensureHttpStatus(expectedStatus, "DELETE", path)),
-        Effect.tapError((error) => Effect.sync(() => {
-            console.error(`Error during DELETE ${getApiUrl(path)}:`, error);
-        }))
     ),
 
     extractBody: (res) => Effect.tryPromise({

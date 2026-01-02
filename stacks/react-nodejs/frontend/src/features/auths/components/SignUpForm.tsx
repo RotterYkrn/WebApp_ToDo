@@ -1,19 +1,16 @@
 import { UnknownAuthError, ValidationError } from "@/errors";
 import { PagePath } from "@1day-todo/shared";
-import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useSignUp } from "../hooks/useSignUp";
 import SignUpSuccessMessage from "./SignUpSuccessMessage";
 
 const SignUpForm: React.FC = () => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const methods = useForm<{email: string; password: string}>();
 
     const { isSuccess, isLoading, isError, error, signUp } = useSignUp();
 
-    const handleSignUp = (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const onSubmit = async ({ email, password }: {email: string; password: string}) => {
         signUp(
             { email, password },
         );
@@ -30,38 +27,36 @@ const SignUpForm: React.FC = () => {
 
     return (
         <>
-            <form onSubmit={handleSignUp}>
-                <label>
-                    メールアドレス:
-                    <input
-                        type="email"
-                        name="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </label>
+            <FormProvider {...methods}>
+                <form onSubmit={methods.handleSubmit(onSubmit)}>
+                    <label>
+                        メールアドレス:
+                        <input
+                            type="email"
+                            {...methods.register("email", { required: "メールアドレスは必須です" })}
+                        />
+                    </label>
 
-                <label>
-                    パスワード:
-                    <input
-                        type="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </label>
+                    <label>
+                        パスワード:
+                        <input
+                            type="password"
+                            {...methods.register("password", { required: "パスワードは必須です" })}
+                        />
+                    </label>
 
-                {isError && <div id="error-message">{errorMessage}</div>}
+                    {isError && <div id="error-message">{errorMessage}</div>}
 
-                <button
-                    type="submit"
-                    disabled={isLoading}
-                >
-                    サインアップ
-                </button>
-            </form>
-            
-            <Link to={PagePath.SIGN_IN}>アカウントをお持ちの方はこちら</Link>
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                    >
+                        サインアップ
+                    </button>
+                </form>
+                
+                <Link to={PagePath.SIGN_IN}>アカウントをお持ちの方はこちら</Link>
+            </FormProvider>
         </>
     );
 };

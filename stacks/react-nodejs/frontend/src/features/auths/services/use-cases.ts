@@ -1,4 +1,4 @@
-import { InvalidCredentialsError, SignOutError, SignUpError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
+import { InvalidCredentialsError, SignOutError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
 import { SignInInput, SignUpInput, UserId } from "@1day-todo/shared";
@@ -23,23 +23,6 @@ export const checkSessionUseCase = (): Effect.Effect<
                     originalError: e,
                 });
             }
-        }),
-    );
-
-export const performSignUp = (input: {
-    email: string,
-    password: string
-}): Effect.Effect<void, SignUpError, AuthService | ApiService> =>
-    pipe(
-        input,
-        parseToSchema(SignUpInput),
-        Effect.flatMap(AuthService.signUpApi),
-        Effect.mapError((e) => {
-            return new SignUpError({
-                type: "unknown_error",
-                inputObject: input,
-                originalError: e,
-            });
         }),
     );
 
@@ -70,14 +53,6 @@ export const signUpUseCase = (input: {
                     });
             }
         }),
-        // Effect.mapError((e) => {
-        //     switch (e.type) {
-        //         case "validation_error":
-        //             return "メールアドレスとパスワードを正しく入力してください。";
-        //         default:
-        //             return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
-        //     }
-        // }),
     );
 
 export const signInUseCase = (input: {

@@ -22,8 +22,7 @@ router.get(ApiAuthPathLocal.CHECK_SESSION, (req, res) => {
 });
 
 router.post(ApiAuthPathLocal.SIGN_IN, (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
+    const { email, password } = req.body;
 
     if (email === "a@a" && password === "a") {
         res
@@ -56,12 +55,14 @@ router.post(ApiAuthPathLocal.SIGN_OUT, (_req, res) => {
 });
 
 router.post(ApiAuthPathLocal.SIGN_UP, (req, res) => {
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
+    const { email, password } = req.body;
 
-    console.log(`signed up as ${username} (${email}): ${password}`);
-    res.status(constants.HTTP_STATUS_CREATED).end();
+    res
+        .status(constants.HTTP_STATUS_CREATED)
+        .json({ email, password })
+        .end();
+    
+    console.log(`signed up as ${email}: ${password}`);
 });
 
 export default router;
