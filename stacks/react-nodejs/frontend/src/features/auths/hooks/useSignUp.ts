@@ -1,6 +1,6 @@
 import { UnknownAuthError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app/useAppManager";
-import { handleCause } from "@/shared/utils/handleExit";
+import { handleCause } from "@/shared/utils";
 import { useMutation } from "@tanstack/react-query";
 import { Exit } from "effect";
 import { signUpUseCase } from "../services/use-cases";

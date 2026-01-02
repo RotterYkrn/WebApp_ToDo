@@ -1,5 +1,5 @@
-import SignOutButton from "@/features/auths/components/SignOutButton";
-import HabitList from "@/features/habits/components/HabitList";
+import { SignOutButton } from "@/features/auths";
+import { HabitList } from "@/features/habits";
 
 const HabitPage = () => {
     return (

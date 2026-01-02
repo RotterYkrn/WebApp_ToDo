@@ -1,4 +1,4 @@
-import SignInForm from "@/features/auths/components/SignInForm";
+import { SignInForm } from "@/features/auths";
 import { PagePath } from "@1day-todo/shared";
 import { Link } from "react-router-dom";
 

@@ -1,9 +1,9 @@
 import { InvalidCredentialsError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app";
-import { handleCause } from "@/shared/utils/handleExit";
+import { handleCause } from "@/shared/utils";
 import { UserId } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Cause, Exit, Option } from "effect";
+import { Exit } from "effect";
 import { checkSessionUseCase, signInUseCase, signOutUseCase } from "../services/use-cases";
 
 const AUTH_SESSION_QUERY_KEY = ["authSession"];
@@ -20,17 +20,12 @@ export function useAuth() {
         queryFn: async () => {
             const result = await runPromise(checkSessionUseCase());
             if (Exit.isFailure(result)) {
-                const cause = result.cause;
-                const error = Cause.failureOption(cause);
-                if (Option.isSome(error)) {
-                    throw error.value;
-                } else {
-                    console.error(cause);
-                    throw new UnknownAuthError({
+                throw handleCause(result.cause, (e) => {
+                    return new UnknownAuthError({
                         message: "Check session failed due to an unknown error.",
-                        originalError: cause,
+                        originalError: e,
                     });
-                }
+                });
             }
 
             return result.value;

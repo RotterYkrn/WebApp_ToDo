@@ -1,4 +1,4 @@
-import SignUpForm from "@/features/auths/components/SignUpForm";
+import { SignUpForm } from "@/features/auths";
 
 const SignUpPage: React.FC = () => {
     return (

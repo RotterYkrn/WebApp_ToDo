@@ -1,6 +1,6 @@
 import { TaskUnknownError } from "@/errors";
 import { useAppManager } from "@/shared/app";
-import { handleCause } from "@/shared/utils/handleExit";
+import { handleCause } from "@/shared/utils";
 import { TodoChunk } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chunk, Exit } from "effect";
