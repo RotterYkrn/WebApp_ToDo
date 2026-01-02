@@ -1,5 +1,6 @@
 import { AuthLive } from "@/features/auths";
 import { DailyPlanLive } from "@/features/daily-plans/services/DailyPlanLive";
+import { HabitLive } from "@/features/habits/services/HabitLive";
 import { TaskLive } from "@/features/tasks/services/TaskLive";
 import { TodoLive } from "@/features/todos/services/TodoLive";
 import { ApiLive } from "@/shared/http";
@@ -13,6 +14,7 @@ export const AppLayer = Layer.mergeAll(
     AuthLive,
     DailyPlanLive,
     TodoLive,
+    HabitLive,
     TaskLive,
     ConsoleLoggerLive,
 );

@@ -5,6 +5,7 @@ import { PagePath } from "@1day-todo/shared";
 import { Route, Routes } from "react-router-dom";
 import AuthenticatedLayout from "./AuthenticatedLayout";
 import DailyPlanPage from "./pages/DailyPlanPage";
+import HabitPage from "./pages/HabitPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import TodoPage from "./pages/TodoPage";
@@ -20,6 +21,7 @@ const App: React.FC = () => {
                     <Route element={<AuthenticatedLayout />}>
                         <Route path={PagePath.INDEX} element={<DailyPlanPage />} />
                         <Route path={PagePath.TODO} element={<TodoPage />} />
+                        <Route path={PagePath.HABIT} element={<HabitPage />} />
                         <Route path="*" element={<SignOutButton />} />
                     </Route>
                 </Route>
