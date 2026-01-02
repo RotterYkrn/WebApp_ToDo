@@ -1,24 +1,17 @@
-import { appManager } from "@/app/app";
-import { UIService } from "@/shared/ui";
 import { PagePath } from "@1day-todo/shared";
-import { Effect, pipe } from "effect";
-import { signOutUseCase } from "../services/use-cases";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const SignOutButton: React.FC = () => {
-    const signOut = () =>
-        appManager.runPromise(
-            pipe(
-                signOutUseCase(),
-                Effect.tap(() => UIService.redirectTo(PagePath.SIGN_IN)),
-                Effect.tapError((e) =>
-                    Effect.sync(() => {
-                        console.error("Sign out failed:", e);
-                    })
-                )
-            )
-        );
+    const { signOut } = useAuth();
+    const navigate = useNavigate();
 
-    return <button onClick={signOut}>サインアウト</button>;
+    const onClick = async () => {
+        await signOut();
+        navigate(PagePath.SIGN_IN, { replace: true });
+    };
+
+    return <button onClick={onClick}>サインアウト</button>;
 };
 
 export default SignOutButton;

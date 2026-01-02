@@ -78,6 +78,6 @@ export function useAuth() {
     return {
         checkSessionQuery,
         signInMutation,
-        signOut: signOutMutation.mutate,
+        signOut: signOutMutation.mutateAsync,
     };
 }
