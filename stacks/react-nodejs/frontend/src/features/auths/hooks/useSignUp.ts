@@ -1,7 +1,8 @@
 import { UnknownAuthError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app/useAppManager";
+import { handleCause } from "@/shared/utils/handleExit";
 import { useMutation } from "@tanstack/react-query";
-import { Cause, Exit, Option } from "effect";
+import { Exit } from "effect";
 import { signUpUseCase } from "../services/use-cases";
 
 export const useSignUp = () => {
@@ -18,17 +19,12 @@ export const useSignUp = () => {
         }) => {
             const result = await runPromise(signUpUseCase(input));
             if (Exit.isFailure(result)) {
-                const cause = result.cause;
-                const error = Cause.failureOption(cause);
-                if (Option.isSome(error)) {
-                    throw error.value;
-                } else {
-                    console.error(cause);
-                    throw new UnknownAuthError({
-                        message: "An unknown error occurred during sign up.",
-                        originalError: cause,
+                throw handleCause(result.cause, (e) => {
+                    return new UnknownAuthError({
+                        message: "Sign up failed due to an unknown error.",
+                        originalError: e,
                     });
-                }
+                });
             }
         },
     })

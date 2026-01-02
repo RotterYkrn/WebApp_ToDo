@@ -1,5 +1,6 @@
 import { InvalidCredentialsError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app";
+import { handleCause } from "@/shared/utils/handleExit";
 import { UserId } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Cause, Exit, Option } from "effect";
@@ -49,18 +50,12 @@ export function useAuth() {
         }) => {
             const result = await runPromise(signInUseCase(input));
             if (Exit.isFailure(result)) {
-                const cause = result.cause;
-                const error = Cause.failureOption(cause);
-                if (Option.isSome(error)) {
-                    console.error("Sign in failed:", error.value);
-                    throw error.value;
-                } else {
-                    console.error(cause);
-                    throw new UnknownAuthError({
+                throw handleCause(result.cause, (e) => {
+                    return new UnknownAuthError({
                         message: "Sign in failed due to an unknown error.",
-                        originalError: cause,
+                        originalError: e,
                     });
-                }
+                });
             }
         },
         onSuccess: () => {
