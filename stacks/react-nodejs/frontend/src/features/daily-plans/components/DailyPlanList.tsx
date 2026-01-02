@@ -3,7 +3,7 @@ import { useAppManager } from "@/shared/app";
 import Tasks from "@/shared/components/Tasks";
 import { DailyPlanChunk } from "@1day-todo/shared";
 import { useQuery } from "@tanstack/react-query";
-import { Cause, Chunk, Exit, Option } from "effect";
+import { Cause, Exit, Option } from "effect";
 import { getAllDailyPlansUseCase } from "../services/use-cases";
 
 export const DailyPlanList = () => {
@@ -52,14 +52,15 @@ export const DailyPlanList = () => {
     return (
         <Tasks>
             <Tasks.List>
-                {Chunk.map(data, (task) => (
-                    <Tasks.Item key={task.id}>
+                {/* {Chunk.map(data, (task) => (
+                    <Tasks.Item key={task.id} id={task.id} onSave={}>
                         <Tasks.Title>{task.title}</Tasks.Title>
                         <Tasks.Detail>
                             <Tasks.Description>{task.description}</Tasks.Description>
                         </Tasks.Detail>
                     </Tasks.Item>
-                ))}
+                ))} */}
+                <>ダミー</>
             </Tasks.List>
         </Tasks>
     );
