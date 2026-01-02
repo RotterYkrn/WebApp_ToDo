@@ -1,5 +1,5 @@
 import SignOutButton from "@/features/auths/components/SignOutButton";
-import TodoList from "@/features/todo/components/TodoList";
+import TodoList from "@/features/todos/components/TodoList";
 
 const TodoPage = () => {
     return (

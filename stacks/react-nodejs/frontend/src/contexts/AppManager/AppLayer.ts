@@ -1,7 +1,7 @@
 import { AuthLive } from "@/features/auths";
 import { DailyPlanLive } from "@/features/daily-plans/services/DailyPlanLive";
 import { TaskLive } from "@/features/tasks/services/TaskLive";
-import { TodoLive } from "@/features/todo/services/TodoLive";
+import { TodoLive } from "@/features/todos/services/TodoLive";
 import { ApiLive } from "@/shared/http";
 import { ConsoleLoggerLive } from "@/shared/logger";
 import { UILive } from "@/shared/ui";
