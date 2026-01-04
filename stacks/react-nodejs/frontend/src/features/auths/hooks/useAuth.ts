@@ -1,8 +1,8 @@
-import { InvalidCredentialsError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
+import { InvalidCredentialsError, SignOutError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app";
 import { handleCause } from "@/shared/utils";
 import { UserId } from "@1day-todo/shared";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { MutateOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Exit } from "effect";
 import { checkSessionUseCase, signInUseCase, signOutUseCase } from "../services/use-cases";
 
@@ -65,9 +65,13 @@ export function useAuth() {
         },
     });
 
+    const signOut = (options?: MutateOptions<Exit.Exit<void, SignOutError>, Error, void, unknown> | undefined) => {
+        signOutMutation.mutate(undefined, options);
+    }
+
     return {
         checkSessionQuery,
         signInMutation,
-        signOut: signOutMutation.mutateAsync,
+        signOut,
     };
 }

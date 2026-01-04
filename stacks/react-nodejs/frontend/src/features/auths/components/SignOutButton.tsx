@@ -6,9 +6,12 @@ const SignOutButton: React.FC = () => {
     const { signOut } = useAuth();
     const navigate = useNavigate();
 
-    const onClick = async () => {
-        await signOut();
-        navigate(PagePath.SIGN_IN, { replace: true });
+    const onClick = () => {
+        signOut({
+            onSuccess: () => {
+                navigate(PagePath.SIGN_IN);
+            }
+        });
     };
 
     return <button onClick={onClick}>サインアウト</button>;

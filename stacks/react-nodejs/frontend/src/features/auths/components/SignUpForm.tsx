@@ -7,10 +7,9 @@ import SignUpSuccessMessage from "./SignUpSuccessMessage";
 
 const SignUpForm: React.FC = () => {
     const methods = useForm<{email: string; password: string}>();
-
     const { isSuccess, isLoading, isError, error, signUp } = useSignUp();
 
-    const onSubmit = async ({ email, password }: {email: string; password: string}) => {
+    const onSubmit = ({ email, password }: {email: string; password: string}) => {
         signUp(
             { email, password },
         );
