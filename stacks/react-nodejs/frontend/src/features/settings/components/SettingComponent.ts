@@ -1,8 +1,6 @@
-
 export class SettingComponent {
-    constructor(
-        // private readonly appManager: IAppManager<SettingService | ApiService>
-    ) { }
+    constructor() // private readonly appManager: IAppManager<SettingService | ApiService>
+    {}
 
     public readonly buildUserNameInputGroup = (value: string): HTMLDivElement => {
         const container = document.createElement("div");
@@ -18,5 +16,5 @@ export class SettingComponent {
         container.appendChild(label);
         container.appendChild(input);
         return container;
-    }
+    };
 }

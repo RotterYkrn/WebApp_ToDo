@@ -9,6 +9,6 @@ const HabitPage = () => {
             <HabitList />
         </>
     );
-}
+};
 
 export default HabitPage;

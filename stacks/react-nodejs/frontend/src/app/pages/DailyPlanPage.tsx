@@ -9,6 +9,6 @@ const DailyPlanPage = () => {
             <DailyPlanList />
         </>
     );
-}
+};
 
 export default DailyPlanPage;

@@ -1,9 +1,8 @@
 import { Schema } from "effect";
+
 import type { SchemaType } from "./utils.js";
 
-export const UserId = Schema.Number.pipe(
-    Schema.brand("UserId")
-);
+export const UserId = Schema.Number.pipe(Schema.brand("UserId"));
 export type UserId = SchemaType<typeof UserId>;
 
 export const UserName = Schema.String.pipe(
@@ -16,7 +15,7 @@ export const UserName = Schema.String.pipe(
     Schema.pattern(/^[a-zA-Z0-9_]+$/, {
         message: () => "Username can only contain alphanumeric characters and underscores.",
     }),
-    Schema.brand('UserName') // 型を区別するためのブランド
+    Schema.brand("UserName"), // 型を区別するためのブランド
 );
 export type UserName = SchemaType<typeof UserName>;
 
@@ -25,7 +24,7 @@ export const EmailAddress = Schema.String.pipe(
     // Schema.filter((s) => emailRegex.test(s), {
     //     message: () => "Invalid email address format.",
     // }),
-    Schema.brand('EmailAddress')
+    Schema.brand("EmailAddress"),
 );
 export type EmailAddress = SchemaType<typeof EmailAddress>;
 
@@ -36,8 +35,6 @@ export const Password = Schema.String.pipe(
     Schema.maxLength(64, {
         message: () => "Password must not exceed 64 characters.",
     }),
-    Schema.brand('Password') // 型を区別するためのブランド
+    Schema.brand("Password"), // 型を区別するためのブランド
 );
 export type Password = SchemaType<typeof Password>;
-
-

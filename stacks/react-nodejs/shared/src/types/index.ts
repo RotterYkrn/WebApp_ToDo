@@ -5,7 +5,7 @@ export enum TaskType {
     DAILY_PLAN = "daily-plan",
     TODO = "todo",
     HABIT = "habit",
-};
+}
 
 export const TaskSchemaMap = {
     [TaskType.DAILY_PLAN]: Task,

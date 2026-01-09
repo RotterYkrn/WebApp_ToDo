@@ -1,5 +1,6 @@
 import { PagePath } from "@1day-todo/shared";
 import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../hooks/useAuth";
 
 const SignOutButton: React.FC = () => {
@@ -10,7 +11,7 @@ const SignOutButton: React.FC = () => {
         signOut({
             onSuccess: () => {
                 navigate(PagePath.SIGN_IN);
-            }
+            },
         });
     };
 

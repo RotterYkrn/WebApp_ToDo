@@ -5,35 +5,35 @@ export class BadRequestError extends Data.TaggedError("BadRequestError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-}> { }
+}> {}
 
 // 401
 export class UnauthorizedError extends Data.TaggedError("UnauthorizedError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-}> { }
+}> {}
 
 // 403
 export class ForbiddenError extends Data.TaggedError("ForbiddenError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-}> { }
+}> {}
 
 // 404
 export class NotFoundError extends Data.TaggedError("NotFoundError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-}> { }
+}> {}
 
 // 500
 export class InternalServerError extends Data.TaggedError("InternalServerError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-}> { }
+}> {}
 
 // 4xx
 export class OtherClientError extends Data.TaggedError("OtherClientError")<{
@@ -41,7 +41,7 @@ export class OtherClientError extends Data.TaggedError("OtherClientError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-}> { }
+}> {}
 
 // 5xx
 export class OtherServerError extends Data.TaggedError("OtherServerError")<{
@@ -49,14 +49,14 @@ export class OtherServerError extends Data.TaggedError("OtherServerError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody: unknown;
-}> { }
+}> {}
 
 export class UnexpectedStatusError extends Data.TaggedError("UnexpectedStatusError")<{
     readonly message: string;
     readonly path: string;
     readonly expectedStatus: number;
     readonly responseStatus: number;
-}> { }
+}> {}
 
 // Other
 export class UnknownHttpError extends Data.TaggedError("UnknownHttpError")<{
@@ -64,7 +64,7 @@ export class UnknownHttpError extends Data.TaggedError("UnknownHttpError")<{
     readonly path: string;
     readonly message: string;
     readonly responseBody?: unknown;
-}> { }
+}> {}
 
 /**
  * HttpError のユニオン型

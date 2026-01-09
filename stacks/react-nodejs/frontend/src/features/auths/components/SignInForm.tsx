@@ -1,11 +1,13 @@
-import { InvalidCredentialsError, UnknownAuthError, ValidationError } from "@/errors";
 import { PagePath } from "@1day-todo/shared";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
+
 import { useAuth } from "../hooks/useAuth";
 
+import { InvalidCredentialsError, UnknownAuthError, ValidationError } from "@/errors";
+
 const SignInForm: React.FC = () => {
-    const methods = useForm<{email: string; password: string}>();
+    const methods = useForm<{ email: string; password: string }>();
     const { signInMutation } = useAuth();
     const { isPending, isError, error, mutate: signIn } = signInMutation;
     const navigate = useNavigate();
@@ -13,21 +15,18 @@ const SignInForm: React.FC = () => {
 
     const from = (location.state as { from?: Location })?.from?.pathname ?? PagePath.INDEX;
 
-    const handleSignIn = ({ email, password }: {email: string; password: string}) => {
+    const handleSignIn = ({ email, password }: { email: string; password: string }) => {
         signIn(
             { email, password },
             {
                 onSuccess: () => {
                     navigate(from, { replace: true });
-                }
-            }
+                },
+            },
         );
     };
 
-    const errorMessage = 
-        isError
-            ? mapErrorMessage(error!)
-            : "";
+    const errorMessage = isError ? mapErrorMessage(error!) : "";
 
     return (
         <>
@@ -64,7 +63,7 @@ const SignInForm: React.FC = () => {
 };
 
 const mapErrorMessage = (
-    error: InvalidCredentialsError | ValidationError | UnknownAuthError
+    error: InvalidCredentialsError | ValidationError | UnknownAuthError,
 ): string => {
     switch (error._tag) {
         case "InvalidCredentialsError":
@@ -75,6 +74,6 @@ const mapErrorMessage = (
         default:
             return "処理中にエラーが発生しました。時間をおいて再度お試しください。";
     }
-}
+};
 
 export default SignInForm;

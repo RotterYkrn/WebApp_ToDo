@@ -1,30 +1,36 @@
-import { TaskUnknownError } from "@/errors";
-import { useAppManager } from "@/shared/app";
-import { handleCause } from "@/shared/utils";
 import { HabitChunk } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chunk, Exit } from "effect";
-import { createHabitUseCase, deleteHabitUseCase, getAllHabitsUseCase, updateHabitUseCase } from "../services/use-cases";
+
+import {
+    createHabitUseCase,
+    deleteHabitUseCase,
+    getAllHabitsUseCase,
+    updateHabitUseCase,
+} from "../services/use-cases";
+
+import { TaskUnknownError } from "@/errors";
+import { useAppManager } from "@/shared/app";
+import { handleCause } from "@/shared/utils";
 
 const HABIT_QUERY_KEY = ["habitChunk"];
 
 export const useHabit = () => {
     const queryClient = useQueryClient();
     const { runPromise } = useAppManager();
-    
-    const { data, isError, isLoading } = useQuery<
-        HabitChunk,
-        TaskUnknownError
-    >({
+
+    const { data, isError, isLoading } = useQuery<HabitChunk, TaskUnknownError>({
         queryKey: HABIT_QUERY_KEY,
         queryFn: async () => {
             const result = await runPromise(getAllHabitsUseCase());
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Get all habits failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Get all habits failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -35,19 +41,16 @@ export const useHabit = () => {
     });
 
     const createMutation = useMutation({
-        mutationFn: async (newHabit: {
-            title: string;
-            description?: string | null;
-        }) => {
-            const result = await runPromise(
-                createHabitUseCase(newHabit),
-            );
+        mutationFn: async (newHabit: { title: string; description?: string | null }) => {
+            const result = await runPromise(createHabitUseCase(newHabit));
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Get all habits failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Get all habits failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -61,20 +64,25 @@ export const useHabit = () => {
     });
 
     const updateMutation = useMutation({
-        mutationFn: async ({ id, input }: {
+        mutationFn: async ({
+            id,
+            input,
+        }: {
             id: number;
             input: {
                 title?: string;
                 description?: string | null;
-            }
+            };
         }) => {
             const result = await runPromise(updateHabitUseCase(id, input));
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Get all habits failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Get all habits failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -82,8 +90,9 @@ export const useHabit = () => {
         },
         onSuccess: (updatedHabit) => {
             queryClient.setQueryData<HabitChunk>(HABIT_QUERY_KEY, (old) => {
-                return old && Chunk.map(old, (todo) => 
-                    todo.id === updatedHabit.id ? updatedHabit : todo
+                return (
+                    old &&
+                    Chunk.map(old, (todo) => (todo.id === updatedHabit.id ? updatedHabit : todo))
                 );
             });
         },
@@ -91,15 +100,15 @@ export const useHabit = () => {
 
     const deleteMutation = useMutation({
         mutationFn: async (id: number) => {
-            const result = await runPromise(
-                deleteHabitUseCase(id),
-            );
+            const result = await runPromise(deleteHabitUseCase(id));
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Delete habit failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Delete habit failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -107,9 +116,7 @@ export const useHabit = () => {
         },
         onSuccess: (deletedHabitId) => {
             queryClient.setQueryData<HabitChunk>(HABIT_QUERY_KEY, (old) => {
-                return old && Chunk.filter(old, (todo) => 
-                    todo.id !== deletedHabitId
-                );
+                return old && Chunk.filter(old, (todo) => todo.id !== deletedHabitId);
             });
         },
     });
@@ -128,4 +135,4 @@ export const useHabit = () => {
         deleteHabit: deleteMutation.mutateAsync,
         isDeleting: deleteMutation.isPending,
     };
-}
+};

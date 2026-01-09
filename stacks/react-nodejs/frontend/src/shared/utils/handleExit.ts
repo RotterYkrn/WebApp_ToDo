@@ -3,7 +3,7 @@ import { YieldableError } from "effect/Cause";
 
 export const handleCause = <E1 extends YieldableError, E2>(
     cause: Cause.Cause<E1>,
-    handleUnknown: (e: unknown) => E2
+    handleUnknown: (e: unknown) => E2,
 ): E1 | E2 => {
     const error = Cause.failureOption(cause);
     if (Option.isSome(error)) {
@@ -13,4 +13,4 @@ export const handleCause = <E1 extends YieldableError, E2>(
         console.error(cause.toJSON());
         return handleUnknown(cause);
     }
-}
+};

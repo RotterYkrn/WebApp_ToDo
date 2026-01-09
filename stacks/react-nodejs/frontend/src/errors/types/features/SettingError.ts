@@ -6,7 +6,6 @@ export class SettingUpdateFailedError<T> extends Data.TaggedError("SettingUpdate
     readonly oldValue: T;
     readonly newValue: T;
     readonly originalError: unknown;
-}> { }
+}> {}
 
-export type SettingError =
-    | SettingUpdateFailedError<unknown>;
+export type SettingError = SettingUpdateFailedError<unknown>;

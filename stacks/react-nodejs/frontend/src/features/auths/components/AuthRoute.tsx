@@ -1,5 +1,6 @@
 import { PagePath } from "@1day-todo/shared";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+
 import { useAuth } from "../hooks/useAuth";
 
 const AuthRoute: React.FC = () => {
@@ -12,11 +13,13 @@ const AuthRoute: React.FC = () => {
     }
 
     if (!data) {
-        return <Navigate
-            to={PagePath.SIGN_IN}
-            state={{ from: location }}
-            replace
-        />;
+        return (
+            <Navigate
+                to={PagePath.SIGN_IN}
+                state={{ from: location }}
+                replace
+            />
+        );
     }
 
     return <Outlet />;

@@ -1,11 +1,17 @@
+import { DailyPlan, DailyPlanChunk } from "@1day-todo/shared";
+import { Effect, pipe } from "effect";
+
+import { DailyPlanService } from "./DailyPlanService";
+
 import { TaskUnknownError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
-import { DailyPlan, DailyPlanChunk } from "@1day-todo/shared";
-import { Effect, pipe } from "effect";
-import { DailyPlanService } from "./DailyPlanService";
 
-export const getAllDailyPlansUseCase = (): Effect.Effect<DailyPlanChunk, TaskUnknownError, DailyPlanService | ApiService> =>
+export const getAllDailyPlansUseCase = (): Effect.Effect<
+    DailyPlanChunk,
+    TaskUnknownError,
+    DailyPlanService | ApiService
+> =>
     pipe(
         DailyPlanService.getAllDailyPlansApi(),
         Effect.mapError((e) => {

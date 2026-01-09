@@ -5,10 +5,10 @@
  * @returns 生成されたHTML要素
  */
 export const createElement = <T extends keyof HTMLElementTagNameMap>(
-  tagName: T,
-  options: Partial<HTMLElementTagNameMap[T]>
+    tagName: T,
+    options: Partial<HTMLElementTagNameMap[T]>,
 ): HTMLElementTagNameMap[T] => {
-  const element = document.createElement(tagName);
-  Object.assign(element, options);
-  return element;
+    const element = document.createElement(tagName);
+    Object.assign(element, options);
+    return element;
 };

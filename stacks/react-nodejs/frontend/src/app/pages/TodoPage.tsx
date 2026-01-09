@@ -9,6 +9,6 @@ const TodoPage = () => {
             <TodoList />
         </>
     );
-}
+};
 
 export default TodoPage;

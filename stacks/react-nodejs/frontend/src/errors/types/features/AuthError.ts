@@ -1,40 +1,41 @@
 import { Data } from "effect";
+
 import { SharedError } from "../shared";
 
 export class Unauthorized extends Data.TaggedError("Unauthorized")<{
     readonly message: string;
-}> { }
+}> {}
 
 export class SignUpError extends Data.TaggedError("SignUpError")<{
     readonly type: "validation_error" | "unknown_error";
     readonly inputObject: unknown;
     readonly originalError: SharedError;
-}> { }
+}> {}
 
 export class ValidationError extends Data.TaggedError("ValidationError")<{
     readonly message: string;
     readonly originalError: SharedError;
-}> { }
+}> {}
 
 export class InvalidCredentialsError extends Data.TaggedError("InvalidCredentialsError")<{
     readonly message: string;
-}> { }
+}> {}
 
 export class UnknownAuthError extends Data.TaggedError("UnknownAuthError")<{
     readonly message: string;
     readonly originalError: unknown;
-}> { }
+}> {}
 
 export class SignInError extends Data.TaggedError("SignInError")<{
     readonly type: "invalid_credentials" | "validation_error" | "unknown_error";
     readonly inputObject: unknown;
     readonly originalError: SharedError;
-}> { }
+}> {}
 
 export class SignOutError extends Data.TaggedError("SignOutError")<{
     readonly message: string;
     readonly originalError: SharedError;
-}> { }
+}> {}
 
 export type AuthError =
     | Unauthorized

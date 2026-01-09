@@ -1,9 +1,17 @@
-import { InvalidCredentialsError, SignOutError, Unauthorized, UnknownAuthError, ValidationError } from "@/errors";
-import { ApiService } from "@/shared/http";
-import { parseToSchema } from "@/shared/utils";
 import { SignInInput, SignUpInput, UserId } from "@1day-todo/shared";
 import { Effect, pipe } from "effect";
+
 import { AuthService } from "./AuthService";
+
+import {
+    InvalidCredentialsError,
+    SignOutError,
+    Unauthorized,
+    UnknownAuthError,
+    ValidationError,
+} from "@/errors";
+import { ApiService } from "@/shared/http";
+import { parseToSchema } from "@/shared/utils";
 
 export const checkSessionUseCase = (): Effect.Effect<
     UserId,
@@ -27,13 +35,9 @@ export const checkSessionUseCase = (): Effect.Effect<
     );
 
 export const signUpUseCase = (input: {
-    email: string,
-    password: string
-}): Effect.Effect<
-    void,
-    ValidationError | UnknownAuthError,
-    AuthService | ApiService
-> =>
+    email: string;
+    password: string;
+}): Effect.Effect<void, ValidationError | UnknownAuthError, AuthService | ApiService> =>
     pipe(
         input,
         parseToSchema(SignUpInput),
@@ -56,8 +60,8 @@ export const signUpUseCase = (input: {
     );
 
 export const signInUseCase = (input: {
-    email: string,
-    password: string
+    email: string;
+    password: string;
 }): Effect.Effect<
     void,
     InvalidCredentialsError | ValidationError | UnknownAuthError,
@@ -101,8 +105,11 @@ export const signInUseCase = (input: {
 export const signOutUseCase = (): Effect.Effect<void, SignOutError, AuthService | ApiService> =>
     pipe(
         AuthService.signOutApi(),
-        Effect.mapError((e) => new SignOutError({
-            message: "Sign out failed",
-            originalError: e,
-        })),
+        Effect.mapError(
+            (e) =>
+                new SignOutError({
+                    message: "Sign out failed",
+                    originalError: e,
+                }),
+        ),
     );

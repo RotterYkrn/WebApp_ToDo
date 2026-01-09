@@ -1,9 +1,9 @@
-import { ParseSchemaError } from "@/errors";
 import { Either, Schema } from "effect";
 
-export const parseToSchema = <A, I>(
-    schema: Schema.Schema<A, I>,
-): (obj: unknown) => Either.Either<A, ParseSchemaError> =>
+import { ParseSchemaError } from "@/errors";
+
+export const parseToSchema =
+    <A, I>(schema: Schema.Schema<A, I>): ((obj: unknown) => Either.Either<A, ParseSchemaError>) =>
     (obj) =>
         Either.try({
             try: () => Schema.decodeUnknownSync(schema)(obj),

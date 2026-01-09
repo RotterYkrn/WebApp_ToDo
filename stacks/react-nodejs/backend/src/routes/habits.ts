@@ -1,5 +1,6 @@
-import { Router } from "express";
 import { constants } from "http2";
+
+import { Router } from "express";
 
 const router = Router();
 
@@ -29,10 +30,7 @@ router.post("/", (req, res) => {
     const { title, description } = req.body;
     const id = tasks.length + 1;
     tasks.push({ id, title, description });
-    res
-        .status(constants.HTTP_STATUS_CREATED)
-        .json({ id, title, description })
-        .end();
+    res.status(constants.HTTP_STATUS_CREATED).json({ id, title, description }).end();
 });
 
 router.patch("/:id", (req, res) => {
@@ -41,9 +39,7 @@ router.patch("/:id", (req, res) => {
 
     const task = tasks.find((t) => t.id === id);
     if (!task) {
-        res
-            .status(constants.HTTP_STATUS_NOT_FOUND)
-            .end();
+        res.status(constants.HTTP_STATUS_NOT_FOUND).end();
         console.error(`Task with id ${id} not found.`);
         return;
     }
@@ -55,8 +51,7 @@ router.patch("/:id", (req, res) => {
     //     task.description = description;
     // }
 
-    res
-        .status(constants.HTTP_STATUS_OK)
+    res.status(constants.HTTP_STATUS_OK)
         .json({
             ...task,
             title: title ?? task.title,
@@ -69,18 +64,13 @@ router.delete("/:id", (req, res) => {
     const id = Number(req.params.id);
     const index = tasks.findIndex((t) => t.id === id);
     if (index === -1) {
-        res
-            .status(constants.HTTP_STATUS_NOT_FOUND)
-            .end();
+        res.status(constants.HTTP_STATUS_NOT_FOUND).end();
         console.error(`Task with id ${id} not found.`);
         return;
     }
 
     tasks.splice(index, 1);
-    res
-        .status(constants.HTTP_STATUS_OK)
-        .json(id)
-        .end();
+    res.status(constants.HTTP_STATUS_OK).json(id).end();
 });
 
 export default router;

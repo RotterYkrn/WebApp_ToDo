@@ -5,9 +5,12 @@ export const ApiDailyPlanPath = {
     ROOT: API_DAILY_PLAN_ROOT,
     GET_ALL: API_DAILY_PLAN_ROOT,
     CREATE: API_DAILY_PLAN_ROOT,
-    GET: (itemId: Id = ":id"): `${typeof API_DAILY_PLAN_ROOT}/${Id}` => `${API_DAILY_PLAN_ROOT}/${itemId}`,
-    UPDATE: (itemId: Id = ":id"): `${typeof API_DAILY_PLAN_ROOT}/${Id}` => `${API_DAILY_PLAN_ROOT}/${itemId}`,
-    DELETE: (itemId: Id = ":id"): `${typeof API_DAILY_PLAN_ROOT}/${Id}` => `${API_DAILY_PLAN_ROOT}/${itemId}`,
+    GET: (itemId: Id = ":id"): `${typeof API_DAILY_PLAN_ROOT}/${Id}` =>
+        `${API_DAILY_PLAN_ROOT}/${itemId}`,
+    UPDATE: (itemId: Id = ":id"): `${typeof API_DAILY_PLAN_ROOT}/${Id}` =>
+        `${API_DAILY_PLAN_ROOT}/${itemId}`,
+    DELETE: (itemId: Id = ":id"): `${typeof API_DAILY_PLAN_ROOT}/${Id}` =>
+        `${API_DAILY_PLAN_ROOT}/${itemId}`,
 } as const;
 
 const API_TODO_ROOT = "/api/todos";

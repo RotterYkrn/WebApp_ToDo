@@ -1,39 +1,36 @@
-import { HttpError, NetworkError, ResponseJsonError } from "@/errors";
 import { Effect } from "effect";
+
 import { PostOptionType } from "../types/api-types";
 import { HttpStatus } from "../types/HttpStatus";
+
+import { HttpError, NetworkError, ResponseJsonError } from "@/errors";
 
 export interface IApiService {
     get: (
         path: string,
         expectedStatus: HttpStatus,
-        options?: RequestInit
+        options?: RequestInit,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
 
     post: (
         path: string,
         expectedStatus: HttpStatus,
-        options?: PostOptionType
+        options?: PostOptionType,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
 
     patch: (
         path: string,
         expectedStatus: HttpStatus,
-        options?: PostOptionType
+        options?: PostOptionType,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
 
     delete: (
         path: string,
         expectedStatus: HttpStatus,
-        options?: PostOptionType
+        options?: PostOptionType,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
-    
-    extractBody: (
-        res: Response
-    ) => Effect.Effect<unknown, ResponseJsonError>;
+
+    extractBody: (res: Response) => Effect.Effect<unknown, ResponseJsonError>;
 }
 
-export class ApiService extends Effect.Tag("ApiService")<
-    ApiService,
-    IApiService
-    >() { };
+export class ApiService extends Effect.Tag("ApiService")<ApiService, IApiService>() {}

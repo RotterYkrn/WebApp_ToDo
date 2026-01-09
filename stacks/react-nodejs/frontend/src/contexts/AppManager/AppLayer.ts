@@ -1,11 +1,12 @@
-import { AuthLive } from "@/features/auths";
+import { Layer } from "effect";
+
+import { AuthLive } from "@/features/auths/services/AuthLive";
 import { DailyPlanLive } from "@/features/daily-plans";
 import { HabitLive } from "@/features/habits";
 import { TodoLive } from "@/features/todos";
 import { ApiLive } from "@/shared/http";
 import { ConsoleLoggerLive } from "@/shared/logger";
 import { UILive } from "@/shared/ui";
-import { Layer } from "effect";
 
 export const AppLayer = Layer.mergeAll(
     ApiLive,
@@ -17,6 +18,4 @@ export const AppLayer = Layer.mergeAll(
     ConsoleLoggerLive,
 );
 
-export type AppService = typeof AppLayer extends Layer.Layer<infer R>
-    ? R
-    : never;
+export type AppService = typeof AppLayer extends Layer.Layer<infer R> ? R : never;

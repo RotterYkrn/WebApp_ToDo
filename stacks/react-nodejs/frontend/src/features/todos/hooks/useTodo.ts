@@ -1,30 +1,36 @@
-import { TaskUnknownError } from "@/errors";
-import { useAppManager } from "@/shared/app";
-import { handleCause } from "@/shared/utils";
 import { TodoChunk } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chunk, Exit } from "effect";
-import { createTodoUseCase, deleteTodoUseCase, getAllTodosUseCase, updateTodoUseCase } from "../services/use-cases";
+
+import {
+    createTodoUseCase,
+    deleteTodoUseCase,
+    getAllTodosUseCase,
+    updateTodoUseCase,
+} from "../services/use-cases";
+
+import { TaskUnknownError } from "@/errors";
+import { useAppManager } from "@/shared/app";
+import { handleCause } from "@/shared/utils";
 
 const TODO_QUERY_KEY = ["todoChunk"];
 
 export const useTodo = () => {
     const queryClient = useQueryClient();
     const { runPromise } = useAppManager();
-    
-    const { data, isError, isLoading } = useQuery<
-        TodoChunk,
-        TaskUnknownError
-    >({
+
+    const { data, isError, isLoading } = useQuery<TodoChunk, TaskUnknownError>({
         queryKey: TODO_QUERY_KEY,
         queryFn: async () => {
             const result = await runPromise(getAllTodosUseCase());
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Get all todos failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Get all todos failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -35,19 +41,16 @@ export const useTodo = () => {
     });
 
     const createMutation = useMutation({
-        mutationFn: async (newTodo: {
-            title: string;
-            description?: string | null;
-        }) => {
-            const result = await runPromise(
-                createTodoUseCase(newTodo),
-            );
+        mutationFn: async (newTodo: { title: string; description?: string | null }) => {
+            const result = await runPromise(createTodoUseCase(newTodo));
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Get all todos failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Get all todos failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -61,20 +64,25 @@ export const useTodo = () => {
     });
 
     const updateMutation = useMutation({
-        mutationFn: async ({ id, input }: {
+        mutationFn: async ({
+            id,
+            input,
+        }: {
             id: number;
             input: {
                 title?: string;
                 description?: string | null;
-            }
+            };
         }) => {
             const result = await runPromise(updateTodoUseCase(id, input));
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Get all todos failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Get all todos failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -82,8 +90,9 @@ export const useTodo = () => {
         },
         onSuccess: (updatedTodo) => {
             queryClient.setQueryData<TodoChunk>(TODO_QUERY_KEY, (old) => {
-                return old && Chunk.map(old, (todo) => 
-                    todo.id === updatedTodo.id ? updatedTodo : todo
+                return (
+                    old &&
+                    Chunk.map(old, (todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
                 );
             });
         },
@@ -91,15 +100,15 @@ export const useTodo = () => {
 
     const deleteMutation = useMutation({
         mutationFn: async (id: number) => {
-            const result = await runPromise(
-                deleteTodoUseCase(id),
-            );
+            const result = await runPromise(deleteTodoUseCase(id));
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) =>
-                    new TaskUnknownError({
-                        message: "Delete todo failed due to an unknown error.",
-                        originalError: e,
-                    }),
+                throw handleCause(
+                    result.cause,
+                    (e) =>
+                        new TaskUnknownError({
+                            message: "Delete todo failed due to an unknown error.",
+                            originalError: e,
+                        }),
                 );
             }
 
@@ -107,9 +116,7 @@ export const useTodo = () => {
         },
         onSuccess: (deletedTodoId) => {
             queryClient.setQueryData<TodoChunk>(TODO_QUERY_KEY, (old) => {
-                return old && Chunk.filter(old, (todo) => 
-                    todo.id !== deletedTodoId
-                );
+                return old && Chunk.filter(old, (todo) => todo.id !== deletedTodoId);
             });
         },
     });
@@ -128,4 +135,4 @@ export const useTodo = () => {
         deleteTodo: deleteMutation.mutateAsync,
         isDeleting: deleteMutation.isPending,
     };
-}
+};

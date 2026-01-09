@@ -1,11 +1,17 @@
+import { Todo, TodoChunk, TodoInput } from "@1day-todo/shared";
+import { Effect, pipe } from "effect";
+
+import { TodoService } from "./TodoService";
+
 import { TaskUnknownError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
-import { Todo, TodoChunk, TodoInput } from "@1day-todo/shared";
-import { Effect, pipe } from "effect";
-import { TodoService } from "./TodoService";
 
-export const getAllTodosUseCase = (): Effect.Effect<TodoChunk, TaskUnknownError, TodoService | ApiService> =>
+export const getAllTodosUseCase = (): Effect.Effect<
+    TodoChunk,
+    TaskUnknownError,
+    TodoService | ApiService
+> =>
     pipe(
         TodoService.getAllTodosApi(),
         Effect.mapError((e) => {
@@ -17,7 +23,7 @@ export const getAllTodosUseCase = (): Effect.Effect<TodoChunk, TaskUnknownError,
     );
 
 export const createTodoUseCase = (
-    newTodo: TodoInput
+    newTodo: TodoInput,
 ): Effect.Effect<Todo, TaskUnknownError, TodoService | ApiService> =>
     pipe(
         newTodo,
@@ -31,10 +37,13 @@ export const createTodoUseCase = (
         }),
     );
 
-export const updateTodoUseCase = (id: number, updatedTodo: {
-    title?: string;
-    description?: string | null;
-}): Effect.Effect<Todo, TaskUnknownError, TodoService | ApiService> =>
+export const updateTodoUseCase = (
+    id: number,
+    updatedTodo: {
+        title?: string;
+        description?: string | null;
+    },
+): Effect.Effect<Todo, TaskUnknownError, TodoService | ApiService> =>
     pipe(
         updatedTodo,
         parseToSchema(TodoInput),
@@ -47,7 +56,9 @@ export const updateTodoUseCase = (id: number, updatedTodo: {
         }),
     );
 
-export const deleteTodoUseCase = (id: number): Effect.Effect<number, TaskUnknownError, TodoService | ApiService> =>
+export const deleteTodoUseCase = (
+    id: number,
+): Effect.Effect<number, TaskUnknownError, TodoService | ApiService> =>
     pipe(
         id,
         TodoService.deleteTodoApi,

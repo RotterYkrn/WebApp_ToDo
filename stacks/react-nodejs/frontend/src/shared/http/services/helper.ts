@@ -1,3 +1,7 @@
+import { Either } from "effect";
+
+import { HttpStatus } from "../types/HttpStatus";
+
 import {
     BadRequestError,
     ForbiddenError,
@@ -10,8 +14,6 @@ import {
     UnexpectedStatusError,
     UnknownHttpError,
 } from "@/errors";
-import { Either } from "effect";
-import { HttpStatus } from "../types/HttpStatus";
 
 interface ErrorInfo {
     readonly path: string;
@@ -19,33 +21,36 @@ interface ErrorInfo {
     readonly responseBody: unknown;
 }
 
-export const handleHttpError = (
-    path: string,
-    message: string
-): (res: Response) => Either.Either<Response, HttpError> =>
+export const handleHttpError =
+    (path: string, message: string): ((res: Response) => Either.Either<Response, HttpError>) =>
     (res) =>
         res.ok
             ? Either.right(res)
-            : Either.left(classifyHttpError(res, {
-                path,
-                message,
-                responseBody: res.body,
-            }))
+            : Either.left(
+                  classifyHttpError(res, {
+                      path,
+                      message,
+                      responseBody: res.body,
+                  }),
+              );
 
-export const ensureHttpStatus = (
-    expectedStatus: HttpStatus,
-    method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
-    path: string
-): (res: Response) => Either.Either<Response, UnexpectedStatusError> =>
+export const ensureHttpStatus =
+    (
+        expectedStatus: HttpStatus,
+        method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
+        path: string,
+    ): ((res: Response) => Either.Either<Response, UnexpectedStatusError>) =>
     (res) =>
         res.status === expectedStatus
             ? Either.right(res)
-            : Either.left(new UnexpectedStatusError({
-                message: `${method}: Received unexpected status.`,
-                path,
-                expectedStatus,
-                responseStatus: res.status,
-            }));
+            : Either.left(
+                  new UnexpectedStatusError({
+                      message: `${method}: Received unexpected status.`,
+                      path,
+                      expectedStatus,
+                      responseStatus: res.status,
+                  }),
+              );
 
 export const classifyHttpError = (res: Response, errorInfo: ErrorInfo): HttpError => {
     switch (res.status) {

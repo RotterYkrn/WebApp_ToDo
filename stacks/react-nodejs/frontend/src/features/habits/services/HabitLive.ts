@@ -1,41 +1,37 @@
-import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
 import { ApiHabitPath, Habit, HabitChunk, HabitInput } from "@1day-todo/shared";
 import { Effect, Layer, pipe, Schema } from "effect";
+
 import { HabitService } from "./HabitService";
 
-export const HabitLive = Layer.succeed(HabitService, HabitService.of({
-    getAllHabitsApi: () => pipe(
-        ApiService.get(
-            ApiHabitPath.GET_ALL,
-            HttpStatus.OK,
-        ),
-        Effect.flatMap(extractBodyWithSchema(HabitChunk)),
-    ),
+import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
 
-    createHabitApi: (newHabit: HabitInput) => pipe(
-        ApiService.post(
-            ApiHabitPath.CREATE,
-            HttpStatus.CREATED,
-            { body: newHabit },
-        ),
-        Effect.flatMap(extractBodyWithSchema(Habit)),
-    ),
+export const HabitLive = Layer.succeed(
+    HabitService,
+    HabitService.of({
+        getAllHabitsApi: () =>
+            pipe(
+                ApiService.get(ApiHabitPath.GET_ALL, HttpStatus.OK),
+                Effect.flatMap(extractBodyWithSchema(HabitChunk)),
+            ),
 
-    updateHabitApi: (id: number, updatedHabit: HabitInput) => pipe(
-        ApiService.patch(
-            `${ApiHabitPath.UPDATE(id)}`,
-            HttpStatus.OK,
-            { body: updatedHabit },
-        ),
-        Effect.flatMap(extractBodyWithSchema(Habit)),
-    ),
+        createHabitApi: (newHabit: HabitInput) =>
+            pipe(
+                ApiService.post(ApiHabitPath.CREATE, HttpStatus.CREATED, { body: newHabit }),
+                Effect.flatMap(extractBodyWithSchema(Habit)),
+            ),
 
-    deleteHabitApi: (id: number) => pipe(
-        ApiService.delete(
-            `${ApiHabitPath.DELETE(id)}`,
-            HttpStatus.OK,
-            { body: { id } },
-        ),
-        Effect.flatMap(extractBodyWithSchema(Schema.Number)),
-    ),
-}));
+        updateHabitApi: (id: number, updatedHabit: HabitInput) =>
+            pipe(
+                ApiService.patch(`${ApiHabitPath.UPDATE(id)}`, HttpStatus.OK, {
+                    body: updatedHabit,
+                }),
+                Effect.flatMap(extractBodyWithSchema(Habit)),
+            ),
+
+        deleteHabitApi: (id: number) =>
+            pipe(
+                ApiService.delete(`${ApiHabitPath.DELETE(id)}`, HttpStatus.OK, { body: { id } }),
+                Effect.flatMap(extractBodyWithSchema(Schema.Number)),
+            ),
+    }),
+);

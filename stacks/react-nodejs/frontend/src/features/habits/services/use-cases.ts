@@ -1,11 +1,17 @@
+import { Habit, HabitChunk, HabitInput } from "@1day-todo/shared";
+import { Effect, pipe } from "effect";
+
+import { HabitService } from "./HabitService";
+
 import { TaskUnknownError } from "@/errors";
 import { ApiService } from "@/shared/http";
 import { parseToSchema } from "@/shared/utils";
-import { Habit, HabitChunk, HabitInput } from "@1day-todo/shared";
-import { Effect, pipe } from "effect";
-import { HabitService } from "./HabitService";
 
-export const getAllHabitsUseCase = (): Effect.Effect<HabitChunk, TaskUnknownError, HabitService | ApiService> =>
+export const getAllHabitsUseCase = (): Effect.Effect<
+    HabitChunk,
+    TaskUnknownError,
+    HabitService | ApiService
+> =>
     pipe(
         HabitService.getAllHabitsApi(),
         Effect.mapError((e) => {
@@ -17,7 +23,7 @@ export const getAllHabitsUseCase = (): Effect.Effect<HabitChunk, TaskUnknownErro
     );
 
 export const createHabitUseCase = (
-    newHabit: HabitInput
+    newHabit: HabitInput,
 ): Effect.Effect<Habit, TaskUnknownError, HabitService | ApiService> =>
     pipe(
         newHabit,
@@ -31,10 +37,13 @@ export const createHabitUseCase = (
         }),
     );
 
-export const updateHabitUseCase = (id: number, updatedHabit: {
-    title?: string;
-    description?: string | null;
-}): Effect.Effect<Habit, TaskUnknownError, HabitService | ApiService> =>
+export const updateHabitUseCase = (
+    id: number,
+    updatedHabit: {
+        title?: string;
+        description?: string | null;
+    },
+): Effect.Effect<Habit, TaskUnknownError, HabitService | ApiService> =>
     pipe(
         updatedHabit,
         parseToSchema(HabitInput),
@@ -47,7 +56,9 @@ export const updateHabitUseCase = (id: number, updatedHabit: {
         }),
     );
 
-export const deleteHabitUseCase = (id: number): Effect.Effect<number, TaskUnknownError, HabitService | ApiService> =>
+export const deleteHabitUseCase = (
+    id: number,
+): Effect.Effect<number, TaskUnknownError, HabitService | ApiService> =>
     pipe(
         id,
         HabitService.deleteHabitApi,

@@ -9,6 +9,6 @@ const SignUpSuccessMessage: React.FC = () => {
             <Link to={PagePath.SIGN_IN}>サインインページ</Link>
         </>
     );
-}
+};
 
 export default SignUpSuccessMessage;

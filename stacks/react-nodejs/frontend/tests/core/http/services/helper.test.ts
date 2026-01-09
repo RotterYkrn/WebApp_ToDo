@@ -1,3 +1,7 @@
+import { describe, expect, it } from "@effect/vitest";
+import { Effect, pipe } from "effect";
+import { validateAppError } from "tests/test-utils";
+
 import {
     BadRequestError,
     ForbiddenError,
@@ -6,13 +10,14 @@ import {
     OtherClientError,
     OtherServerError,
     UnauthorizedError,
-    UnknownHttpError
+    UnknownHttpError,
 } from "@/errors";
-import { classifyHttpError, ensureHttpStatus, handleHttpError } from "@/shared/http/services/helper";
+import {
+    classifyHttpError,
+    ensureHttpStatus,
+    handleHttpError,
+} from "@/shared/http/services/helper";
 import { HttpStatus } from "@/shared/http/types/HttpStatus";
-import { describe, expect, it } from "@effect/vitest";
-import { Effect, pipe } from "effect";
-import { validateAppError } from "tests/test-utils";
 
 describe("handleHttpError", () => {
     it.effect("成功ならば、レスポンスをそのまま返す", () =>
@@ -34,20 +39,15 @@ describe("handleHttpError", () => {
             const message = "HTTP Error during TEST";
             const response = new Response("{}", { status: HttpStatus.BAD_REQUEST });
 
-            const result = yield* Effect.exit(pipe(
-                Effect.succeed(response),
-                Effect.flatMap(handleHttpError(path, message)),
-            ));
-
-            validateAppError(
-                result,
-                "BadRequestError",
-                (httpError) => {
-                    expect(httpError.path).toBe(path);
-                    expect(httpError.message).toBe(message);
-                }
+            const result = yield* Effect.exit(
+                pipe(Effect.succeed(response), Effect.flatMap(handleHttpError(path, message))),
             );
-        })
+
+            validateAppError(result, "BadRequestError", (httpError) => {
+                expect(httpError.path).toBe(path);
+                expect(httpError.message).toBe(message);
+            });
+        }),
     );
 
     it.effect("レスポンスステータスが 500 の場合、InternalServerError を返す", () =>
@@ -56,20 +56,15 @@ describe("handleHttpError", () => {
             const message = "HTTP Error during TEST";
             const response = new Response("{}", { status: HttpStatus.INTERNAL_SERVER_ERROR });
 
-            const result = yield* Effect.exit(pipe(
-                Effect.succeed(response),
-                Effect.flatMap(handleHttpError(path, message)),
-            ));
-
-            validateAppError(
-                result,
-                "InternalServerError",
-                (httpError) => {
-                    expect(httpError.path).toBe(path);
-                    expect(httpError.message).toBe(message);
-                }
+            const result = yield* Effect.exit(
+                pipe(Effect.succeed(response), Effect.flatMap(handleHttpError(path, message))),
             );
-        })
+
+            validateAppError(result, "InternalServerError", (httpError) => {
+                expect(httpError.path).toBe(path);
+                expect(httpError.message).toBe(message);
+            });
+        }),
     );
 });
 
@@ -85,34 +80,32 @@ describe("ensureHttpStatus", () => {
             );
 
             expect(result).toEqual(response);
-        })
+        }),
     );
 
     it.effect("期待するステータスと異なる場合、UnexpectedStatusError を返す", () =>
         Effect.gen(function* () {
             const resStatus = HttpStatus.OK;
             const response = new Response("{}", { status: resStatus });
-            
+
             const expectedStatus = HttpStatus.CREATED;
             const method = "GET";
             const path = "/test/ensure-http-different-status";
 
-            const result = yield* Effect.exit(pipe(
-                Effect.succeed(response),
-                Effect.flatMap(ensureHttpStatus(expectedStatus, method, path)),
-            ));
-
-            validateAppError(
-                result,
-                "UnexpectedStatusError",
-                (unexpectedStatusError) => {
-                    expect(unexpectedStatusError.path).toBe(path);
-                    expect(unexpectedStatusError.message).toContain(method);
-                    expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
-                    expect(unexpectedStatusError.responseStatus).toBe(resStatus);
-                }
+            const result = yield* Effect.exit(
+                pipe(
+                    Effect.succeed(response),
+                    Effect.flatMap(ensureHttpStatus(expectedStatus, method, path)),
+                ),
             );
-        })
+
+            validateAppError(result, "UnexpectedStatusError", (unexpectedStatusError) => {
+                expect(unexpectedStatusError.path).toBe(path);
+                expect(unexpectedStatusError.message).toContain(method);
+                expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
+                expect(unexpectedStatusError.responseStatus).toBe(resStatus);
+            });
+        }),
     );
 });
 

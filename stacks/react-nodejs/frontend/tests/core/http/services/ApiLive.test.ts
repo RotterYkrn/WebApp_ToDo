@@ -1,22 +1,21 @@
-import {
-    HttpError
-} from "@/errors";
-import { ApiService } from "@/shared/http";
-import { ApiLive } from "@/shared/http/services/ApiLive";
-import { HttpStatus } from "@/shared/http/types/HttpStatus";
 import { beforeEach, describe, expect, it, vi, type Mock } from "@effect/vitest";
 import { Effect } from "effect";
 import { validateAppError } from "tests/test-utils";
+
+import { HttpError } from "@/errors";
+import { ApiService } from "@/shared/http";
+import { ApiLive } from "@/shared/http/services/ApiLive";
+import { HttpStatus } from "@/shared/http/types/HttpStatus";
 
 // global.fetch のモック
 global.fetch = vi.fn();
 
 const mockFetch = (body: unknown, init: ResponseInit) => {
-	(fetch as Mock).mockResolvedValue(new Response(JSON.stringify(body), init));
+    (fetch as Mock).mockResolvedValue(new Response(JSON.stringify(body), init));
 };
 
 const mockFetchError = (error: unknown) => {
-	(fetch as Mock).mockRejectedValue(error);
+    (fetch as Mock).mockRejectedValue(error);
 };
 
 const executeApi = (
@@ -24,62 +23,51 @@ const executeApi = (
     path: string,
     status: HttpStatus,
     requestBody?: unknown,
-    options?: Omit<RequestInit, "body">
+    options?: Omit<RequestInit, "body">,
 ) =>
     ApiService.pipe(
-        Effect.flatMap(api =>
+        Effect.flatMap((api) =>
             method === "get"
                 ? api.get(path, status, options)
-                : api.post(path, status, { body: requestBody, options: { ...options } })
+                : api.post(path, status, { body: requestBody, options: { ...options } }),
         ),
         Effect.provide(ApiLive),
     );
 
-const testApiFailed_NetworkError = (
-    method: "get" | "post",
-    path: string,
-) => Effect.gen(function* () {
-    const fetchError = new Error("Network Error");
-    mockFetchError(fetchError);
+const testApiFailed_NetworkError = (method: "get" | "post", path: string) =>
+    Effect.gen(function* () {
+        const fetchError = new Error("Network Error");
+        mockFetchError(fetchError);
 
-    const result = yield* Effect.exit(
-        executeApi(method, path, HttpStatus.INTERNAL_SERVER_ERROR)
-    );
+        const result = yield* Effect.exit(
+            executeApi(method, path, HttpStatus.INTERNAL_SERVER_ERROR),
+        );
 
-    validateAppError(
-        result,
-        "NetworkError",
-        (networkError) => {
+        validateAppError(result, "NetworkError", (networkError) => {
             expect(networkError.path).toBe(path);
             expect(networkError.message).toContain("Network error");
             expect(networkError.message).toContain(method.toUpperCase());
             expect(networkError.originalError).toStrictEqual(fetchError);
-        }
-    );
-});
+        });
+    });
 
 const testApiFailed_HttpError = (
     method: "get" | "post",
     path: string,
     status: HttpStatus,
-    expectedTag: HttpError["_tag"]
-) => Effect.gen(function* () {
-    mockFetch({}, { status });
+    expectedTag: HttpError["_tag"],
+) =>
+    Effect.gen(function* () {
+        mockFetch({}, { status });
 
-    const result = yield* Effect.exit(
-        executeApi(method, path, status)
-    );
+        const result = yield* Effect.exit(executeApi(method, path, status));
 
-    validateAppError(
-        result,
-        expectedTag,
-        (httpError) => {
+        validateAppError(result, expectedTag, (httpError) => {
             expect(httpError.path).toBe(path);
             expect(httpError.message).toContain("HTTP error");
             expect(httpError.message).toContain(method.toUpperCase());
-        }
-    );
-});
+        });
+    });
 
 /**
  * HttpError のテストについては、ApiLive サービスが classifyHttpError ヘルパーを正しく呼び出し、
@@ -95,33 +83,32 @@ describe("ApiLive", () => {
     });
 
     describe("get", () => {
-        it.effect("成功時、レスポンスを返す", () => Effect.gen(function* () {
-            const resBody = { message: "Success" };
-            const resStatus = HttpStatus.OK;
-            mockFetch(resBody, { status: resStatus });
+        it.effect("成功時、レスポンスを返す", () =>
+            Effect.gen(function* () {
+                const resBody = { message: "Success" };
+                const resStatus = HttpStatus.OK;
+                mockFetch(resBody, { status: resStatus });
 
-            const path = "/test/get-success";
-            const options = { headers: { "Content-Type": "application/json" } };
+                const path = "/test/get-success";
+                const options = { headers: { "Content-Type": "application/json" } };
 
-            const response = yield* executeApi("get", path, resStatus, undefined, options);
-            const data = yield* Effect.promise(() => response.json());
+                const response = yield* executeApi("get", path, resStatus, undefined, options);
+                const data = yield* Effect.promise(() => response.json());
 
-            expect(fetch).toHaveBeenCalledWith(path, {
-                method: "GET",
-                credentials: "include",
-                body: undefined,
-                ...options
-            });
-            expect(response.ok).toBe(true);
-            expect(response.status).toBe(resStatus);
-            expect(data).toEqual(resBody);
-        }));
+                expect(fetch).toHaveBeenCalledWith(path, {
+                    method: "GET",
+                    credentials: "include",
+                    body: undefined,
+                    ...options,
+                });
+                expect(response.ok).toBe(true);
+                expect(response.status).toBe(resStatus);
+                expect(data).toEqual(resBody);
+            }),
+        );
 
         it.effect("例外発生時、NetworkError を返す", () =>
-            testApiFailed_NetworkError(
-                "get",
-                "/test/get-failure",
-            )
+            testApiFailed_NetworkError("get", "/test/get-failure"),
         );
 
         it.effect("レスポンスステータスが 400 の場合、BadRequestError を返す", () =>
@@ -129,8 +116,8 @@ describe("ApiLive", () => {
                 "get",
                 "/test/get-http-400-error",
                 HttpStatus.BAD_REQUEST,
-                "BadRequestError"
-            )
+                "BadRequestError",
+            ),
         );
 
         it.effect("レスポンスステータスが 500 の場合、InternalServerError を返す", () =>
@@ -138,64 +125,60 @@ describe("ApiLive", () => {
                 "get",
                 "/test/get-http-500-error",
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "InternalServerError"
-            )
+                "InternalServerError",
+            ),
         );
 
-        it.effect("レスポンスは成功だが、期待したステータスと異なる場合、UnexpectedStatusError を返す",
-            () => Effect.gen(function* () {
-                const resStatus = HttpStatus.OK;
-                mockFetch({}, { status: resStatus });
+        it.effect(
+            "レスポンスは成功だが、期待したステータスと異なる場合、UnexpectedStatusError を返す",
+            () =>
+                Effect.gen(function* () {
+                    const resStatus = HttpStatus.OK;
+                    mockFetch({}, { status: resStatus });
 
-                const path = "/test/get-different-status-error";
-                const expectedStatus = HttpStatus.CREATED;
+                    const path = "/test/get-different-status-error";
+                    const expectedStatus = HttpStatus.CREATED;
 
-                const result = yield* Effect.exit(
-                    executeApi("get", path, expectedStatus)
-                );
+                    const result = yield* Effect.exit(executeApi("get", path, expectedStatus));
 
-                validateAppError(
-                    result,
-                    "UnexpectedStatusError",
-                    (unexpectedStatusError) => {
+                    validateAppError(result, "UnexpectedStatusError", (unexpectedStatusError) => {
                         expect(unexpectedStatusError.path).toBe(path);
                         expect(unexpectedStatusError.message).toContain("GET");
                         expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
                         expect(unexpectedStatusError.responseStatus).toBe(resStatus);
-                    }
-                );
-            }));
+                    });
+                }),
+        );
     });
 
     describe("post", () => {
-        it.effect("成功時、レスポンスを返す", () => Effect.gen(function* () {
-            const resBody = { message: "Success" };
-            const resStatus = HttpStatus.OK;
-            mockFetch(resBody, { status: resStatus });
+        it.effect("成功時、レスポンスを返す", () =>
+            Effect.gen(function* () {
+                const resBody = { message: "Success" };
+                const resStatus = HttpStatus.OK;
+                mockFetch(resBody, { status: resStatus });
 
-            const path = "/test/post-success";
-            const reqBody = { data: "some data" };
-            const options = { headers: { "Content-Type": "application/json" } };
+                const path = "/test/post-success";
+                const reqBody = { data: "some data" };
+                const options = { headers: { "Content-Type": "application/json" } };
 
-            const response = yield* executeApi("post", path, resStatus, reqBody, options);
-            const data = yield* Effect.promise(() => response.json());
+                const response = yield* executeApi("post", path, resStatus, reqBody, options);
+                const data = yield* Effect.promise(() => response.json());
 
-            expect(fetch).toHaveBeenCalledWith(path, {
-                method: "POST",
-                credentials: "include",
-                body: JSON.stringify(reqBody),
-                ...options
-            });
-            expect(response.ok).toBe(true);
-            expect(response.status).toBe(resStatus);
-            expect(data).toEqual(resBody);
-        }));
+                expect(fetch).toHaveBeenCalledWith(path, {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify(reqBody),
+                    ...options,
+                });
+                expect(response.ok).toBe(true);
+                expect(response.status).toBe(resStatus);
+                expect(data).toEqual(resBody);
+            }),
+        );
 
         it.effect("例外発生時、NetworkError を返す", () =>
-            testApiFailed_NetworkError(
-                "post",
-                "/test/post-failure",
-            )
+            testApiFailed_NetworkError("post", "/test/post-failure"),
         );
 
         it.effect("レスポンスステータスが 400 の場合、BadRequestError を返す", () =>
@@ -203,8 +186,8 @@ describe("ApiLive", () => {
                 "post",
                 "/test/post-http-400-error",
                 HttpStatus.BAD_REQUEST,
-                "BadRequestError"
-            )
+                "BadRequestError",
+            ),
         );
 
         it.effect("レスポンスステータスが 500 の場合、InternalServerError を返す", () =>
@@ -212,32 +195,29 @@ describe("ApiLive", () => {
                 "post",
                 "/test/post-http-500-error",
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "InternalServerError"
-            )
+                "InternalServerError",
+            ),
         );
 
-        it.effect("レスポンスは成功だが、期待したステータスと異なる場合、UnknownHttpError を返す",
-            () => Effect.gen(function* () {
-                const resStatus = HttpStatus.OK;
-                mockFetch({}, { status: resStatus });
+        it.effect(
+            "レスポンスは成功だが、期待したステータスと異なる場合、UnknownHttpError を返す",
+            () =>
+                Effect.gen(function* () {
+                    const resStatus = HttpStatus.OK;
+                    mockFetch({}, { status: resStatus });
 
-                const path = "/test/post-different-status-error";
-                const expectedStatus = HttpStatus.CREATED;
+                    const path = "/test/post-different-status-error";
+                    const expectedStatus = HttpStatus.CREATED;
 
-                const result = yield* Effect.exit(
-                    executeApi("post", path, expectedStatus)
-                );
+                    const result = yield* Effect.exit(executeApi("post", path, expectedStatus));
 
-                validateAppError(
-                    result,
-                    "UnexpectedStatusError",
-                    (unexpectedStatusError) => {
+                    validateAppError(result, "UnexpectedStatusError", (unexpectedStatusError) => {
                         expect(unexpectedStatusError.path).toBe(path);
                         expect(unexpectedStatusError.message).toContain("POST");
                         expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
                         expect(unexpectedStatusError.responseStatus).toBe(resStatus);
-                    }
-                );
-            }));
+                    });
+                }),
+        );
     });
 });

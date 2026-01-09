@@ -1,34 +1,33 @@
-import Tasks from "@/shared/components/Tasks";
 import { Chunk } from "effect";
+
 import { useTodo } from "../hooks/useTodo";
+
+import Tasks from "@/shared/components/Tasks";
 
 export const TodoList = () => {
     const { data, isError, isLoading, createTodo, updateTodo, deleteTodo } = useTodo();
 
-    const onCreate = async (newTodo: {
-        title: string;
-        description?: string | null;
-    }) => {
+    const onCreate = async (newTodo: { title: string; description?: string | null }) => {
         await createTodo(newTodo);
     };
-    
+
     const onSave = async (
         id: number,
         updatedTask: {
             title?: string;
             description?: string | null;
-        }
+        },
     ) => {
         await updateTodo({
             id,
-            input: updatedTask
+            input: updatedTask,
         });
     };
 
     const onDelete = async (id: number) => {
         await deleteTodo(id);
-    }    
-    
+    };
+
     if (isLoading) {
         return <div>ToDoリストを読み込み中...</div>;
     }
@@ -40,7 +39,7 @@ export const TodoList = () => {
     if (!data) {
         return <div>ToDoリストがありません。</div>;
     }
-    
+
     return (
         <Tasks>
             <Tasks.List>
@@ -59,7 +58,13 @@ export const TodoList = () => {
                 </Tasks.Create>
 
                 {Chunk.map(data, (task) => (
-                    <Tasks.Item key={task.id} id={task.id} task={task} onSave={onSave} onDelete={onDelete}>
+                    <Tasks.Item
+                        key={task.id}
+                        id={task.id}
+                        task={task}
+                        onSave={onSave}
+                        onDelete={onDelete}
+                    >
                         <Tasks.Title>{task.title}</Tasks.Title>
                         <Tasks.View>
                             <Tasks.Detail>
@@ -82,6 +87,6 @@ export const TodoList = () => {
             </Tasks.List>
         </Tasks>
     );
-}
+};
 
 export default TodoList;

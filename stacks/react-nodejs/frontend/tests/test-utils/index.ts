@@ -1,12 +1,13 @@
-import { AppError } from "@/errors";
 import { Cause, Exit } from "effect";
+
+import { AppError } from "@/errors";
 
 type ExtractByTag<E extends { _tag: string }, T extends string> = E extends { _tag: T } ? E : never;
 
 export const validateAppError = <A, T extends AppError["_tag"]>(
     result: Exit.Exit<A, AppError>,
     expectedTag: T,
-    expectedValues: (error: ExtractByTag<AppError, T>) => void
+    expectedValues: (error: ExtractByTag<AppError, T>) => void,
 ) => {
     expect(Exit.isFailure(result)).toBeTruthy();
     if (Exit.isFailure(result)) {

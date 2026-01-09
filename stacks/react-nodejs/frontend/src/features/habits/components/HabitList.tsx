@@ -1,34 +1,33 @@
-import Tasks from "@/shared/components/Tasks";
 import { Chunk } from "effect";
+
 import { useHabit } from "../hooks/useHabit";
+
+import Tasks from "@/shared/components/Tasks";
 
 export const HabitList = () => {
     const { data, isError, isLoading, createHabit, updateHabit, deleteHabit } = useHabit();
 
-    const onCreate = async (newHabit: {
-        title: string;
-        description?: string | null;
-    }) => {
+    const onCreate = async (newHabit: { title: string; description?: string | null }) => {
         await createHabit(newHabit);
     };
-    
+
     const onSave = async (
         id: number,
         updatedTask: {
             title?: string;
             description?: string | null;
-        }
+        },
     ) => {
         await updateHabit({
             id,
-            input: updatedTask
+            input: updatedTask,
         });
     };
 
     const onDelete = async (id: number) => {
         await deleteHabit(id);
-    }    
-    
+    };
+
     if (isLoading) {
         return <div>Habitリストを読み込み中...</div>;
     }
@@ -40,7 +39,7 @@ export const HabitList = () => {
     if (!data) {
         return <div>Habitリストがありません。</div>;
     }
-    
+
     return (
         <Tasks>
             <Tasks.List>
@@ -59,7 +58,13 @@ export const HabitList = () => {
                 </Tasks.Create>
 
                 {Chunk.map(data, (task) => (
-                    <Tasks.Item key={task.id} id={task.id} task={task} onSave={onSave} onDelete={onDelete}>
+                    <Tasks.Item
+                        key={task.id}
+                        id={task.id}
+                        task={task}
+                        onSave={onSave}
+                        onDelete={onDelete}
+                    >
                         <Tasks.Title>{task.title}</Tasks.Title>
                         <Tasks.View>
                             <Tasks.Detail>
@@ -82,6 +87,6 @@ export const HabitList = () => {
             </Tasks.List>
         </Tasks>
     );
-}
+};
 
 export default HabitList;
