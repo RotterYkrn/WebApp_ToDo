@@ -1,60 +1,43 @@
 import { SignInInput, SignUpInput, UserId } from "@1day-todo/shared";
-import { Effect, pipe } from "effect";
+import { Effect, pipe, Schema } from "effect";
 
 import { AuthService } from "./AuthService";
 
 import {
+    InternalServerError,
     InvalidCredentialsError,
-    SignOutError,
-    Unauthorized,
-    UnknownAuthError,
+    InvalidSessionError,
     ValidationError,
 } from "@/errors";
 import { ApiService } from "@/shared/http";
-import { parseToSchema } from "@/shared/utils";
 
 export const checkSessionUseCase = (): Effect.Effect<
     UserId,
-    Unauthorized | UnknownAuthError,
+    InvalidSessionError | InternalServerError,
     AuthService | ApiService
 > =>
     pipe(
         AuthService.checkSession(),
-        Effect.mapError((e) => {
-            if (e._tag === "UnauthorizedError") {
-                return new Unauthorized({
-                    message: "User is not authenticated.",
-                });
-            } else {
-                return new UnknownAuthError({
-                    message: "An unexpected error occurred.",
-                    originalError: e,
-                });
-            }
-        }),
+        Effect.mapError((e) => e),
     );
 
 export const signUpUseCase = (input: {
     email: string;
     password: string;
-}): Effect.Effect<void, ValidationError | UnknownAuthError, AuthService | ApiService> =>
+}): Effect.Effect<void, ValidationError | InternalServerError, AuthService | ApiService> =>
     pipe(
         input,
-        parseToSchema(SignUpInput),
+        Schema.decodeUnknownEither(SignUpInput),
         Effect.flatMap(AuthService.signUpApi),
         Effect.mapError((e) => {
             switch (e._tag) {
-                case "BadRequestError":
-                case "ParseSchemaError":
+                case "ParseError":
                     return new ValidationError({
                         message: "Bad email or password format.",
                         originalError: e,
                     });
                 default:
-                    return new UnknownAuthError({
-                        message: "An unexpected error occurred.",
-                        originalError: e,
-                    });
+                    return e;
             }
         }),
     );
@@ -64,30 +47,22 @@ export const signInUseCase = (input: {
     password: string;
 }): Effect.Effect<
     void,
-    InvalidCredentialsError | ValidationError | UnknownAuthError,
+    InvalidCredentialsError | ValidationError | InternalServerError,
     AuthService | ApiService
 > =>
     pipe(
         input,
-        parseToSchema(SignInInput),
+        Schema.decodeUnknownEither(SignInInput),
         Effect.flatMap(AuthService.signInApi),
         Effect.mapError((e) => {
             switch (e._tag) {
-                case "UnauthorizedError":
-                    return new InvalidCredentialsError({
-                        message: "Invalid email or password.",
-                    });
-                case "BadRequestError":
-                case "ParseSchemaError":
+                case "ParseError":
                     return new ValidationError({
                         message: "Bad email or password format.",
                         originalError: e,
                     });
                 default:
-                    return new UnknownAuthError({
-                        message: "An unexpected error occurred.",
-                        originalError: e,
-                    });
+                    return e;
             }
         }),
         // Effect.mapError((e) => {
@@ -102,14 +77,12 @@ export const signInUseCase = (input: {
         // }),
     );
 
-export const signOutUseCase = (): Effect.Effect<void, SignOutError, AuthService | ApiService> =>
+export const signOutUseCase = (): Effect.Effect<
+    void,
+    InternalServerError,
+    AuthService | ApiService
+> =>
     pipe(
         AuthService.signOutApi(),
-        Effect.mapError(
-            (e) =>
-                new SignOutError({
-                    message: "Sign out failed",
-                    originalError: e,
-                }),
-        ),
+        Effect.mapError((e) => e),
     );

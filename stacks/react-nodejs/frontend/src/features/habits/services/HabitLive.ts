@@ -3,6 +3,7 @@ import { Effect, Layer, pipe, Schema } from "effect";
 
 import { HabitService } from "./HabitService";
 
+import { InternalServerError } from "@/errors";
 import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
 
 export const HabitLive = Layer.succeed(
@@ -12,12 +13,26 @@ export const HabitLive = Layer.succeed(
             pipe(
                 ApiService.get(ApiHabitPath.GET_ALL, HttpStatus.OK),
                 Effect.flatMap(extractBodyWithSchema(HabitChunk)),
+                Effect.mapError(
+                    (e) =>
+                        new InternalServerError({
+                            message: "Failed to fetch habits",
+                            cause: e,
+                        }),
+                ),
             ),
 
         createHabitApi: (newHabit: HabitInput) =>
             pipe(
                 ApiService.post(ApiHabitPath.CREATE, HttpStatus.CREATED, { body: newHabit }),
                 Effect.flatMap(extractBodyWithSchema(Habit)),
+                Effect.mapError(
+                    (e) =>
+                        new InternalServerError({
+                            message: "Failed to create habit",
+                            cause: e,
+                        }),
+                ),
             ),
 
         updateHabitApi: (id: number, updatedHabit: HabitInput) =>
@@ -26,12 +41,26 @@ export const HabitLive = Layer.succeed(
                     body: updatedHabit,
                 }),
                 Effect.flatMap(extractBodyWithSchema(Habit)),
+                Effect.mapError(
+                    (e) =>
+                        new InternalServerError({
+                            message: "Failed to update habit",
+                            cause: e,
+                        }),
+                ),
             ),
 
         deleteHabitApi: (id: number) =>
             pipe(
                 ApiService.delete(`${ApiHabitPath.DELETE(id)}`, HttpStatus.OK, { body: { id } }),
                 Effect.flatMap(extractBodyWithSchema(Schema.Number)),
+                Effect.mapError(
+                    (e) =>
+                        new InternalServerError({
+                            message: "Failed to delete habit",
+                            cause: e,
+                        }),
+                ),
             ),
     }),
 );

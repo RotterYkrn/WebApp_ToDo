@@ -3,6 +3,7 @@ import { Effect, Layer, pipe } from "effect";
 
 import { DailyPlanService } from "./DailyPlanService";
 
+import { InternalServerError } from "@/errors";
 import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
 
 export const DailyPlanLive = Layer.succeed(
@@ -12,6 +13,13 @@ export const DailyPlanLive = Layer.succeed(
             pipe(
                 ApiService.get(ApiDailyPlanPath.GET_ALL, HttpStatus.OK),
                 Effect.flatMap(extractBodyWithSchema(DailyPlanChunk)),
+                Effect.mapError(
+                    (e) =>
+                        new InternalServerError({
+                            message: "Failed to fetch daily plans",
+                            cause: e,
+                        }),
+                ),
             ),
 
         createDailyPlanApi: (newDailyPlan: DailyPlan) =>
@@ -20,6 +28,13 @@ export const DailyPlanLive = Layer.succeed(
                     body: newDailyPlan,
                 }),
                 Effect.flatMap(extractBodyWithSchema(DailyPlan)),
+                Effect.mapError(
+                    (e) =>
+                        new InternalServerError({
+                            message: "Failed to create daily plans",
+                            cause: e,
+                        }),
+                ),
             ),
     }),
 );

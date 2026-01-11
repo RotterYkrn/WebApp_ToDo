@@ -16,20 +16,9 @@ export class ResponseJsonError extends Data.TaggedError("ResponseJsonError")<{
     readonly originalError: unknown;
 }> {}
 
-export class ParseSchemaError extends Data.TaggedError("ParseSchemaError")<{
-    readonly message: string;
-    readonly failedObject: unknown;
-    readonly originalError: unknown;
-}> {}
-
 export class UnknownAppError extends Data.TaggedError("UnknownAppError")<{
     readonly message: string;
     readonly originalError: unknown;
 }> {}
 
-export type OtherError =
-    | NetworkError
-    | TimeoutError
-    | ResponseJsonError
-    | ParseSchemaError
-    | UnknownAppError;
+export type OtherError = NetworkError | TimeoutError | ResponseJsonError | UnknownAppError;

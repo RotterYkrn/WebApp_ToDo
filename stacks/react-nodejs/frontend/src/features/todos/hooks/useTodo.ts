@@ -1,4 +1,4 @@
-import { TodoChunk } from "@1day-todo/shared";
+import { Todo, TodoChunk } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chunk, Exit } from "effect";
 
@@ -9,7 +9,7 @@ import {
     updateTodoUseCase,
 } from "../services/use-cases";
 
-import { TaskUnknownError } from "@/errors";
+import { CriticalError, InternalServerError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app";
 import { handleCause } from "@/shared/utils";
 
@@ -19,19 +19,12 @@ export const useTodo = () => {
     const queryClient = useQueryClient();
     const { runPromise } = useAppManager();
 
-    const { data, isError, isLoading } = useQuery<TodoChunk, TaskUnknownError>({
+    const { data, isError, isLoading } = useQuery<TodoChunk, InternalServerError | CriticalError>({
         queryKey: TODO_QUERY_KEY,
         queryFn: async () => {
             const result = await runPromise(getAllTodosUseCase());
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Get all todos failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Get all todos failed due to an unknown error.");
             }
 
             return result.value;
@@ -40,18 +33,15 @@ export const useTodo = () => {
         retry: false,
     });
 
-    const createMutation = useMutation({
+    const createMutation = useMutation<
+        Todo,
+        ValidationError | InternalServerError | CriticalError,
+        { title: string; description?: string | null }
+    >({
         mutationFn: async (newTodo: { title: string; description?: string | null }) => {
             const result = await runPromise(createTodoUseCase(newTodo));
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Get all todos failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Create todo failed due to an unknown error.");
             }
 
             return result.value;
@@ -63,7 +53,11 @@ export const useTodo = () => {
         },
     });
 
-    const updateMutation = useMutation({
+    const updateMutation = useMutation<
+        Todo,
+        ValidationError | InternalServerError | CriticalError,
+        { id: number; input: { title?: string; description?: string | null } }
+    >({
         mutationFn: async ({
             id,
             input,
@@ -76,14 +70,7 @@ export const useTodo = () => {
         }) => {
             const result = await runPromise(updateTodoUseCase(id, input));
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Get all todos failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Update todo failed due to an unknown error.");
             }
 
             return result.value;
@@ -98,18 +85,11 @@ export const useTodo = () => {
         },
     });
 
-    const deleteMutation = useMutation({
+    const deleteMutation = useMutation<number, InternalServerError | CriticalError, number>({
         mutationFn: async (id: number) => {
             const result = await runPromise(deleteTodoUseCase(id));
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Delete todo failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Delete todo failed due to an unknown error.");
             }
 
             return result.value;

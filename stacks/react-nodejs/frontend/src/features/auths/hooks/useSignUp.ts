@@ -3,7 +3,7 @@ import { Exit } from "effect";
 
 import { signUpUseCase } from "../services/use-cases";
 
-import { UnknownAuthError, ValidationError } from "@/errors";
+import { CriticalError, InternalServerError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app/useAppManager";
 import { handleCause } from "@/shared/utils";
 
@@ -12,18 +12,13 @@ export const useSignUp = () => {
 
     const signUpMutation = useMutation<
         void,
-        ValidationError | UnknownAuthError,
+        ValidationError | InternalServerError | CriticalError,
         { email: string; password: string }
     >({
         mutationFn: async (input: { email: string; password: string }) => {
             const result = await runPromise(signUpUseCase(input));
             if (Exit.isFailure(result)) {
-                throw handleCause(result.cause, (e) => {
-                    return new UnknownAuthError({
-                        message: "Sign up failed due to an unknown error.",
-                        originalError: e,
-                    });
-                });
+                throw handleCause(result.cause, "Sign up failed due to an unknown error.");
             }
         },
     });

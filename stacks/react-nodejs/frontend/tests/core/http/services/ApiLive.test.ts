@@ -116,21 +116,21 @@ describe("ApiLive", () => {
                 "get",
                 "/test/get-http-400-error",
                 HttpStatus.BAD_REQUEST,
-                "BadRequestError",
+                "HttpBadRequestError",
             ),
         );
 
-        it.effect("レスポンスステータスが 500 の場合、InternalServerError を返す", () =>
+        it.effect("レスポンスステータスが 5xx の場合、 HttpOtherServerError を返す", () =>
             testApiFailed_HttpError(
                 "get",
                 "/test/get-http-500-error",
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "InternalServerError",
+                "HttpOtherServerError",
             ),
         );
 
         it.effect(
-            "レスポンスは成功だが、期待したステータスと異なる場合、UnexpectedStatusError を返す",
+            "レスポンスは成功だが、期待したステータスと異なる場合、HttpUnexpectedStatusError を返す",
             () =>
                 Effect.gen(function* () {
                     const resStatus = HttpStatus.OK;
@@ -141,12 +141,16 @@ describe("ApiLive", () => {
 
                     const result = yield* Effect.exit(executeApi("get", path, expectedStatus));
 
-                    validateAppError(result, "UnexpectedStatusError", (unexpectedStatusError) => {
-                        expect(unexpectedStatusError.path).toBe(path);
-                        expect(unexpectedStatusError.message).toContain("GET");
-                        expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
-                        expect(unexpectedStatusError.responseStatus).toBe(resStatus);
-                    });
+                    validateAppError(
+                        result,
+                        "HttpUnexpectedStatusError",
+                        (HttpUnexpectedStatusError) => {
+                            expect(HttpUnexpectedStatusError.path).toBe(path);
+                            expect(HttpUnexpectedStatusError.message).toContain("GET");
+                            expect(HttpUnexpectedStatusError.expectedStatus).toBe(expectedStatus);
+                            expect(HttpUnexpectedStatusError.responseStatus).toBe(resStatus);
+                        },
+                    );
                 }),
         );
     });
@@ -186,21 +190,21 @@ describe("ApiLive", () => {
                 "post",
                 "/test/post-http-400-error",
                 HttpStatus.BAD_REQUEST,
-                "BadRequestError",
+                "HttpBadRequestError",
             ),
         );
 
-        it.effect("レスポンスステータスが 500 の場合、InternalServerError を返す", () =>
+        it.effect("レスポンスステータスが 5xx の場合、HttpOtherServerError を返す", () =>
             testApiFailed_HttpError(
                 "post",
                 "/test/post-http-500-error",
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "InternalServerError",
+                "HttpOtherServerError",
             ),
         );
 
         it.effect(
-            "レスポンスは成功だが、期待したステータスと異なる場合、UnknownHttpError を返す",
+            "レスポンスは成功だが、期待したステータスと異なる場合、HttpUnknownError を返す",
             () =>
                 Effect.gen(function* () {
                     const resStatus = HttpStatus.OK;
@@ -211,12 +215,16 @@ describe("ApiLive", () => {
 
                     const result = yield* Effect.exit(executeApi("post", path, expectedStatus));
 
-                    validateAppError(result, "UnexpectedStatusError", (unexpectedStatusError) => {
-                        expect(unexpectedStatusError.path).toBe(path);
-                        expect(unexpectedStatusError.message).toContain("POST");
-                        expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
-                        expect(unexpectedStatusError.responseStatus).toBe(resStatus);
-                    });
+                    validateAppError(
+                        result,
+                        "HttpUnexpectedStatusError",
+                        (HttpUnexpectedStatusError) => {
+                            expect(HttpUnexpectedStatusError.path).toBe(path);
+                            expect(HttpUnexpectedStatusError.message).toContain("POST");
+                            expect(HttpUnexpectedStatusError.expectedStatus).toBe(expectedStatus);
+                            expect(HttpUnexpectedStatusError.responseStatus).toBe(resStatus);
+                        },
+                    );
                 }),
         );
     });

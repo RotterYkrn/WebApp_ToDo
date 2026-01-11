@@ -1,39 +1,38 @@
 import { Todo, TodoChunk, TodoInput } from "@1day-todo/shared";
-import { Effect, pipe } from "effect";
+import { Effect, pipe, Schema } from "effect";
 
 import { TodoService } from "./TodoService";
 
-import { TaskUnknownError } from "@/errors";
+import { InternalServerError, ValidationError } from "@/errors";
 import { ApiService } from "@/shared/http";
-import { parseToSchema } from "@/shared/utils";
 
 export const getAllTodosUseCase = (): Effect.Effect<
     TodoChunk,
-    TaskUnknownError,
+    InternalServerError,
     TodoService | ApiService
 > =>
     pipe(
         TodoService.getAllTodosApi(),
-        Effect.mapError((e) => {
-            return new TaskUnknownError({
-                message: "An unexpected error occurred while fetching todos.",
-                originalError: e,
-            });
-        }),
+        Effect.mapError((e) => e),
     );
 
 export const createTodoUseCase = (
     newTodo: TodoInput,
-): Effect.Effect<Todo, TaskUnknownError, TodoService | ApiService> =>
+): Effect.Effect<Todo, ValidationError | InternalServerError, TodoService | ApiService> =>
     pipe(
         newTodo,
-        parseToSchema(TodoInput),
+        Schema.decodeUnknownEither(TodoInput),
         Effect.flatMap(TodoService.createTodoApi),
         Effect.mapError((e) => {
-            return new TaskUnknownError({
-                message: "An unexpected error occurred while creating a todo.",
-                originalError: e,
-            });
+            switch (e._tag) {
+                case "ParseError":
+                    return new ValidationError({
+                        message: "Invalid todo data format.",
+                        originalError: e,
+                    });
+                default:
+                    return e;
+            }
         }),
     );
 
@@ -43,29 +42,29 @@ export const updateTodoUseCase = (
         title?: string;
         description?: string | null;
     },
-): Effect.Effect<Todo, TaskUnknownError, TodoService | ApiService> =>
+): Effect.Effect<Todo, ValidationError | InternalServerError, TodoService | ApiService> =>
     pipe(
         updatedTodo,
-        parseToSchema(TodoInput),
+        Schema.decodeUnknownEither(TodoInput),
         Effect.flatMap((updatedTodo) => TodoService.updateTodoApi(id, updatedTodo)),
         Effect.mapError((e) => {
-            return new TaskUnknownError({
-                message: "An unexpected error occurred while updating a todo.",
-                originalError: e,
-            });
+            switch (e._tag) {
+                case "ParseError":
+                    return new ValidationError({
+                        message: "Invalid todo data format.",
+                        originalError: e,
+                    });
+                default:
+                    return e;
+            }
         }),
     );
 
 export const deleteTodoUseCase = (
     id: number,
-): Effect.Effect<number, TaskUnknownError, TodoService | ApiService> =>
+): Effect.Effect<number, InternalServerError, TodoService | ApiService> =>
     pipe(
         id,
         TodoService.deleteTodoApi,
-        Effect.mapError((e) => {
-            return new TaskUnknownError({
-                message: "An unexpected error occurred while deleting a todo.",
-                originalError: e,
-            });
-        }),
+        Effect.mapError((e) => e),
     );

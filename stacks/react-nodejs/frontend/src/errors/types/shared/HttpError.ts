@@ -1,81 +1,73 @@
 import { Data } from "effect";
 
 // 400
-export class BadRequestError extends Data.TaggedError("BadRequestError")<{
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
+export class HttpBadRequestError extends Data.TaggedError("HttpBadRequestError")<{
+    path: string;
+    message: string;
+    responseBody: unknown;
 }> {}
 
 // 401
-export class UnauthorizedError extends Data.TaggedError("UnauthorizedError")<{
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
+export class HttpUnauthorizedError extends Data.TaggedError("HttpUnauthorizedError")<{
+    path: string;
+    message: string;
+    responseBody: unknown;
 }> {}
 
 // 403
-export class ForbiddenError extends Data.TaggedError("ForbiddenError")<{
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
+export class HttpForbiddenError extends Data.TaggedError("HttpForbiddenError")<{
+    path: string;
+    message: string;
+    responseBody: unknown;
 }> {}
 
 // 404
-export class NotFoundError extends Data.TaggedError("NotFoundError")<{
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
-}> {}
-
-// 500
-export class InternalServerError extends Data.TaggedError("InternalServerError")<{
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
+export class HttpNotFoundError extends Data.TaggedError("HttpNotFoundError")<{
+    path: string;
+    message: string;
+    responseBody: unknown;
 }> {}
 
 // 4xx
-export class OtherClientError extends Data.TaggedError("OtherClientError")<{
-    readonly status: number;
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
+export class HttpOtherClientError extends Data.TaggedError("HttpOtherClientError")<{
+    status: number;
+    path: string;
+    message: string;
+    responseBody: unknown;
 }> {}
 
 // 5xx
-export class OtherServerError extends Data.TaggedError("OtherServerError")<{
-    readonly status: number;
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody: unknown;
+export class HttpOtherServerError extends Data.TaggedError("HttpOtherServerError")<{
+    status: number;
+    path: string;
+    message: string;
+    responseBody: unknown;
 }> {}
 
-export class UnexpectedStatusError extends Data.TaggedError("UnexpectedStatusError")<{
-    readonly message: string;
-    readonly path: string;
-    readonly expectedStatus: number;
-    readonly responseStatus: number;
+export class HttpUnexpectedStatusError extends Data.TaggedError("HttpUnexpectedStatusError")<{
+    message: string;
+    path: string;
+    expectedStatus: number;
+    responseStatus: number;
 }> {}
 
 // Other
-export class UnknownHttpError extends Data.TaggedError("UnknownHttpError")<{
-    readonly status: number;
-    readonly path: string;
-    readonly message: string;
-    readonly responseBody?: unknown;
+export class HttpUnknownError extends Data.TaggedError("HttpUnknownError")<{
+    status: number;
+    path: string;
+    message: string;
+    responseBody?: unknown;
 }> {}
 
 /**
  * HttpError のユニオン型
  */
 export type HttpError =
-    | BadRequestError
-    | UnauthorizedError
-    | ForbiddenError
-    | NotFoundError
-    | InternalServerError
-    | OtherClientError
-    | OtherServerError
-    | UnexpectedStatusError
-    | UnknownHttpError;
+    | HttpBadRequestError
+    | HttpUnauthorizedError
+    | HttpForbiddenError
+    | HttpNotFoundError
+    | HttpOtherClientError
+    | HttpOtherServerError
+    | HttpUnexpectedStatusError
+    | HttpUnknownError;

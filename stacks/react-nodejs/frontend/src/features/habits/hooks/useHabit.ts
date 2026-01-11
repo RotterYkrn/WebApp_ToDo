@@ -1,4 +1,4 @@
-import { HabitChunk } from "@1day-todo/shared";
+import { Habit, HabitChunk } from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chunk, Exit } from "effect";
 
@@ -9,7 +9,7 @@ import {
     updateHabitUseCase,
 } from "../services/use-cases";
 
-import { TaskUnknownError } from "@/errors";
+import { CriticalError, InternalServerError, ValidationError } from "@/errors";
 import { useAppManager } from "@/shared/app";
 import { handleCause } from "@/shared/utils";
 
@@ -19,19 +19,15 @@ export const useHabit = () => {
     const queryClient = useQueryClient();
     const { runPromise } = useAppManager();
 
-    const { data, isError, isLoading } = useQuery<HabitChunk, TaskUnknownError>({
+    const { data, isError, isLoading } = useQuery<
+        HabitChunk,
+        ValidationError | InternalServerError | CriticalError
+    >({
         queryKey: HABIT_QUERY_KEY,
         queryFn: async () => {
             const result = await runPromise(getAllHabitsUseCase());
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Get all habits failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Get all habits failed due to an unknown error.");
             }
 
             return result.value;
@@ -40,18 +36,15 @@ export const useHabit = () => {
         retry: false,
     });
 
-    const createMutation = useMutation({
+    const createMutation = useMutation<
+        Habit,
+        ValidationError | InternalServerError | CriticalError,
+        { title: string; description?: string | null }
+    >({
         mutationFn: async (newHabit: { title: string; description?: string | null }) => {
             const result = await runPromise(createHabitUseCase(newHabit));
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Get all habits failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Create habit failed due to an unknown error.");
             }
 
             return result.value;
@@ -63,7 +56,17 @@ export const useHabit = () => {
         },
     });
 
-    const updateMutation = useMutation({
+    const updateMutation = useMutation<
+        Habit,
+        ValidationError | InternalServerError | CriticalError,
+        {
+            id: number;
+            input: {
+                title?: string;
+                description?: string | null;
+            };
+        }
+    >({
         mutationFn: async ({
             id,
             input,
@@ -76,14 +79,7 @@ export const useHabit = () => {
         }) => {
             const result = await runPromise(updateHabitUseCase(id, input));
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Get all habits failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Update habit failed due to an unknown error.");
             }
 
             return result.value;
@@ -98,18 +94,15 @@ export const useHabit = () => {
         },
     });
 
-    const deleteMutation = useMutation({
+    const deleteMutation = useMutation<
+        number,
+        ValidationError | InternalServerError | CriticalError,
+        number
+    >({
         mutationFn: async (id: number) => {
             const result = await runPromise(deleteHabitUseCase(id));
             if (Exit.isFailure(result)) {
-                throw handleCause(
-                    result.cause,
-                    (e) =>
-                        new TaskUnknownError({
-                            message: "Delete habit failed due to an unknown error.",
-                            originalError: e,
-                        }),
-                );
+                throw handleCause(result.cause, "Delete habit failed due to an unknown error.");
             }
 
             return result.value;

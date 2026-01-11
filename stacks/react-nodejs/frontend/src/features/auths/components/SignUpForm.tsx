@@ -6,7 +6,7 @@ import { useSignUp } from "../hooks/useSignUp";
 
 import SignUpSuccessMessage from "./SignUpSuccessMessage";
 
-import { UnknownAuthError, ValidationError } from "@/errors";
+import { CriticalError, InternalServerError, ValidationError } from "@/errors";
 
 const SignUpForm: React.FC = () => {
     const methods = useForm<{ email: string; password: string }>();
@@ -58,11 +58,10 @@ const SignUpForm: React.FC = () => {
     );
 };
 
-const mapErrorMessage = (error: ValidationError | UnknownAuthError): string => {
+const mapErrorMessage = (error: ValidationError | InternalServerError | CriticalError): string => {
     switch (error._tag) {
         case "ValidationError":
             return "メールアドレスとパスワードを正しく入力してください。";
-        case "UnknownAuthError":
         default:
             return "処理中にエラーが発生しました。時間をおいて再度お試しください。";
     }

@@ -1,18 +1,18 @@
 import { DailyPlan } from "@1day-todo/shared";
 import { Chunk, Effect } from "effect";
 
-import { SharedError } from "@/errors";
+import { InternalServerError } from "@/errors";
 import { ApiService } from "@/shared/http";
 
 export interface IDailyPlanService {
     readonly getAllDailyPlansApi: () => Effect.Effect<
         Chunk.Chunk<DailyPlan>,
-        SharedError,
+        InternalServerError,
         ApiService
     >;
     readonly createDailyPlanApi: (
         newDailyPlan: DailyPlan,
-    ) => Effect.Effect<DailyPlan, SharedError, ApiService>;
+    ) => Effect.Effect<DailyPlan, InternalServerError, ApiService>;
     // readonly deleteTask: (taskId: string) => Effect.Effect<void, SharedError, ApiService>;
 }
 

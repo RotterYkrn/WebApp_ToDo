@@ -3,14 +3,13 @@ import { Effect, pipe } from "effect";
 import { validateAppError } from "tests/test-utils";
 
 import {
-    BadRequestError,
-    ForbiddenError,
-    InternalServerError,
-    NotFoundError,
-    OtherClientError,
-    OtherServerError,
-    UnauthorizedError,
-    UnknownHttpError,
+    HttpBadRequestError,
+    HttpForbiddenError,
+    HttpNotFoundError,
+    HttpOtherClientError,
+    HttpOtherServerError,
+    HttpUnauthorizedError,
+    HttpUnknownError,
 } from "@/errors";
 import {
     classifyHttpError,
@@ -43,24 +42,7 @@ describe("handleHttpError", () => {
                 pipe(Effect.succeed(response), Effect.flatMap(handleHttpError(path, message))),
             );
 
-            validateAppError(result, "BadRequestError", (httpError) => {
-                expect(httpError.path).toBe(path);
-                expect(httpError.message).toBe(message);
-            });
-        }),
-    );
-
-    it.effect("レスポンスステータスが 500 の場合、InternalServerError を返す", () =>
-        Effect.gen(function* () {
-            const path = "/test/handle-response-500-error";
-            const message = "HTTP Error during TEST";
-            const response = new Response("{}", { status: HttpStatus.INTERNAL_SERVER_ERROR });
-
-            const result = yield* Effect.exit(
-                pipe(Effect.succeed(response), Effect.flatMap(handleHttpError(path, message))),
-            );
-
-            validateAppError(result, "InternalServerError", (httpError) => {
+            validateAppError(result, "HttpBadRequestError", (httpError) => {
                 expect(httpError.path).toBe(path);
                 expect(httpError.message).toBe(message);
             });
@@ -83,7 +65,7 @@ describe("ensureHttpStatus", () => {
         }),
     );
 
-    it.effect("期待するステータスと異なる場合、UnexpectedStatusError を返す", () =>
+    it.effect("期待するステータスと異なる場合、HttpUnexpectedStatusError を返す", () =>
         Effect.gen(function* () {
             const resStatus = HttpStatus.OK;
             const response = new Response("{}", { status: resStatus });
@@ -99,11 +81,11 @@ describe("ensureHttpStatus", () => {
                 ),
             );
 
-            validateAppError(result, "UnexpectedStatusError", (unexpectedStatusError) => {
-                expect(unexpectedStatusError.path).toBe(path);
-                expect(unexpectedStatusError.message).toContain(method);
-                expect(unexpectedStatusError.expectedStatus).toBe(expectedStatus);
-                expect(unexpectedStatusError.responseStatus).toBe(resStatus);
+            validateAppError(result, "HttpUnexpectedStatusError", (HttpUnexpectedStatusError) => {
+                expect(HttpUnexpectedStatusError.path).toBe(path);
+                expect(HttpUnexpectedStatusError.message).toContain(method);
+                expect(HttpUnexpectedStatusError.expectedStatus).toBe(expectedStatus);
+                expect(HttpUnexpectedStatusError.responseStatus).toBe(resStatus);
             });
         }),
     );
@@ -122,47 +104,43 @@ describe("classifyHttpError", () => {
         expect(error).toBeInstanceOf(expected);
         expect(error.path).toBe(errorInfo.path);
         expect(error.message).toBe(errorInfo.message);
-        if (error._tag !== "UnexpectedStatusError") {
+        if (error._tag !== "HttpUnexpectedStatusError") {
             expect(error.responseBody).toBe(errorInfo.responseBody);
         }
         if (
-            error instanceof OtherClientError ||
-            error instanceof OtherServerError ||
-            error instanceof UnknownHttpError
+            error instanceof HttpOtherClientError ||
+            error instanceof HttpOtherServerError ||
+            error instanceof HttpUnknownError
         ) {
             expect(error.status).toBe(status);
         }
     };
 
     it("ステータスコード400の場合、BadRequestErrorを返す", () => {
-        test(HttpStatus.BAD_REQUEST, BadRequestError);
+        test(HttpStatus.BAD_REQUEST, HttpBadRequestError);
     });
 
     it("ステータスコード401の場合、UnauthorizedErrorを返す", () => {
-        test(HttpStatus.UNAUTHORIZED, UnauthorizedError);
+        test(HttpStatus.UNAUTHORIZED, HttpUnauthorizedError);
     });
 
-    it("ステータスコード403の場合、ForbiddenErrorを返す", () => {
-        test(HttpStatus.FORBIDDEN, ForbiddenError);
+    it("ステータスコード403の場合、HttpForbiddenErrorを返す", () => {
+        test(HttpStatus.FORBIDDEN, HttpForbiddenError);
     });
 
-    it("ステータスコード404の場合、NotFoundErrorを返す", () => {
-        test(HttpStatus.NOT_FOUND, NotFoundError);
+    it("ステータスコード404の場合、HttpNotFoundErrorを返す", () => {
+        test(HttpStatus.NOT_FOUND, HttpNotFoundError);
     });
 
-    it("ステータスコード500の場合、InternalServerErrorを返す", () => {
-        test(HttpStatus.INTERNAL_SERVER_ERROR, InternalServerError);
+    it("その他の4xx系ステータスコードの場合、HttpOtherClientErrorを返す", () => {
+        test(418, HttpOtherClientError); // I'm a teapot
     });
 
-    it("その他の4xx系ステータスコードの場合、OtherClientErrorを返す", () => {
-        test(418, OtherClientError); // I'm a teapot
+    it("その他の5xx系ステータスコードの場合、HttpOtherServerErrorを返す", () => {
+        test(503, HttpOtherServerError); // Service Unavailable
     });
 
-    it("その他の5xx系ステータスコードの場合、OtherServerErrorを返す", () => {
-        test(503, OtherServerError); // Service Unavailable
-    });
-
-    it("予期しないステータスコードの場合、UnknownHttpErrorを返す", () => {
-        test(200, UnknownHttpError);
+    it("予期しないステータスコードの場合、HttpUnknownErrorを返す", () => {
+        test(200, HttpUnknownError);
     });
 });

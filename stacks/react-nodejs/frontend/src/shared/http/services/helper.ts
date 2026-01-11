@@ -3,16 +3,15 @@ import { Either } from "effect";
 import { HttpStatus } from "../types/HttpStatus";
 
 import {
-    BadRequestError,
-    ForbiddenError,
+    HttpBadRequestError,
     HttpError,
-    InternalServerError,
-    NotFoundError,
-    OtherClientError,
-    OtherServerError,
-    UnauthorizedError,
-    UnexpectedStatusError,
-    UnknownHttpError,
+    HttpForbiddenError,
+    HttpNotFoundError,
+    HttpOtherClientError,
+    HttpOtherServerError,
+    HttpUnauthorizedError,
+    HttpUnexpectedStatusError,
+    HttpUnknownError,
 } from "@/errors";
 
 interface ErrorInfo {
@@ -39,12 +38,12 @@ export const ensureHttpStatus =
         expectedStatus: HttpStatus,
         method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
         path: string,
-    ): ((res: Response) => Either.Either<Response, UnexpectedStatusError>) =>
+    ): ((res: Response) => Either.Either<Response, HttpUnexpectedStatusError>) =>
     (res) =>
         res.status === expectedStatus
             ? Either.right(res)
             : Either.left(
-                  new UnexpectedStatusError({
+                  new HttpUnexpectedStatusError({
                       message: `${method}: Received unexpected status.`,
                       path,
                       expectedStatus,
@@ -55,22 +54,20 @@ export const ensureHttpStatus =
 export const classifyHttpError = (res: Response, errorInfo: ErrorInfo): HttpError => {
     switch (res.status) {
         case HttpStatus.BAD_REQUEST:
-            return new BadRequestError(errorInfo);
+            return new HttpBadRequestError(errorInfo);
         case HttpStatus.UNAUTHORIZED:
-            return new UnauthorizedError(errorInfo);
+            return new HttpUnauthorizedError(errorInfo);
         case HttpStatus.FORBIDDEN:
-            return new ForbiddenError(errorInfo);
+            return new HttpForbiddenError(errorInfo);
         case HttpStatus.NOT_FOUND:
-            return new NotFoundError(errorInfo);
-        case HttpStatus.INTERNAL_SERVER_ERROR:
-            return new InternalServerError(errorInfo);
+            return new HttpNotFoundError(errorInfo);
         default:
             if (res.status >= 400 && res.status < 500) {
-                return new OtherClientError({ ...errorInfo, status: res.status });
+                return new HttpOtherClientError({ ...errorInfo, status: res.status });
             }
             if (res.status >= 500 && res.status < 600) {
-                return new OtherServerError({ ...errorInfo, status: res.status });
+                return new HttpOtherServerError({ ...errorInfo, status: res.status });
             }
-            return new UnknownHttpError({ ...errorInfo, status: res.status });
+            return new HttpUnknownError({ ...errorInfo, status: res.status });
     }
 };

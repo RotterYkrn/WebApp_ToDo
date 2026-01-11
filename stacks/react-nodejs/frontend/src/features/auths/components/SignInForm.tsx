@@ -4,7 +4,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
 
-import { InvalidCredentialsError, UnknownAuthError, ValidationError } from "@/errors";
+import {
+    CriticalError,
+    InternalServerError,
+    InvalidCredentialsError,
+    ValidationError,
+} from "@/errors";
 
 const SignInForm: React.FC = () => {
     const methods = useForm<{ email: string; password: string }>();
@@ -63,14 +68,13 @@ const SignInForm: React.FC = () => {
 };
 
 const mapErrorMessage = (
-    error: InvalidCredentialsError | ValidationError | UnknownAuthError,
+    error: InvalidCredentialsError | ValidationError | InternalServerError | CriticalError,
 ): string => {
     switch (error._tag) {
         case "InvalidCredentialsError":
             return "メールアドレスまたはパスワードが正しくありません。";
         case "ValidationError":
             return "メールアドレスとパスワードを正しく入力してください。";
-        case "UnknownAuthError":
         default:
             return "処理中にエラーが発生しました。時間をおいて再度お試しください。";
     }

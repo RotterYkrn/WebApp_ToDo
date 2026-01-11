@@ -19,7 +19,7 @@ export const DailyPlanList = () => {
                 const cause = result.cause;
                 const error = Cause.failureOption(cause);
                 if (Option.isSome(error)) {
-                    console.error(error.value.message, error.value.originalError);
+                    console.error(error.value.message, error.value.cause);
                     throw error.value;
                 } else {
                     console.error(cause);
