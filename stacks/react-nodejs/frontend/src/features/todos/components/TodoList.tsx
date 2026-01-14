@@ -1,4 +1,4 @@
-import { Chunk } from "effect";
+import { TodoCreateEncoded, TodoUpdateEncoded } from "@1day-todo/shared";
 
 import { useTodo } from "../hooks/useTodo";
 
@@ -7,17 +7,11 @@ import Tasks from "@/shared/components/Tasks";
 export const TodoList = () => {
     const { data, isError, isLoading, createTodo, updateTodo, deleteTodo } = useTodo();
 
-    const onCreate = async (newTodo: { title: string; description?: string | null }) => {
+    const onCreate = async (newTodo: TodoCreateEncoded) => {
         await createTodo(newTodo);
     };
 
-    const onSave = async (
-        id: number,
-        updatedTask: {
-            title?: string;
-            description?: string | null;
-        },
-    ) => {
+    const onSave = async (id: number, updatedTask: TodoUpdateEncoded) => {
         await updateTodo({
             id,
             input: updatedTask,
@@ -57,7 +51,7 @@ export const TodoList = () => {
                     </Tasks.Detail>
                 </Tasks.Create>
 
-                {Chunk.map(data, (task) => (
+                {data.map((task) => (
                     <Tasks.Item
                         key={task.id}
                         id={task.id}

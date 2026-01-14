@@ -20,7 +20,9 @@ const TaskItemContext = createContext<TaskItemContextType | undefined>(undefined
 const useTaskItemContext = <T extends FieldValues>() => {
     const context = useContext(TaskItemContext);
     if (!context) {
-        throw new Error("const Itemの子コンポーネントとして使用してください");
+        throw new Error(
+            "useTaskItemContext は Tasks.Item の子コンポーネントとして使用してください",
+        );
     }
     return context as TaskItemContextType<T>;
 };

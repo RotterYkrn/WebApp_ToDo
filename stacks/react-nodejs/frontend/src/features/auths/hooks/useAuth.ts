@@ -1,4 +1,4 @@
-import { UserId } from "@1day-todo/shared";
+import { SignInInputEncoded, UserId } from "@1day-todo/shared";
 import { MutateOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Exit } from "effect";
 
@@ -40,9 +40,9 @@ export function useAuth() {
     const signInMutation = useMutation<
         void,
         InvalidCredentialsError | ValidationError | InternalServerError | CriticalError,
-        { email: string; password: string }
+        SignInInputEncoded
     >({
-        mutationFn: async (input: { email: string; password: string }) => {
+        mutationFn: async (input: SignInInputEncoded) => {
             const result = await runPromise(signInUseCase(input));
             if (Exit.isFailure(result)) {
                 throw handleCause(result.cause, "Sign in failed due to an unknown error.");

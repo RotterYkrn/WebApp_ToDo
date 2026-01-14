@@ -1,3 +1,4 @@
+import { SignUpInputEncoded } from "@1day-todo/shared";
 import { useMutation } from "@tanstack/react-query";
 import { Exit } from "effect";
 
@@ -13,9 +14,9 @@ export const useSignUp = () => {
     const signUpMutation = useMutation<
         void,
         ValidationError | InternalServerError | CriticalError,
-        { email: string; password: string }
+        SignUpInputEncoded
     >({
-        mutationFn: async (input: { email: string; password: string }) => {
+        mutationFn: async (input: SignUpInputEncoded) => {
             const result = await runPromise(signUpUseCase(input));
             if (Exit.isFailure(result)) {
                 throw handleCause(result.cause, "Sign up failed due to an unknown error.");

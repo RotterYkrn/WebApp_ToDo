@@ -1,6 +1,12 @@
-import { Todo, TodoChunk } from "@1day-todo/shared";
+import {
+    Todo,
+    TodoChunk,
+    TodoChunkEncoded,
+    TodoCreateEncoded,
+    TodoUpdateEncoded,
+} from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chunk, Exit } from "effect";
+import { Chunk, Exit, Schema } from "effect";
 
 import {
     createTodoUseCase,
@@ -19,7 +25,11 @@ export const useTodo = () => {
     const queryClient = useQueryClient();
     const { runPromise } = useAppManager();
 
-    const { data, isError, isLoading } = useQuery<TodoChunk, InternalServerError | CriticalError>({
+    const { data, isError, isLoading } = useQuery<
+        TodoChunk,
+        InternalServerError | CriticalError,
+        TodoChunkEncoded
+    >({
         queryKey: TODO_QUERY_KEY,
         queryFn: async () => {
             const result = await runPromise(getAllTodosUseCase());
@@ -29,6 +39,9 @@ export const useTodo = () => {
 
             return result.value;
         },
+        select: (todoChunk) => {
+            return Schema.encodeSync(TodoChunk)(todoChunk);
+        },
         staleTime: 5 * 60 * 1000,
         retry: false,
     });
@@ -36,9 +49,9 @@ export const useTodo = () => {
     const createMutation = useMutation<
         Todo,
         ValidationError | InternalServerError | CriticalError,
-        { title: string; description?: string | null }
+        TodoCreateEncoded
     >({
-        mutationFn: async (newTodo: { title: string; description?: string | null }) => {
+        mutationFn: async (newTodo: TodoCreateEncoded) => {
             const result = await runPromise(createTodoUseCase(newTodo));
             if (Exit.isFailure(result)) {
                 throw handleCause(result.cause, "Create todo failed due to an unknown error.");
@@ -56,18 +69,9 @@ export const useTodo = () => {
     const updateMutation = useMutation<
         Todo,
         ValidationError | InternalServerError | CriticalError,
-        { id: number; input: { title?: string; description?: string | null } }
+        { id: number; input: TodoUpdateEncoded }
     >({
-        mutationFn: async ({
-            id,
-            input,
-        }: {
-            id: number;
-            input: {
-                title?: string;
-                description?: string | null;
-            };
-        }) => {
+        mutationFn: async ({ id, input }: { id: number; input: TodoUpdateEncoded }) => {
             const result = await runPromise(updateTodoUseCase(id, input));
             if (Exit.isFailure(result)) {
                 throw handleCause(result.cause, "Update todo failed due to an unknown error.");

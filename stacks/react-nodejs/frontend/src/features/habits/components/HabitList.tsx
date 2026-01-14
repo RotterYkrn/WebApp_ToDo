@@ -1,4 +1,4 @@
-import { Chunk } from "effect";
+import { HabitCreateEncoded, HabitUpdateEncoded } from "@1day-todo/shared";
 
 import { useHabit } from "../hooks/useHabit";
 
@@ -7,17 +7,11 @@ import Tasks from "@/shared/components/Tasks";
 export const HabitList = () => {
     const { data, isError, isLoading, createHabit, updateHabit, deleteHabit } = useHabit();
 
-    const onCreate = async (newHabit: { title: string; description?: string | null }) => {
+    const onCreate = async (newHabit: HabitCreateEncoded) => {
         await createHabit(newHabit);
     };
 
-    const onSave = async (
-        id: number,
-        updatedTask: {
-            title?: string;
-            description?: string | null;
-        },
-    ) => {
+    const onSave = async (id: number, updatedTask: HabitUpdateEncoded) => {
         await updateHabit({
             id,
             input: updatedTask,
@@ -57,7 +51,7 @@ export const HabitList = () => {
                     </Tasks.Detail>
                 </Tasks.Create>
 
-                {Chunk.map(data, (task) => (
+                {data.map((task) => (
                     <Tasks.Item
                         key={task.id}
                         id={task.id}

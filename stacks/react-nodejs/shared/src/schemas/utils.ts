@@ -9,5 +9,5 @@ interface Variance<A, I, R> {
 }
 
 export type SchemaType<S> = S extends Variance<infer A, infer _I, infer _R> ? A : never;
-
+export type SchemaEncode<S> = S extends Variance<infer _A, infer I, infer _R> ? I : never;
 export type ChunkInfer<S> = S extends Schema.Chunk<infer A> ? A : never;

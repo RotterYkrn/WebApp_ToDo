@@ -1,4 +1,11 @@
-import { Habit, HabitChunk, HabitInput } from "@1day-todo/shared";
+import {
+    Habit,
+    HabitChunk,
+    HabitCreate,
+    HabitCreateEncoded,
+    HabitUpdate,
+    HabitUpdateEncoded,
+} from "@1day-todo/shared";
 import { Effect, pipe, Schema } from "effect";
 
 import { HabitService } from "./HabitService";
@@ -17,11 +24,11 @@ export const getAllHabitsUseCase = (): Effect.Effect<
     );
 
 export const createHabitUseCase = (
-    newHabit: HabitInput,
+    newHabit: HabitCreateEncoded,
 ): Effect.Effect<Habit, ValidationError | InternalServerError, HabitService | ApiService> =>
     pipe(
         newHabit,
-        Schema.decodeUnknownEither(HabitInput),
+        Schema.decodeUnknownEither(HabitCreate),
         Effect.flatMap(HabitService.createHabitApi),
         Effect.mapError((e) => {
             switch (e._tag) {
@@ -38,14 +45,11 @@ export const createHabitUseCase = (
 
 export const updateHabitUseCase = (
     id: number,
-    updatedHabit: {
-        title?: string;
-        description?: string | null;
-    },
+    updatedHabit: HabitUpdateEncoded,
 ): Effect.Effect<Habit, ValidationError | InternalServerError, HabitService | ApiService> =>
     pipe(
         updatedHabit,
-        Schema.decodeUnknownEither(HabitInput),
+        Schema.decodeUnknownEither(HabitUpdate),
         Effect.flatMap((updatedHabit) => HabitService.updateHabitApi(id, updatedHabit)),
         Effect.mapError((e) => {
             switch (e._tag) {

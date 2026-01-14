@@ -1,4 +1,4 @@
-import { ApiHabitPath, Habit, HabitChunk, HabitInput } from "@1day-todo/shared";
+import { ApiHabitPath, Habit, HabitChunk, HabitCreate, HabitUpdate } from "@1day-todo/shared";
 import { Effect, Layer, pipe, Schema } from "effect";
 
 import { HabitService } from "./HabitService";
@@ -22,9 +22,13 @@ export const HabitLive = Layer.succeed(
                 ),
             ),
 
-        createHabitApi: (newHabit: HabitInput) =>
+        createHabitApi: (newHabit: HabitCreate) =>
             pipe(
-                ApiService.post(ApiHabitPath.CREATE, HttpStatus.CREATED, { body: newHabit }),
+                newHabit,
+                Schema.encodeEither(HabitCreate),
+                Effect.flatMap((habit) =>
+                    ApiService.post(ApiHabitPath.CREATE, HttpStatus.CREATED, { body: habit }),
+                ),
                 Effect.flatMap(extractBodyWithSchema(Habit)),
                 Effect.mapError(
                     (e) =>
@@ -35,11 +39,15 @@ export const HabitLive = Layer.succeed(
                 ),
             ),
 
-        updateHabitApi: (id: number, updatedHabit: HabitInput) =>
+        updateHabitApi: (id: number, updatedHabit: HabitUpdate) =>
             pipe(
-                ApiService.patch(`${ApiHabitPath.UPDATE(id)}`, HttpStatus.OK, {
-                    body: updatedHabit,
-                }),
+                updatedHabit,
+                Schema.encodeEither(HabitUpdate),
+                Effect.flatMap((habit) =>
+                    ApiService.patch(`${ApiHabitPath.UPDATE(id)}`, HttpStatus.OK, {
+                        body: habit,
+                    }),
+                ),
                 Effect.flatMap(extractBodyWithSchema(Habit)),
                 Effect.mapError(
                     (e) =>

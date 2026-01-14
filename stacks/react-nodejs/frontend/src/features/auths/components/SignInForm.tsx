@@ -1,4 +1,4 @@
-import { PagePath } from "@1day-todo/shared";
+import { PagePath, SignInInputEncoded } from "@1day-todo/shared";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -20,15 +20,12 @@ const SignInForm: React.FC = () => {
 
     const from = (location.state as { from?: Location })?.from?.pathname ?? PagePath.INDEX;
 
-    const handleSignIn = ({ email, password }: { email: string; password: string }) => {
-        signIn(
-            { email, password },
-            {
-                onSuccess: () => {
-                    navigate(from, { replace: true });
-                },
+    const handleSignIn = (input: SignInInputEncoded) => {
+        signIn(input, {
+            onSuccess: () => {
+                navigate(from, { replace: true });
             },
-        );
+        });
     };
 
     const errorMessage = isError ? mapErrorMessage(error!) : "";

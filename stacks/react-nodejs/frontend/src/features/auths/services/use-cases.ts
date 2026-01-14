@@ -1,4 +1,10 @@
-import { SignInInput, SignUpInput, UserId } from "@1day-todo/shared";
+import {
+    SignInInput,
+    SignInInputEncoded,
+    SignUpInput,
+    SignUpInputEncoded,
+    UserId,
+} from "@1day-todo/shared";
 import { Effect, pipe, Schema } from "effect";
 
 import { AuthService } from "./AuthService";
@@ -21,10 +27,9 @@ export const checkSessionUseCase = (): Effect.Effect<
         Effect.mapError((e) => e),
     );
 
-export const signUpUseCase = (input: {
-    email: string;
-    password: string;
-}): Effect.Effect<void, ValidationError | InternalServerError, AuthService | ApiService> =>
+export const signUpUseCase = (
+    input: SignUpInputEncoded,
+): Effect.Effect<void, ValidationError | InternalServerError, AuthService | ApiService> =>
     pipe(
         input,
         Schema.decodeUnknownEither(SignUpInput),
@@ -42,10 +47,9 @@ export const signUpUseCase = (input: {
         }),
     );
 
-export const signInUseCase = (input: {
-    email: string;
-    password: string;
-}): Effect.Effect<
+export const signInUseCase = (
+    input: SignInInputEncoded,
+): Effect.Effect<
     void,
     InvalidCredentialsError | ValidationError | InternalServerError,
     AuthService | ApiService
@@ -65,16 +69,6 @@ export const signInUseCase = (input: {
                     return e;
             }
         }),
-        // Effect.mapError((e) => {
-        //     switch (e.type) {
-        //         case "invalid_credentials":
-        //             return "メールアドレスまたはパスワードが正しくありません。";
-        //         case "validation_error":
-        //             return "メールアドレスとパスワードを正しく入力してください。";
-        //         default:
-        //             return "予期せぬエラーが発生しました。時間をおいて再度お試しください。";
-        //     }
-        // }),
     );
 
 export const signOutUseCase = (): Effect.Effect<

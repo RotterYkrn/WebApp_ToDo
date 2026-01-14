@@ -1,4 +1,11 @@
-import { Todo, TodoChunk, TodoInput } from "@1day-todo/shared";
+import {
+    Todo,
+    TodoChunk,
+    TodoCreate,
+    TodoCreateEncoded,
+    TodoUpdate,
+    TodoUpdateEncoded,
+} from "@1day-todo/shared";
 import { Effect, pipe, Schema } from "effect";
 
 import { TodoService } from "./TodoService";
@@ -17,11 +24,11 @@ export const getAllTodosUseCase = (): Effect.Effect<
     );
 
 export const createTodoUseCase = (
-    newTodo: TodoInput,
+    newTodo: TodoCreateEncoded,
 ): Effect.Effect<Todo, ValidationError | InternalServerError, TodoService | ApiService> =>
     pipe(
         newTodo,
-        Schema.decodeUnknownEither(TodoInput),
+        Schema.decodeUnknownEither(TodoCreate),
         Effect.flatMap(TodoService.createTodoApi),
         Effect.mapError((e) => {
             switch (e._tag) {
@@ -38,14 +45,11 @@ export const createTodoUseCase = (
 
 export const updateTodoUseCase = (
     id: number,
-    updatedTodo: {
-        title?: string;
-        description?: string | null;
-    },
+    updatedTodo: TodoUpdateEncoded,
 ): Effect.Effect<Todo, ValidationError | InternalServerError, TodoService | ApiService> =>
     pipe(
         updatedTodo,
-        Schema.decodeUnknownEither(TodoInput),
+        Schema.decodeUnknownEither(TodoUpdate),
         Effect.flatMap((updatedTodo) => TodoService.updateTodoApi(id, updatedTodo)),
         Effect.mapError((e) => {
             switch (e._tag) {

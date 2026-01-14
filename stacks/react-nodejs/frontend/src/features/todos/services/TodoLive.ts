@@ -1,4 +1,4 @@
-import { ApiTodoPath, Todo, TodoChunk, TodoInput } from "@1day-todo/shared";
+import { ApiTodoPath, Todo, TodoChunk, TodoCreate, TodoUpdate } from "@1day-todo/shared";
 import { Effect, Layer, pipe, Schema } from "effect";
 
 import { TodoService } from "./TodoService";
@@ -22,7 +22,7 @@ export const TodoLive = Layer.succeed(
                 ),
             ),
 
-        createTodoApi: (newTodo: TodoInput) =>
+        createTodoApi: (newTodo: TodoCreate) =>
             pipe(
                 ApiService.post(ApiTodoPath.CREATE, HttpStatus.CREATED, { body: newTodo }),
                 Effect.flatMap(extractBodyWithSchema(Todo)),
@@ -35,7 +35,7 @@ export const TodoLive = Layer.succeed(
                 ),
             ),
 
-        updateTodoApi: (id: number, updatedTodo: TodoInput) =>
+        updateTodoApi: (id: number, updatedTodo: TodoUpdate) =>
             pipe(
                 ApiService.patch(`${ApiTodoPath.UPDATE(id)}`, HttpStatus.OK, { body: updatedTodo }),
                 Effect.flatMap(extractBodyWithSchema(Todo)),

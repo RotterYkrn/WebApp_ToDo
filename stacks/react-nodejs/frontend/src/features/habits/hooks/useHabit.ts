@@ -1,6 +1,12 @@
-import { Habit, HabitChunk } from "@1day-todo/shared";
+import {
+    Habit,
+    HabitChunk,
+    HabitChunkEncoded,
+    HabitCreateEncoded,
+    HabitUpdateEncoded,
+} from "@1day-todo/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chunk, Exit } from "effect";
+import { Chunk, Exit, Schema } from "effect";
 
 import {
     createHabitUseCase,
@@ -21,7 +27,8 @@ export const useHabit = () => {
 
     const { data, isError, isLoading } = useQuery<
         HabitChunk,
-        ValidationError | InternalServerError | CriticalError
+        ValidationError | InternalServerError | CriticalError,
+        HabitChunkEncoded
     >({
         queryKey: HABIT_QUERY_KEY,
         queryFn: async () => {
@@ -32,6 +39,9 @@ export const useHabit = () => {
 
             return result.value;
         },
+        select: (habitChunk) => {
+            return Schema.encodeSync(HabitChunk)(habitChunk);
+        },
         staleTime: 5 * 60 * 1000,
         retry: false,
     });
@@ -39,9 +49,9 @@ export const useHabit = () => {
     const createMutation = useMutation<
         Habit,
         ValidationError | InternalServerError | CriticalError,
-        { title: string; description?: string | null }
+        HabitCreateEncoded
     >({
-        mutationFn: async (newHabit: { title: string; description?: string | null }) => {
+        mutationFn: async (newHabit: HabitCreateEncoded) => {
             const result = await runPromise(createHabitUseCase(newHabit));
             if (Exit.isFailure(result)) {
                 throw handleCause(result.cause, "Create habit failed due to an unknown error.");
@@ -61,22 +71,10 @@ export const useHabit = () => {
         ValidationError | InternalServerError | CriticalError,
         {
             id: number;
-            input: {
-                title?: string;
-                description?: string | null;
-            };
+            input: HabitUpdateEncoded;
         }
     >({
-        mutationFn: async ({
-            id,
-            input,
-        }: {
-            id: number;
-            input: {
-                title?: string;
-                description?: string | null;
-            };
-        }) => {
+        mutationFn: async ({ id, input }: { id: number; input: HabitUpdateEncoded }) => {
             const result = await runPromise(updateHabitUseCase(id, input));
             if (Exit.isFailure(result)) {
                 throw handleCause(result.cause, "Update habit failed due to an unknown error.");
