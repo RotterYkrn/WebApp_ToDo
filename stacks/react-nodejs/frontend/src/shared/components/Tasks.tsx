@@ -5,15 +5,28 @@ const List = ({ children }: { children: React.ReactNode }) => {
     return <div className="task-list">{children}</div>;
 };
 
-interface TaskItemContextType<T extends FieldValues = any> {
+interface TaskCreateContextType<T extends FieldValues> {
+    type: "create";
+    isOpen: boolean;
+    handleTitleClick: () => void;
+    isEditing: true;
+    toggleEdit: () => void;
+    onSubmit: (data: T) => Promise<void>;
+}
+
+interface TaskEditContextType<T extends FieldValues> {
+    type: "edit";
     isOpen: boolean;
     handleTitleClick: () => void;
     isEditing: boolean;
     toggleEdit: (value: boolean) => void;
-    task?: T;
     onSubmit: (data: T) => Promise<void>;
-    handleDelete?: () => Promise<void>;
+    handleDelete: () => Promise<void>;
 }
+
+type TaskItemContextType<T extends FieldValues = any> =
+    | TaskCreateContextType<T>
+    | TaskEditContextType<T>;
 
 const TaskItemContext = createContext<TaskItemContextType | undefined>(undefined);
 
@@ -44,6 +57,7 @@ const Create = <T extends FieldValues>({ children, onCreate }: TasksCreateProps<
     return (
         <TaskItemContext
             value={{
+                type: "create",
                 isOpen,
                 handleTitleClick: () => setIsOpen(!isOpen),
                 isEditing: true,
@@ -99,6 +113,7 @@ const Item = <T extends FieldValues>({
     return (
         <TaskItemContext
             value={{
+                type: "edit",
                 isOpen,
                 handleTitleClick,
                 isEditing,
@@ -146,14 +161,14 @@ const EditButton = ({ children }: { children: ReactNode }) => {
 };
 
 const DeleteButton = ({ children }: { children: React.ReactNode }) => {
-    const { handleDelete } = useTaskItemContext();
+    const context = useTaskItemContext();
 
-    if (!handleDelete) return null;
+    if (context.type !== "edit") return null;
 
     return (
         <button
             className="task-delete-button"
-            onClick={handleDelete}
+            onClick={context.handleDelete}
         >
             {children}
         </button>
