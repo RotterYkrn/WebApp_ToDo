@@ -6,31 +6,31 @@ import { HttpStatus } from "../types/HttpStatus";
 import { HttpError, NetworkError, ResponseJsonError } from "@/errors";
 
 export interface IApiService {
-    get: (
+    readonly get: (
         path: string,
         expectedStatus: HttpStatus,
         options?: RequestInit,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
 
-    post: (
+    readonly post: (
         path: string,
         expectedStatus: HttpStatus,
         options?: PostOptionType,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
 
-    patch: (
+    readonly patch: (
         path: string,
         expectedStatus: HttpStatus,
         options?: PostOptionType,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
 
-    delete: (
+    readonly delete: (
         path: string,
         expectedStatus: HttpStatus,
         options?: PostOptionType,
     ) => Effect.Effect<Response, NetworkError | HttpError>;
 
-    extractBody: (res: Response) => Effect.Effect<unknown, ResponseJsonError>;
+    readonly extractBody: (res: Response) => Effect.Effect<unknown, ResponseJsonError>;
 }
 
 export class ApiService extends Effect.Tag("ApiService")<ApiService, IApiService>() {}
