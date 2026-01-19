@@ -10,7 +10,7 @@ import {
     HttpOtherServerError,
     HttpUnauthorizedError,
     HttpUnknownError,
-} from "@/errors";
+} from "@/errors/types/shared/HttpError";
 import {
     classifyHttpError,
     ensureHttpStatus,

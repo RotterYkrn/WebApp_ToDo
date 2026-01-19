@@ -3,8 +3,10 @@ import { Effect, Layer, pipe } from "effect";
 
 import { DailyPlanService } from "./DailyPlanService";
 
-import { InternalServerError } from "@/errors";
-import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
+import { InternalServerError } from "@/errors/types/features/DomainUtilError";
+import { ApiService } from "@/shared/http/services/ApiService";
+import { extractBodyWithSchema } from "@/shared/http/services/use-case";
+import { HttpStatus } from "@/shared/http/types/HttpStatus";
 
 export const DailyPlanLive = Layer.succeed(
     DailyPlanService,

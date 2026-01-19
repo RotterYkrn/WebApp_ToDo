@@ -2,7 +2,7 @@ import { Chunk, Effect, Either, Layer, Option, pipe } from "effect";
 
 import { UIService } from "./UIService";
 
-import { AppendElementsError, UIUnknownError } from "@/errors";
+import { AppendElementsError, UIUnknownError } from "@/errors/types/shared/UIError";
 
 export const UILive = Layer.succeed(
     UIService,

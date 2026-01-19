@@ -6,7 +6,7 @@ import { HttpStatus } from "../types/HttpStatus";
 import { ApiService } from "./ApiService";
 import { ensureHttpStatus, handleHttpError } from "./helper";
 
-import { NetworkError, ResponseJsonError } from "@/errors";
+import { NetworkError, ResponseJsonError } from "@/errors/types/shared/OtherError";
 
 const getApiUrl = (path: string): string => {
     const baseUrl = import.meta.env.VITE_API_URL || "";

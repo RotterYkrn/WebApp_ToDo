@@ -4,9 +4,13 @@ import { Exit } from "effect";
 
 import { signUpUseCase } from "../services/use-cases";
 
-import { CriticalError, InternalServerError, ValidationError } from "@/errors";
+import {
+    CriticalError,
+    InternalServerError,
+    ValidationError,
+} from "@/errors/types/features/DomainUtilError";
 import { useAppManager } from "@/shared/app/useAppManager";
-import { handleCause } from "@/shared/utils";
+import { handleCause } from "@/shared/utils/handleExit";
 
 export const useSignUp = () => {
     const { runPromise } = useAppManager();

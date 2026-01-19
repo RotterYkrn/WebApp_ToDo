@@ -9,13 +9,9 @@ import { Effect, pipe, Schema } from "effect";
 
 import { AuthService } from "./AuthService";
 
-import {
-    InternalServerError,
-    InvalidCredentialsError,
-    InvalidSessionError,
-    ValidationError,
-} from "@/errors";
-import { ApiService } from "@/shared/http";
+import { InvalidCredentialsError, InvalidSessionError } from "@/errors/types/features/AuthError";
+import { InternalServerError, ValidationError } from "@/errors/types/features/DomainUtilError";
+import { ApiService } from "@/shared/http/services/ApiService";
 
 export const checkSessionUseCase = (): Effect.Effect<
     UserId,

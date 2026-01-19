@@ -1,8 +1,9 @@
 import { SignInInput, SignUpInput, UserId } from "@1day-todo/shared";
 import { Effect } from "effect";
 
-import { InternalServerError, InvalidCredentialsError, InvalidSessionError } from "@/errors";
-import { ApiService } from "@/shared/http";
+import { InvalidCredentialsError, InvalidSessionError } from "@/errors/types/features/AuthError";
+import { InternalServerError } from "@/errors/types/features/DomainUtilError";
+import { ApiService } from "@/shared/http/services/ApiService";
 
 export interface IAuthService {
     readonly checkSession: () => Effect.Effect<

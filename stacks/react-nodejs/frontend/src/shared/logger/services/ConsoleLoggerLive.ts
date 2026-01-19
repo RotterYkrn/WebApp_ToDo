@@ -1,6 +1,6 @@
 import { Effect, Layer } from "effect";
 
-import { LoggerService } from "@/shared/logger";
+import { LoggerService } from "./LoggerService";
 
 export const consoleLogger = {
     log: (message: string, ...args: unknown[]) =>

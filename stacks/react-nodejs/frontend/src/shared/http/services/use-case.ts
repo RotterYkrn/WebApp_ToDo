@@ -2,7 +2,7 @@ import { Effect, ParseResult, pipe, Schema } from "effect";
 
 import { ApiService } from "./ApiService";
 
-import { ResponseJsonError } from "@/errors";
+import { ResponseJsonError } from "@/errors/types/shared/OtherError";
 
 export const extractBodyWithSchema =
     <A, I>(

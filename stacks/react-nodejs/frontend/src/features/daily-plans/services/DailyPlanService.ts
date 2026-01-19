@@ -1,8 +1,8 @@
 import { DailyPlan } from "@1day-todo/shared";
 import { Chunk, Effect } from "effect";
 
-import { InternalServerError } from "@/errors";
-import { ApiService } from "@/shared/http";
+import { InternalServerError } from "@/errors/types/features/DomainUtilError";
+import { ApiService } from "@/shared/http/services/ApiService";
 
 export interface IDailyPlanService {
     readonly getAllDailyPlansApi: () => Effect.Effect<

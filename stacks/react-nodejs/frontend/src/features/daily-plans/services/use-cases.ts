@@ -3,8 +3,8 @@ import { Effect, pipe, Schema } from "effect";
 
 import { DailyPlanService } from "./DailyPlanService";
 
-import { InternalServerError, ValidationError } from "@/errors";
-import { ApiService } from "@/shared/http";
+import { InternalServerError, ValidationError } from "@/errors/types/features/DomainUtilError";
+import { ApiService } from "@/shared/http/services/ApiService";
 
 export const getAllDailyPlansUseCase = (): Effect.Effect<
     DailyPlanChunk,

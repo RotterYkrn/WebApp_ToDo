@@ -3,7 +3,9 @@ import { Effect, Layer, pipe } from "effect";
 
 import { SettingService } from "./SettingService";
 
-import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
+import { ApiService } from "@/shared/http/services/ApiService";
+import { extractBodyWithSchema } from "@/shared/http/services/use-case";
+import { HttpStatus } from "@/shared/http/types/HttpStatus";
 
 export const SettingLive = Layer.succeed(
     SettingService,

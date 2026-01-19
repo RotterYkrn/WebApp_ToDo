@@ -1,8 +1,8 @@
 import { SettingsInput, SettingsOutput } from "@1day-todo/shared";
 import { Effect } from "effect";
 
-import { SharedError } from "@/errors";
-import { ApiService } from "@/shared/http";
+import { SharedError } from "@/errors/types/shared/SharedError";
+import { ApiService } from "@/shared/http/services/ApiService";
 
 interface ISettingService {
     readonly getSettingsApi: () => Effect.Effect<SettingsOutput, SharedError, ApiService>;

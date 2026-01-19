@@ -4,15 +4,14 @@ import { Exit } from "effect";
 
 import { checkSessionUseCase, signInUseCase, signOutUseCase } from "../services/use-cases";
 
+import { InvalidCredentialsError, InvalidSessionError } from "@/errors/types/features/AuthError";
 import {
     CriticalError,
     InternalServerError,
-    InvalidCredentialsError,
-    InvalidSessionError,
     ValidationError,
-} from "@/errors";
-import { useAppManager } from "@/shared/app";
-import { handleCause } from "@/shared/utils";
+} from "@/errors/types/features/DomainUtilError";
+import { useAppManager } from "@/shared/app/useAppManager";
+import { handleCause } from "@/shared/utils/handleExit";
 
 const AUTH_SESSION_QUERY_KEY = ["authSession"];
 

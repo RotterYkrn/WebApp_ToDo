@@ -4,8 +4,8 @@ import { Cause, Exit, Option } from "effect";
 
 import { getAllDailyPlansUseCase } from "../services/use-cases";
 
-import { TaskUnknownError } from "@/errors";
-import { useAppManager } from "@/shared/app";
+import { TaskUnknownError } from "@/errors/types/features/TaskError";
+import { useAppManager } from "@/shared/app/useAppManager";
 import Tasks from "@/shared/components/Tasks";
 
 export const DailyPlanList = () => {

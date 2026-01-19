@@ -14,8 +14,10 @@ const createAppManager = (): IAppManager => {
     };
 };
 
-export const AppManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AppManagerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const appManager = useMemo(() => createAppManager(), []);
 
     return <AppManagerContext value={appManager}>{children}</AppManagerContext>;
 };
+
+export default AppManagerProvider;
