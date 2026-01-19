@@ -116,6 +116,6 @@ export const ApiLive = Layer.succeed(
                         message: "Failed to read response body as JSON.",
                         originalError: e,
                     }),
-            }),
+            }).pipe(Effect.tap((body) => Effect.sync(() => console.debug("Response body:", body)))),
     }),
 );

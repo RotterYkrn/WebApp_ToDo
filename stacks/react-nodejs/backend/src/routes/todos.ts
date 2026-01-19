@@ -1,74 +1,96 @@
 import { constants } from "http2";
 
+import { Todo, TodoChunk } from "@1day-todo/shared";
+import { Effect, Exit, Schema } from "effect";
 import { Router } from "express";
+
+import { TodoLive } from "@/features/todos/TodoLive.js";
+import {
+    createTodoUseCase,
+    deleteTodoUseCase,
+    getAllTodosUseCase,
+    updateTodoUseCase,
+} from "@/features/todos/use-case.js";
 
 const router = Router();
 
-const tasks: { id: number; title: string; description: string }[] = [
-    {
-        id: 1,
-        title: "🛒 買い物に行く",
-        description: "スーパーで牛乳・パン・卵を購入する。ついでに日用品もチェック。",
-    },
-    {
-        id: 2,
-        title: "🧹 部屋の掃除",
-        description: "リビングとキッチンを中心に掃除機をかけて片付ける。",
-    },
-    {
-        id: 3,
-        title: "📧 メール確認",
-        description: "クライアントからの返信を確認し、返事を書く。",
-    },
-];
+// const tasks: { id: number; title: string; description: string }[] = [
+//     {
+//         id: 1,
+//         title: "🛒 買い物に行く",
+//         description: "スーパーで牛乳・パン・卵を購入する。ついでに日用品もチェック。",
+//     },
+//     {
+//         id: 2,
+//         title: "🧹 部屋の掃除",
+//         description: "リビングとキッチンを中心に掃除機をかけて片付ける。",
+//     },
+//     {
+//         id: 3,
+//         title: "📧 メール確認",
+//         description: "クライアントからの返信を確認し、返事を書く。",
+//     },
+// ];
 
-router.get("/", (_req, res) => {
-    res.json(tasks);
-});
+router.get("/", async (_req, res) => {
+    const todosExit = await Effect.runPromiseExit(
+        getAllTodosUseCase().pipe(Effect.provide(TodoLive)),
+    );
 
-router.post("/", (req, res) => {
-    const { title, description } = req.body;
-    const id = tasks.length + 1;
-    tasks.push({ id, title, description });
-    res.status(constants.HTTP_STATUS_CREATED).json({ id, title, description });
-});
-
-router.patch("/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const { title, description } = req.body;
-
-    const task = tasks.find((t) => t.id === id);
-    if (!task) {
-        res.status(constants.HTTP_STATUS_NOT_FOUND).end();
-        console.error(`Task with id ${id} not found.`);
+    if (Exit.isFailure(todosExit)) {
+        console.error("Failed to get todos:", todosExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
         return;
     }
 
-    // if (title !== undefined) {
-    //     task.title = title;
-    // }
-    // if (description !== undefined) {
-    //     task.description = description;
-    // }
-
-    res.status(constants.HTTP_STATUS_OK).json({
-        ...task,
-        title: title ?? task.title,
-        description: description ?? task.description,
-    });
+    res.status(constants.HTTP_STATUS_OK).json(Schema.encodeSync(TodoChunk)(todosExit.value));
 });
 
-router.delete("/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const index = tasks.findIndex((t) => t.id === id);
-    if (index === -1) {
-        res.status(constants.HTTP_STATUS_NOT_FOUND).end();
-        console.error(`Task with id ${id} not found.`);
+router.post("/", async (req, res) => {
+    const createdTodoExit = await Effect.runPromiseExit(
+        createTodoUseCase(req.body).pipe(Effect.provide(TodoLive)),
+    );
+
+    if (Exit.isFailure(createdTodoExit)) {
+        console.error("Failed to create todo:", createdTodoExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
         return;
     }
 
-    tasks.splice(index, 1);
-    res.status(constants.HTTP_STATUS_OK).json(id);
+    res.status(constants.HTTP_STATUS_CREATED).json(Schema.encodeSync(Todo)(createdTodoExit.value));
+});
+
+router.patch("/:id", async (req, res) => {
+    const id = Number(req.params.id);
+
+    const updatedTodoExit = await Effect.runPromiseExit(
+        updateTodoUseCase(id, req.body).pipe(Effect.provide(TodoLive)),
+    );
+
+    if (Exit.isFailure(updatedTodoExit)) {
+        console.error("Failed to update todo:", updatedTodoExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
+        return;
+    }
+
+    res.status(constants.HTTP_STATUS_OK).json(Schema.encodeSync(Todo)(updatedTodoExit.value));
+});
+
+router.delete("/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    const deletedTodoExit = await Effect.runPromiseExit(
+        deleteTodoUseCase(id).pipe(Effect.provide(TodoLive)),
+    );
+
+    if (Exit.isFailure(deletedTodoExit)) {
+        console.error("Failed to delete todo:", deletedTodoExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
+        return;
+    }
+
+    res.status(constants.HTTP_STATUS_OK)
+        .json(Schema.encodeSync(Schema.Number)(deletedTodoExit.value))
+        .end();
 });
 
 export default router;
