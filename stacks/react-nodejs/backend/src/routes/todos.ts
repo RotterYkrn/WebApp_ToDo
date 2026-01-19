@@ -14,24 +14,6 @@ import {
 
 const router = Router();
 
-// const tasks: { id: number; title: string; description: string }[] = [
-//     {
-//         id: 1,
-//         title: "🛒 買い物に行く",
-//         description: "スーパーで牛乳・パン・卵を購入する。ついでに日用品もチェック。",
-//     },
-//     {
-//         id: 2,
-//         title: "🧹 部屋の掃除",
-//         description: "リビングとキッチンを中心に掃除機をかけて片付ける。",
-//     },
-//     {
-//         id: 3,
-//         title: "📧 メール確認",
-//         description: "クライアントからの返信を確認し、返事を書く。",
-//     },
-// ];
-
 router.get("/", async (_req, res) => {
     const todosExit = await Effect.runPromiseExit(
         getAllTodosUseCase().pipe(Effect.provide(TodoLive)),
@@ -88,9 +70,9 @@ router.delete("/:id", async (req, res) => {
         return;
     }
 
-    res.status(constants.HTTP_STATUS_OK)
-        .json(Schema.encodeSync(Schema.Number)(deletedTodoExit.value))
-        .end();
+    res.status(constants.HTTP_STATUS_OK).json(
+        Schema.encodeSync(Schema.Number)(deletedTodoExit.value),
+    );
 });
 
 export default router;
