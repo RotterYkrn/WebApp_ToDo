@@ -3,8 +3,11 @@ import { Effect, Layer, pipe } from "effect";
 
 import { AuthService } from "./AuthService";
 
-import { InternalServerError, InvalidCredentialsError, InvalidSessionError } from "@/errors";
-import { ApiService, extractBodyWithSchema, HttpStatus } from "@/shared/http";
+import { InvalidCredentialsError, InvalidSessionError } from "@/errors/types/features/AuthError";
+import { InternalServerError } from "@/errors/types/features/DomainUtilError";
+import { ApiService } from "@/shared/http/services/ApiService";
+import { extractBodyWithSchema } from "@/shared/http/services/use-case";
+import { HttpStatus } from "@/shared/http/types/HttpStatus";
 
 export const AuthLive = Layer.succeed(
     AuthService,

@@ -1,12 +1,12 @@
 import { Layer } from "effect";
 
 import { AuthLive } from "@/features/auths/services/AuthLive";
-import { DailyPlanLive } from "@/features/daily-plans";
-import { HabitLive } from "@/features/habits";
-import { TodoLive } from "@/features/todos";
-import { ApiLive } from "@/shared/http";
-import { ConsoleLoggerLive } from "@/shared/logger";
-import { UILive } from "@/shared/ui";
+import { DailyPlanLive } from "@/features/daily-plans/services/DailyPlanLive";
+import { HabitLive } from "@/features/habits/services/HabitLive";
+import { TodoLive } from "@/features/todos/services/TodoLive";
+import { ApiLive } from "@/shared/http/services/ApiLive";
+import { ConsoleLoggerLive } from "@/shared/logger/services/ConsoleLoggerLive";
+import { UILive } from "@/shared/ui/services/UILive";
 
 export const AppLayer = Layer.mergeAll(
     ApiLive,

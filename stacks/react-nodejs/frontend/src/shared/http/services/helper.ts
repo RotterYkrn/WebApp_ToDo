@@ -12,7 +12,7 @@ import {
     HttpUnauthorizedError,
     HttpUnexpectedStatusError,
     HttpUnknownError,
-} from "@/errors";
+} from "@/errors/types/shared/HttpError";
 
 interface ErrorInfo {
     readonly path: string;

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 
-import { AppManagerContext, IAppManager } from "@/contexts/AppManager";
+import { AppManagerContext } from "@/contexts/AppManager/AppManagerContext";
+import { IAppManager } from "@/contexts/AppManager/IAppManager";
 
 export const useAppManager = (): IAppManager => {
     const context = useContext(AppManagerContext);

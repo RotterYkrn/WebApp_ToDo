@@ -1,6 +1,6 @@
 import { Cause, Exit } from "effect";
 
-import { AppError } from "@/errors";
+import { AppError } from "@/errors/types/AppError";
 
 type ExtractByTag<E extends { _tag: string }, T extends string> = E extends { _tag: T } ? E : never;
 

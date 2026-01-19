@@ -4,12 +4,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
 
+import { InvalidCredentialsError } from "@/errors/types/features/AuthError";
 import {
     CriticalError,
     InternalServerError,
-    InvalidCredentialsError,
     ValidationError,
-} from "@/errors";
+} from "@/errors/types/features/DomainUtilError";
 
 const SignInForm: React.FC = () => {
     const methods = useForm<{ email: string; password: string }>();

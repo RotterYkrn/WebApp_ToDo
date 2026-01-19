@@ -3,7 +3,8 @@ import { Effect } from "effect";
 import { PostOptionType } from "../types/api-types";
 import { HttpStatus } from "../types/HttpStatus";
 
-import { HttpError, NetworkError, ResponseJsonError } from "@/errors";
+import { HttpError } from "@/errors/types/shared/HttpError";
+import { NetworkError, ResponseJsonError } from "@/errors/types/shared/OtherError";
 
 export interface IApiService {
     readonly get: (

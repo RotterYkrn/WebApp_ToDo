@@ -2,7 +2,7 @@ import { Chunk, Effect } from "effect";
 
 import { UIService } from "./UIService";
 
-import { AppendElementsError } from "@/errors";
+import { AppendElementsError } from "@/errors/types/shared/UIError";
 
 export const appendElementsWrapper = (
     parent: HTMLElement,

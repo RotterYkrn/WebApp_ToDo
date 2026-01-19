@@ -10,8 +10,8 @@ import { Effect, pipe, Schema } from "effect";
 
 import { TodoService } from "./TodoService";
 
-import { InternalServerError, ValidationError } from "@/errors";
-import { ApiService } from "@/shared/http";
+import { InternalServerError, ValidationError } from "@/errors/types/features/DomainUtilError";
+import { ApiService } from "@/shared/http/services/ApiService";
 
 export const getAllTodosUseCase = (): Effect.Effect<
     TodoChunk,

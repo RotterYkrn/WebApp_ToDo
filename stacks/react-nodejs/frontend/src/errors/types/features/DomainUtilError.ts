@@ -1,6 +1,6 @@
 import { Cause, Data } from "effect";
 
-import { SharedError } from "../shared";
+import { SharedError } from "../shared/SharedError";
 
 export class InternalServerError extends Data.TaggedError("InternalServerError")<{
     message: string;

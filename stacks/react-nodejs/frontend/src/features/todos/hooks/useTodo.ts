@@ -15,9 +15,13 @@ import {
     updateTodoUseCase,
 } from "../services/use-cases";
 
-import { CriticalError, InternalServerError, ValidationError } from "@/errors";
-import { useAppManager } from "@/shared/app";
-import { handleCause } from "@/shared/utils";
+import {
+    CriticalError,
+    InternalServerError,
+    ValidationError,
+} from "@/errors/types/features/DomainUtilError";
+import { useAppManager } from "@/shared/app/useAppManager";
+import { handleCause } from "@/shared/utils/handleExit";
 
 const TODO_QUERY_KEY = ["todoChunk"];
 

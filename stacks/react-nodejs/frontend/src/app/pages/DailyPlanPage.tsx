@@ -1,5 +1,5 @@
-import { SignOutButton } from "@/features/auths";
-import { DailyPlanList } from "@/features/daily-plans";
+import SignOutButton from "@/features/auths/components/SignOutButton";
+import DailyPlanList from "@/features/daily-plans/components/DailyPlanList";
 
 const DailyPlanPage = () => {
     return (

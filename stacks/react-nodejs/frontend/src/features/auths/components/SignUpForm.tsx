@@ -6,7 +6,11 @@ import { useSignUp } from "../hooks/useSignUp";
 
 import SignUpSuccessMessage from "./SignUpSuccessMessage";
 
-import { CriticalError, InternalServerError, ValidationError } from "@/errors";
+import {
+    CriticalError,
+    InternalServerError,
+    ValidationError,
+} from "@/errors/types/features/DomainUtilError";
 
 const SignUpForm: React.FC = () => {
     const methods = useForm<{ email: string; password: string }>();

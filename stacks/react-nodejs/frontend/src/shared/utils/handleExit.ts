@@ -1,7 +1,7 @@
 import { Cause, Option } from "effect";
 import { YieldableError } from "effect/Cause";
 
-import { CriticalError } from "@/errors";
+import { CriticalError } from "@/errors/types/features/DomainUtilError";
 
 export const handleCause = <E1 extends YieldableError>(
     cause: Cause.Cause<E1>,

@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi, type Mock } from "@effect/vitest"
 import { Effect } from "effect";
 import { validateAppError } from "tests/test-utils";
 
-import { HttpError } from "@/errors";
-import { ApiService } from "@/shared/http";
+import { HttpError } from "@/errors/types/shared/HttpError";
 import { ApiLive } from "@/shared/http/services/ApiLive";
+import { ApiService } from "@/shared/http/services/ApiService";
 import { HttpStatus } from "@/shared/http/types/HttpStatus";
 
 // global.fetch のモック

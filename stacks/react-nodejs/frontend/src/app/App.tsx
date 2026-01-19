@@ -8,8 +8,9 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import TodoPage from "./pages/TodoPage";
 
-import { AppManagerProvider } from "@/contexts/AppManager";
-import { AuthRoute, SignOutButton } from "@/features/auths";
+import AppManagerProvider from "@/contexts/AppManager/AppManagerProvider";
+import AuthRoute from "@/features/auths/components/AuthRoute";
+import SignOutButton from "@/features/auths/components/SignOutButton";
 
 const App: React.FC = () => {
     return (
