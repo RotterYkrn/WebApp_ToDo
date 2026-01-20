@@ -24,9 +24,9 @@ let tasks: { id: number; title: string; description: string | null }[] = [
 export const HabitLive = Layer.succeed(
     HabitService,
     HabitService.of({
-        getAllHabitsFromDB: () => pipe(tasks, Schema.decodeUnknownEither(HabitChunk)),
+        findAll: () => pipe(tasks, Schema.decodeUnknownEither(HabitChunk)),
 
-        createHabitInDB: (habit) =>
+        create: (habit) =>
             pipe(habit, Schema.encodeSync(HabitCreate), (habit) => {
                 const newTask = {
                     id: tasks.length + 1,
@@ -37,7 +37,7 @@ export const HabitLive = Layer.succeed(
                 return Schema.decodeUnknownEither(Habit)(newTask);
             }),
 
-        updateHabitInDB: (id, habit) =>
+        update: (id, habit) =>
             pipe(
                 habit,
                 Schema.encodeSync(HabitUpdate),
@@ -60,7 +60,7 @@ export const HabitLive = Layer.succeed(
                 Schema.decodeUnknownEither(Habit),
             ),
 
-        deleteHabitInDB: (id) =>
+        delete: (id) =>
             pipe(
                 id,
                 (id) => {

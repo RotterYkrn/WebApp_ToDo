@@ -24,9 +24,9 @@ let tasks: { id: number; title: string; description: string | null }[] = [
 export const TodoLive = Layer.succeed(
     TodoService,
     TodoService.of({
-        getAllTodosFromDB: () => pipe(tasks, Schema.decodeUnknownEither(TodoChunk)),
+        findAll: () => pipe(tasks, Schema.decodeUnknownEither(TodoChunk)),
 
-        createTodoInDB: (todo) =>
+        create: (todo) =>
             pipe(todo, Schema.encodeSync(TodoCreate), (todo) => {
                 const newTask = {
                     id: tasks.length + 1,
@@ -37,7 +37,7 @@ export const TodoLive = Layer.succeed(
                 return Schema.decodeUnknownEither(Todo)(newTask);
             }),
 
-        updateTodoInDB: (id, todo) =>
+        update: (id, todo) =>
             pipe(
                 todo,
                 Schema.encodeSync(TodoUpdate),
@@ -60,7 +60,7 @@ export const TodoLive = Layer.succeed(
                 Schema.decodeUnknownEither(Todo),
             ),
 
-        deleteTodoInDB: (id) =>
+        delete: (id) =>
             pipe(
                 id,
                 (id) => {
