@@ -1,76 +1,80 @@
 import { constants } from "http2";
 
+import { Habit, HabitChunk } from "@1day-todo/shared";
+import { Effect, Exit, Schema } from "effect";
 import { Router } from "express";
+
+import { HabitLive } from "@/features/habits/HabitLive.js";
+import {
+    createHabitUseCase,
+    deleteHabitUseCase,
+    getAllHabitsUseCase,
+    updateHabitUseCase,
+} from "@/features/habits/use-case.js";
 
 const router = Router();
 
-const tasks: { id: number; title: string; description: string }[] = [
-    {
-        id: 1,
-        title: "🛒 買い物に行く",
-        description: "スーパーで牛乳・パン・卵を購入する。ついでに日用品もチェック。",
-    },
-    {
-        id: 2,
-        title: "🧹 部屋の掃除",
-        description: "リビングとキッチンを中心に掃除機をかけて片付ける。",
-    },
-    {
-        id: 3,
-        title: "📧 メール確認",
-        description: "クライアントからの返信を確認し、返事を書く。",
-    },
-];
+router.get("/", async (_req, res) => {
+    const habitsExit = await Effect.runPromiseExit(
+        getAllHabitsUseCase().pipe(Effect.provide(HabitLive)),
+    );
 
-router.get("/", (_req, res) => {
-    res.json(tasks);
-});
-
-router.post("/", (req, res) => {
-    const { title, description } = req.body;
-    const id = tasks.length + 1;
-    tasks.push({ id, title, description });
-    res.status(constants.HTTP_STATUS_CREATED).json({ id, title, description }).end();
-});
-
-router.patch("/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const { title, description } = req.body;
-
-    const task = tasks.find((t) => t.id === id);
-    if (!task) {
-        res.status(constants.HTTP_STATUS_NOT_FOUND).end();
-        console.error(`Task with id ${id} not found.`);
+    if (Exit.isFailure(habitsExit)) {
+        console.error("Failed to get habits:", habitsExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
         return;
     }
 
-    // if (title !== undefined) {
-    //     task.title = title;
-    // }
-    // if (description !== undefined) {
-    //     task.description = description;
-    // }
-
-    res.status(constants.HTTP_STATUS_OK)
-        .json({
-            ...task,
-            title: title ?? task.title,
-            description: description ?? task.description,
-        })
-        .end();
+    res.status(constants.HTTP_STATUS_OK).json(Schema.encodeSync(HabitChunk)(habitsExit.value));
 });
 
-router.delete("/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const index = tasks.findIndex((t) => t.id === id);
-    if (index === -1) {
-        res.status(constants.HTTP_STATUS_NOT_FOUND).end();
-        console.error(`Task with id ${id} not found.`);
+router.post("/", async (req, res) => {
+    const createdHabitExit = await Effect.runPromiseExit(
+        createHabitUseCase(req.body).pipe(Effect.provide(HabitLive)),
+    );
+
+    if (Exit.isFailure(createdHabitExit)) {
+        console.error("Failed to create habit:", createdHabitExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
         return;
     }
 
-    tasks.splice(index, 1);
-    res.status(constants.HTTP_STATUS_OK).json(id).end();
+    res.status(constants.HTTP_STATUS_CREATED).json(
+        Schema.encodeSync(Habit)(createdHabitExit.value),
+    );
+});
+
+router.patch("/:id", async (req, res) => {
+    const id = Number(req.params.id);
+
+    const updatedHabitExit = await Effect.runPromiseExit(
+        updateHabitUseCase(id, req.body).pipe(Effect.provide(HabitLive)),
+    );
+
+    if (Exit.isFailure(updatedHabitExit)) {
+        console.error("Failed to update habit:", updatedHabitExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
+        return;
+    }
+
+    res.status(constants.HTTP_STATUS_OK).json(Schema.encodeSync(Habit)(updatedHabitExit.value));
+});
+
+router.delete("/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    const deletedHabitExit = await Effect.runPromiseExit(
+        deleteHabitUseCase(id).pipe(Effect.provide(HabitLive)),
+    );
+
+    if (Exit.isFailure(deletedHabitExit)) {
+        console.error("Failed to delete habit:", deletedHabitExit.cause);
+        res.status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).end();
+        return;
+    }
+
+    res.status(constants.HTTP_STATUS_OK).json(
+        Schema.encodeSync(Schema.Number)(deletedHabitExit.value),
+    );
 });
 
 export default router;
