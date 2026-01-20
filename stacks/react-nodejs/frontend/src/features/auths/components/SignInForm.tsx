@@ -56,7 +56,7 @@ const SignInForm: React.FC = () => {
                         type="submit"
                         disabled={isPending}
                     >
-                        サインアップ
+                        サインイン
                     </button>
                 </form>
             </FormProvider>
